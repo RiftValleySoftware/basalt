@@ -1,6 +1,6 @@
 /***************************************************************************************************************************/
 /**
-    COBRA Security Administration Layer
+    BASALT Extension Layer
     
     © Copyright 2018, Little Green Viper Software Development LLC.
     
@@ -59,7 +59,7 @@ function showTests() {
                 throbber_container.style.display = 'none';
             };
             
-            tests_wrapped_up.style.display = 'block';
+            tests_wrapped_up.style.display = 'table';
         };
     };
     

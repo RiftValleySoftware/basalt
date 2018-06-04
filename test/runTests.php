@@ -1,7 +1,7 @@
 <?php
 /***************************************************************************************************************************/
 /**
-    COBRA Security Administration Layer
+    BASALT Extension Layer
     
     © Copyright 2018, Little Green Viper Software Development LLC.
     
@@ -43,6 +43,11 @@ if (isset($test_name_array) && is_array($test_name_array) && count($test_name_ar
                 font-family: Arial, San-serif;
                 }
             
+            div.closed,
+            div.open {
+                display: table;
+            }
+            
             div.main_div {
                 margin-top:0.25em;
                 margin-bottom: 0.25em;
@@ -58,6 +63,7 @@ if (isset($test_name_array) && is_array($test_name_array) && count($test_name_ar
             
             .explain {
                 font-style: italic;
+                display:table;
             }
             
             h1.header {
@@ -79,7 +85,7 @@ if (isset($test_name_array) && is_array($test_name_array) && count($test_name_ar
             
             div.open div.container {
                 margin-left:1em;
-                display: block;
+                display: table;
             }
             
             div.closed div.container {
@@ -88,6 +94,7 @@ if (isset($test_name_array) && is_array($test_name_array) && count($test_name_ar
             
             h3.inner_header {
                 font-size: medium;
+                display:table;
             }
             
             div.inner_open h2.inner_header {
@@ -97,9 +104,10 @@ if (isset($test_name_array) && is_array($test_name_array) && count($test_name_ar
             }
             
             div.inner_open div.inner_container {
-                margin-left:1em;
-                display: block;
+                display: table;
                 border:1px dashed #555;
+                border-radius:0.25em;
+                padding: 0.25em;
             }
             
             div.inner_closed div.inner_container {
@@ -111,12 +119,15 @@ if (isset($test_name_array) && is_array($test_name_array) && count($test_name_ar
                 margin:auto;
                 padding: 0.25em;
                 margin-top:1em;
-                border-radius:0.5em;
-                border:2px solid #999;
                 min-width:30em;
             }
             
             div.collection_wrapper {
+            }
+            
+            div#tests-wrapped-up {
+                margin-left:auto;
+                margin-right:auto;
             }
             
         </style>

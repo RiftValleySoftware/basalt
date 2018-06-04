@@ -1,7 +1,7 @@
 <?php
 /***************************************************************************************************************************/
 /**
-    COBRA Security Administration Layer
+    BASALT Extension Layer
     
     © Copyright 2018, Little Green Viper Software Development LLC.
     
@@ -268,5 +268,3 @@
             echo("<h4>Invalid Object!</h4>");
         }
     }
-        
-?>
