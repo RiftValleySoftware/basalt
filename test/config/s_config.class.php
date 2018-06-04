@@ -20,11 +20,11 @@ This file contains the implementation-dependent configuration settings.
 define('_MAIN_DB_TYPE_', 'mysql');
 define('_SECURITY_DB_TYPE_', 'mysql');
 
-require_once(dirname(dirname(dirname(__FILE__))).'/cobra/chameleon/badger/install-assets/t_config.interface.php');
+require_once(dirname(dirname(dirname(__FILE__))).'/andisol/cobra/chameleon/badger/install-assets/t_config.interface.php');
 
 class CO_Config {
     use tCO_Config; // These are the built-in config methods.
-
+    
     static private $_god_mode_id = 2;   ///< God Login Security DB ID. This is private, so it can't be programmatically changed.
     static private $_god_mode_password = 'BWU-HA-HAAAA-HA!'; ///< Plaintext password for the God Mode ID login. This overrides anything in the ID row.
     
@@ -51,10 +51,9 @@ class CO_Config {
     
     /***********************/
     /**
-    \returns the POSIX path to the main ANDISOL directory.
+    \returns the POSIX path to the main BASALT directory.
      */
     static function base_dir() {
         return dirname(dirname(dirname(__FILE__)));
     }
-    
 }

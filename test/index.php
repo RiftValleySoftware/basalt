@@ -1,7 +1,7 @@
 <?php
 /***************************************************************************************************************************/
 /**
-    ANDISOL Object Model Layer
+    BASALT Extension Layer
     
     © Copyright 2018, Little Green Viper Software Development LLC.
     
@@ -23,7 +23,7 @@ require_once($config_file_path);
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>ANDISOL</title>
+        <title>BASALT</title>
         <link rel="shortcut icon" href="../icon.png" type="image/png" />
         <style>
             *{margin:0;padding:0}
@@ -51,14 +51,14 @@ require_once($config_file_path);
         </style>
     </head>
     <body>
-        <h1 style="text-align:center">ANDISOL OBJECT MODEL LAYER</h1>
+        <h1 style="text-align:center">BASALT EXTENSION LAYER</h1>
         <div style="text-align:center;padding:1em;">
             <?php
-                if ( !defined('LGV_ANDISOL_CATCHER') ) {
-                    define('LGV_ANDISOL_CATCHER', 1);
+                if ( !defined('LGV_BASALT_CATCHER') ) {
+                    define('LGV_BASALT_CATCHER', 1);
                 }
     
-                require_once(CO_Config::main_class_dir().'/co_andisol.class.php');
+                require_once(CO_Config::main_class_dir()."/co_basalt.class.php");
             ?>
             <img src="../icon.png" style="display:block;margin:auto;width:80px" alt="A Lump of COAL" />
             <h1 class="header">MAIN ENVIRONMENT SETUP</h1>
@@ -68,11 +68,13 @@ require_once($config_file_path);
                         echo("<div style=\"margin:auto;text-align:center;display:table\">");
                         echo("<h2>File/Folder Locations</h2>");
                         echo("<pre style=\"margin:auto;text-align:left;display:table\">");
+                        echo("<strong>BASALT Version</strong>..........".__BASALT_VERSION__."\n");
                         echo("<strong>ANDISOL Version</strong>.........".__ANDISOL_VERSION__."\n");
                         echo("<strong>COBRA Version</strong>...........".__COBRA_VERSION__."\n");
                         echo("<strong>CHAMELEON Version</strong>.......".__CHAMELEON_VERSION__."\n");
                         echo("<strong>BADGER Version</strong>..........".__BADGER_VERSION__."\n");
-                        echo("<strong>ANDISOL Base dir</strong>........".CO_Config::base_dir()."\n");
+                        echo("<strong>BASALT Base dir</strong>.........".CO_Config::base_dir()."\n");
+                        echo("<strong>ANDISOL Base dir</strong>........".CO_Config::andisol_base_dir()."\n");
                         echo("<strong>COBRA Base dir</strong>..........".CO_Config::cobra_base_dir()."\n");
                         echo("<strong>CHAMELEON Base dir</strong>......".CO_Config::chameleon_base_dir()."\n");
                         echo("<strong>BADGER Base dir</strong>.........".CO_Config::badger_base_dir()."\n");
@@ -91,10 +93,11 @@ require_once($config_file_path);
                     </div>
                 </div>
             </div>
-            <h3><a href="./runTests.php">ANDISOL TESTS</a></h3>
-            <h3 style="margin-top:1em"><a href="../cobra/test/">COBRA TESTS</a></h3>
-            <h3 style="margin-top:1em"><a href="../cobra/chameleon/test/">CHAMELEON TESTS</a></h3>
-            <h3 style="margin-top:1em"><a href="../cobra/chameleon/badger/test/">BADGER TESTS</a></h3>
+            <h3><a href="./runTests.php">BASALT TESTS</a></h3>
+            <h3 style="margin-top:1em"><a href="../andisol/test/">ANDISOL TESTS</a></h3>
+            <h3 style="margin-top:1em"><a href="../andisol/cobra/test/">COBRA TESTS</a></h3>
+            <h3 style="margin-top:1em"><a href="../andisol/cobra/chameleon/test/">CHAMELEON TESTS</a></h3>
+            <h3 style="margin-top:1em"><a href="../andisol/cobra/chameleon/badger/test/">BADGER TESTS</a></h3>
         </div>
     </body>
 </html>

@@ -35,7 +35,7 @@ if (isset($test_name_array) && is_array($test_name_array) && count($test_name_ar
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>ANDISOL</title>
+        <title>BASALT</title>
         <link rel="shortcut icon" href="../icon.png" type="image/png" />
         <style>
             *{margin:0;padding:0}
@@ -161,7 +161,7 @@ if (isset($test_name_array) && is_array($test_name_array) && count($test_name_ar
         </script>
     </head>
     <body>
-        <h1 style="text-align:center">ANDISOL OBJECT MODEL LAYER</h1>
+        <h1 style="text-align:center">BASALT EXTENSION LAYER</h1>
         <div style="text-align:center;padding:1em;">
             <div id="throbber-container" style="text-align:center">
                 <h3 id="progress-report" style="margin-top:1em"></h3>

@@ -19,7 +19,11 @@ if (!defined('LGV_ACCESS_CATCHER')) {
     define('LGV_ACCESS_CATCHER', 1);
 }
 
-require_once(CO_Config::cobra_main_class_dir().'/co_cobra.class.php');
+if ( !defined('LGV_ANDISOL_CATCHER') ) {
+    define('LGV_ANDISOL_CATCHER', 1);
+}
+
+require_once(CO_Config::andisol_main_class_dir().'/co_andisol.class.php');
 
 if ( !defined('LGV_LANG_CATCHER') ) {
     define('LGV_LANG_CATCHER', 1);

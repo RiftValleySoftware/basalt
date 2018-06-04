@@ -28,7 +28,7 @@
             define('LGV_ANDISOL_CATCHER', 1);
         }
     
-        require_once(CO_Config::main_class_dir().'/co_andisol.class.php');
+        require_once(CO_Config::andisol_main_class_dir().'/co_andisol.class.php');
     
         $andisol_instance = new CO_Andisol($in_login, $in_hashed_password, $in_password);
     

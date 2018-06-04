@@ -16,7 +16,7 @@ require_once(dirname(dirname(__FILE__)).'/functions.php');
 // -------------------------------- TEST DISPATCHER ---------------------------------------------
 
 function basalt_basic_run_tests() {
-    basalt_basic_test(1, 'TEST', 'TEST');
+    basalt_basic_run_test(1, 'TEST', 'TEST');
 }
 
 // -------------------------------- TESTS ---------------------------------------------
@@ -45,7 +45,7 @@ function basalt_basic_run_test($in_num, $in_title, $in_explain, $in_login = NULL
 }
 
 ob_start();
-    prepare_databases('basalt_basic_tests');
+    prepare_databases('base_tests');
     
     echo('<div class="test-wrapper" style="display:table;margin-left:auto;margin-right:auto;text-align:left">');
         echo('<h1 class="header">BASALT BASIC TESTS</h1>');
