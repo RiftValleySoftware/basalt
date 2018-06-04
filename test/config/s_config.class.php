@@ -56,4 +56,12 @@ class CO_Config {
     static function base_dir() {
         return dirname(dirname(dirname(__FILE__)));
     }
+    
+    /***********************/
+    /**
+    \returns the POSIX path to the user-defined extended database row classes (we use the ANDISOL extensions for BASALT).
+     */
+    static function db_classes_extension_class_dir() {
+        return self::andisol_db_classes_extension_class_dir();
+    }
 }
