@@ -1,0 +1,3 @@
+[submodule "andisol"]
+	path = andisol
+	url = git@github.com:LittleGreenViper/andisol.git
