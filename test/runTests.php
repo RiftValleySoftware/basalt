@@ -41,11 +41,20 @@ if (isset($test_name_array) && is_array($test_name_array) && count($test_name_ar
             *{margin:0;padding:0}
             body {
                 font-family: Arial, San-serif;
+                text-align:center;
                 }
             
             div.closed,
-            div.open {
+            div.open,
+            div.inner_closed {
                 display: table;
+                margin:auto;
+            }
+            
+            div.inner_closed,
+            div.inner_open {
+                margin-top:0.25em;
+                margin-bottom: 0.25em;
             }
             
             div.main_div {
@@ -57,35 +66,37 @@ if (isset($test_name_array) && is_array($test_name_array) && count($test_name_ar
             
             div.inner_div {
                 margin-top:0.25em;
-                margin-left:1em;
                 padding: 0.25em;
             }
             
             .explain {
                 font-style: italic;
-                display:table;
+                display:block;
+                margin:0.5em;
+                text-align:left;
             }
             
             h1.header {
                 font-size: x-large;
-                text-align:center;
             }
             
             h2.header {
                 font-size: large;
-                margin-top: 1em;
-                text-align:center;
             }
             
-            div.open h1.header {
-            }
-            
-            div.closed h1.header {
+            div.closed,
+            div.open {
+                margin-top:0.5em;
+                border:1px solid #555;
+                border-radius:0.25em;
+                padding: 0.25em;
+                min-width:30em;
             }
             
             div.open div.container {
-                margin-left:1em;
+                margin:auto;
                 display: table;
+                text-align:left;
             }
             
             div.closed div.container {
@@ -95,9 +106,13 @@ if (isset($test_name_array) && is_array($test_name_array) && count($test_name_ar
             h3.inner_header {
                 font-size: medium;
                 display:table;
+                margin:auto;
             }
             
-            div.inner_open h2.inner_header {
+            div.inner_open {
+                border:1px dashed #555;
+                border-radius:0.25em;
+                padding: 0.25em;
             }
             
             div.inner_closed h2.inner_header {
@@ -105,9 +120,7 @@ if (isset($test_name_array) && is_array($test_name_array) && count($test_name_ar
             
             div.inner_open div.inner_container {
                 display: table;
-                border:1px dashed #555;
-                border-radius:0.25em;
-                padding: 0.25em;
+                margin:auto;
             }
             
             div.inner_closed div.inner_container {
@@ -126,8 +139,7 @@ if (isset($test_name_array) && is_array($test_name_array) && count($test_name_ar
             }
             
             div#tests-wrapped-up {
-                margin-left:auto;
-                margin-right:auto;
+                margin:auto;
             }
             
         </style>

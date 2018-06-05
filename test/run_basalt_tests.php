@@ -41,12 +41,10 @@ function basalt_run_tests($starting_test, $in_title, $in_explain = NULL) {
 
 function basalt_run_single_direct_test($in_num, $in_title, $in_explain = NULL, $in_database = NULL, $in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $test_num_string = sprintf("%04d", intval($in_num));
-    echo('<div id="test-'.$test_num_string.'" class="inner_closed" style="display:table">');
+    echo('<div id="test-'.$test_num_string.'" class="inner_closed">');
         echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test-'.$test_num_string.'\')">TEST '.$in_num.': '.$in_title.'</a></h3>');
         echo('<div class="inner_container">');
-            echo('<div class="container">');
-                echo('<p class="explain">'.$in_explain.'</p>');
-            echo('</div>');
+            echo('<p class="explain" style="display:table;margin-left:auto;margin-right:auto">'.$in_explain.'</p>');
             echo('<div class="container">');
                 if ($in_database) {
                     $st1 = microtime(true);
