@@ -24,9 +24,6 @@ function basalt_test_define_0001() {
 }
 
 function basalt_test_0001($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
-    if (session_start()) {
-        session_destroy();
-    }
     $result_code = '';
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/users', NULL, $in_login, $in_password, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
@@ -43,9 +40,6 @@ function basalt_test_define_0002() {
 }
 
 function basalt_test_0002($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
-    if (session_start()) {
-        session_destroy();
-    }
     $result_code = '';
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/users', NULL, $in_login, $in_password, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
@@ -62,9 +56,6 @@ function basalt_test_define_0003() {
 }
 
 function basalt_test_0003($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
-    if (session_start()) {
-        session_destroy();
-    }
     $result_code = '';
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/users', NULL, $in_login, $in_password, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
@@ -81,9 +72,6 @@ function basalt_test_define_0004() {
 }
 
 function basalt_test_0004($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
-    if (session_start()) {
-        session_destroy();
-    }
     $result_code = '';
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/users', NULL, $in_login, $in_password, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
