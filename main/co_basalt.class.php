@@ -36,7 +36,8 @@ require_once(CO_Config::lang_class_dir().'/common.inc.php');
  */
 class CO_Basalt {
     protected   $_andisol_instance; ///< This contains the instance of ANDISOL used by this instance.
-    protected   $_vars;             ///< This will contain any vars that are received via GET, PUT, POST or DELETE.
+    protected   $_path;             ///< This array will contain any path components that are received via GET, PUT, POST or DELETE.
+    protected   $_vars;             ///< This associative array will contain any query variables that are received via GET, PUT, POST or DELETE.
     protected   $_request_type;     /**< This will contain the HTTP Request Type, in uppercase.
                                             It will be one of:
                                                 - 'GET'
@@ -44,6 +45,7 @@ class CO_Basalt {
                                                 - 'PUT'
                                                 - 'DELETE'
                                     */
+    protected   $_response_type;    ///< This is the reponse type. It is either 'json' or 'xml'.
     
     var         $version;           ///< The version indicator.
     var         $error;             ///< Any errors that occured are kept here.
@@ -55,29 +57,41 @@ class CO_Basalt {
     /***********************/
     /**
     This method goes through the passed-in REST query parameters and request paths, and sets up our local instance property with the decoded versions.
-    At the end of this method, the internal $_vars property will be an array, containing path components.
-    The final array component may (if provided) be the query (after the question mark), parsed by '&', and '='.
+    At the end of this method, the internal $_path property will be an array, containing path components, and, if provided, the $_vars property will have any query parameters.
     If provided, the query array will be an associative array, with the key being the query element key, and the value being its value.
     If a query element is provided only as a key, then its value will be set to true.
      */
     protected function _process_parameters() {
         $vars = isset($_SERVER['PATH_INFO']) ? explode("/", substr(@$_SERVER['PATH_INFO'], 1)) : [];
         $query = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : NULL;
+        $path_final = [];
         $vars_final = [];
+        $this->_path = [];
+        $this->_vars = [];
+        $this->_response_type = NULL;
         
         // First, we simply look for the path components.
         foreach ($vars as $path_var) {
             $path_var = trim($path_var);
             
             if ($path_var) {
-                $vars_final[] = $path_var;  // Simple push.
+                $ll_var = strtolower($path_var);
+                
+                // We look for an 'xml' or 'json'. It can be in the path, but it should be the first one. 
+                if (!$this->_response_type && (('json' == $ll_var) || ('xml' == $ll_var))) {
+                    $this->_response_type = $ll_var;
+                } else {
+                    $path_final[] = $path_var;  // Simple push.
+                }
             }
         }
         
+        $this->_path = $path_final;
+        
+        // Next, we examine any query parameters.
         $query = explode('&', $query);
         
         if (isset($query) && is_array($query) && count($query)) {
-            $part_array = [];
             foreach ($query as $param) {
                 // Now, see if we have a bunch of parameters.
                 $key = trim($param);
@@ -95,17 +109,21 @@ class CO_Basalt {
                     }
                 
                     // remember that if we repeat the key, the first value is overwritten by the second (or third, or so on).
-                    $part_array[$key] = $value;
+                    $vars_final[$key] = $value;
                 }
-            }
-    
-            // Add the parsed part to our accumulator.
-            if (count($part_array)) {
-                $vars_final[] = $part_array;  // Simple push.
             }
         }
         
         $this->_vars = $vars_final;
+    }
+    
+    /***********************/
+    /**
+     */
+    protected function _process_command() {
+        $ret = NULL;
+        
+        return $ret;
     }
     
     /***********************/
