@@ -276,7 +276,21 @@ function call_REST_API( $method,
                         $password = NULL,
                         &$httpCode = NULL
                         ) {
+    // This gets the session as a cookie.
+    if (isset ( $_COOKIE['PHPSESSID'] ) && $_COOKIE['PHPSESSID'] )
+        {
+        $strCookie = 'PHPSESSID=' . $_COOKIE['PHPSESSID'] . '; path=/';
+
+        session_write_close();
+        }
+
+    // Create a new cURL resource.
     $curl = curl_init();
+    
+    if ( isset ( $strCookie ) )
+        {
+        curl_setopt ( $curl, CURLOPT_COOKIE, $strCookie );
+        }
 
     switch ($method) {
         case "POST":
