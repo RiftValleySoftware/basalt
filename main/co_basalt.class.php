@@ -74,61 +74,98 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         $this->_vars = [];
         $this->_response_type = NULL;
         $this->_plugin_selector = NULL;
+
+        $this->_request_type = strtoupper(trim($_SERVER['REQUEST_METHOD']));
         
-        if (1 < count($paths)) { // We need at least the response and plugin types.
+        if ((1 < count($paths)) || isset($paths[0]) && ('login' == $paths[0])) { // We need at least the response and plugin types.
             $response_type = strtolower(trim($paths[0]));
             
-            // Get the response type.
-            if (('json' == $response_type) || ('xml' == $response_type) || ('xsd' == $response_type)) {
-                array_shift($paths);
-                
-                $this->_response_type = $response_type;
-                
-                $plugin_selector = strtolower(trim($paths[0]));
-                
-                // Make sure that we are calling a valid plugin.
-                if (in_array($plugin_selector, $this->get_plugin_names())) {
-                    $this->_plugin_selector = $plugin_selector;
-                
-                    array_shift($paths);
-                
-                    // We now trim the strings in the remaining paths, and make sure that we don't have any empties.
-                    $this->_path = array_filter(array_map('trim', $paths), function($i){return '' != $i;});
+            if ('login' == $response_type) {
+                $query = explode('&', $query);
+                $this->_path = Array('login');
+                if (isset($query) && is_array($query) && (2 == count($query))) {
+                    $vars_final = [];
+                        
+                    foreach ($query as $param) {
+                        // Now, see if we have a bunch of parameters.
+                        $key = trim($param);
+                        $value = NULL;
         
-                    // Next, we examine any query parameters.
-                    $query = explode('&', $query);
+                        $parts = explode('=', $param, 2);
+                        if (1 < count($parts)) {
+                            $key = trim($parts[0]);
+                            $value = trim($parts[1]);
+                        }
         
-                    if (isset($query) && is_array($query) && count($query)) {
-                        foreach ($query as $param) {
-                            // Now, see if we have a bunch of parameters.
-                            $key = trim($param);
-                            $value = NULL;
-                
-                            $parts = explode('=', $param, 2);
-                            if (1 < count($parts)) {
-                                $key = trim($parts[0]);
-                                $value = trim($parts[1]);
+                        if ($key) {
+                            if (!isset($value) || !$value) {
+                                $value = true;
                             }
-                
-                            if ($key) {
-                                if (!isset($value) || !$value) {
-                                    $value = true;
-                                }
-                
-                                // remember that if we repeat the key, the first value is overwritten by the second (or third, or so on).
-                                $vars_final[$key] = $value;
-                            }
+        
+                            // remember that if we repeat the key, the first value is overwritten by the second (or third, or so on).
+                            $vars_final[$key] = $value;
                         }
                     }
-        
                     $this->_vars = $vars_final;
                 } else {
-                    header('HTTP/1.1 400 Unsupported or Missing Plugin');
+                    header('HTTP/1.1 403 Unauthorized Login');
                     exit();
                 }
             } else {
-                header('HTTP/1.1 400 Improper Return Type');
-                exit();
+                // Get the response type.
+                if (('json' == $response_type) || ('xml' == $response_type) || ('xsd' == $response_type)) {
+                    array_shift($paths);
+                
+                    $this->_response_type = $response_type;
+                
+                    $plugin_selector = strtolower(trim($paths[0]));
+                
+                    // Make sure that we are calling a valid plugin.
+                    if (in_array($plugin_selector, $this->get_plugin_names())) {
+                        $vars_final = [];
+                        
+                        $this->_plugin_selector = $plugin_selector;
+                
+                        array_shift($paths);
+                
+                        // We now trim the strings in the remaining paths, and make sure that we don't have any empties.
+                        $this->_path = array_filter(array_map('trim', $paths), function($i){return '' != $i;});
+        
+                        // Next, we examine any query parameters.
+                        $query = explode('&', $query);
+        
+                        if (isset($query) && is_array($query) && count($query)) {
+                            foreach ($query as $param) {
+                                // Now, see if we have a bunch of parameters.
+                                $key = trim($param);
+                                $value = NULL;
+                
+                                $parts = explode('=', $param, 2);
+                                if (1 < count($parts)) {
+                                    $key = trim($parts[0]);
+                                    $value = trim($parts[1]);
+                                }
+                
+                                if ($key) {
+                                    if (!isset($value) || !$value) {
+                                        $value = true;
+                                    }
+                
+                                    // remember that if we repeat the key, the first value is overwritten by the second (or third, or so on).
+                                    $vars_final[$key] = $value;
+                                }
+                            }
+                        }
+        
+                        $this->_vars = $vars_final;
+                    } else {
+                        header('HTTP/1.1 400 Unsupported or Missing Plugin');
+                        exit();
+                    }
+                } else {
+                    header('HTTP/1.1 400 Improper Return Type');
+                    exit();
+                }
             }
         } else {
             header('HTTP/1.1 400 Missing Path Components');
@@ -143,10 +180,10 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
     \returns the HTTP response string.
      */
     protected function _process_command() {
-        $ret = NULL;
+        $result = NULL;
         
         if ('baseline' == $this->_plugin_selector) {
-            $ret = $this->process_command($this->_andisol_instance, $this->_response_type, $this->_path, $this->_vars);
+            $result = $this->process_command($this->_andisol_instance, $this->_response_type, $this->_path, $this->_vars);
         } else {
             $plugin_filename = 'co_'.$this->_plugin_selector.'_basalt_plugin.class.php';
             $plugin_classname = 'CO_'.$this->_plugin_selector.'_Basalt_Plugin';
@@ -169,7 +206,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                 require_once($plugin_file);
                 $plugin_instance = new $plugin_classname();
                 if ($plugin_instance instanceof A_CO_Basalt_Plugin) {
-                    $ret = $plugin_instance->process_command($this->_andisol_instance, $this->_response_type, $this->_path, $this->_vars);
+                    $result = $plugin_instance->process_command($this->_andisol_instance, $this->_response_type, $this->_path, $this->_vars);
                 } else {
                     header('HTTP/1.1 400 Unsupported or Missing Plugin');
                     exit();
@@ -180,7 +217,26 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
             }
         }
         
-        return $ret;
+        $header = 'Content-Type:';
+        
+        switch ($this->_response_type) {
+            case 'xsd':
+            case 'xml':
+                $header .= 'text/xml';
+                break;
+                
+            case 'json':
+                $header .= 'application/json';
+                break;
+                
+            default:
+                $header = 'HTTP/1.1 400 Improper Return Type';
+                $result = '';
+        }
+        
+        header($header);
+        echo($result);
+        exit();
     }
     
     /***********************/
@@ -220,63 +276,50 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         $https = ((!empty ( $_SERVER['HTTPS'] ) && (($_SERVER['HTTPS'] !== 'off') || ($port == 443)))) ? true : false;
         
         if (!CO_Config::$require_ssl_for_all || $https) {
-            if ( !isset ( $_SESSION ) ) {
-                if (!session_start()) {
-                    $header = 'HTTP/1.1 400 Session Failure';
-                    $result = '';
-                }
-            }
-            
-            $login_id_string = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : NULL;
-            $cleartext_password = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : NULL;
-            
-            if ($login_id_string && $cleartext_password) {
-                if (!CO_Config::$require_ssl_for_authentication || (CO_Config::$require_ssl_for_authentication && $https)) {
-                    $this->_andisol_instance = new CO_Andisol($login_id_string, '', $cleartext_password);
-                    // Assuming all went well, we set the session to our crypted password.
-                    if ($this->_andisol_instance->logged_in()) {
-                        $_SESSION[_SESSION_NAME_] = [];
-                        $_SESSION[_SESSION_NAME_]['last_access_time'] = time();
-                        $_SESSION[_SESSION_NAME_]['login_id_string'] = $this->_andisol_instance->get_chameleon_instance()->get_login_item()->login_id;
-                        $_SESSION[_SESSION_NAME_]['hashed_password'] = $this->_andisol_instance->get_chameleon_instance()->get_login_item()->get_crypted_password();
-echo('<pre>'.htmlspecialchars(print_r($_SESSION, true)).'</pre>');
+            $this->_process_parameters();
+
+            // If this is a login, we do nothing else. We simply handle the login.
+            if ((1 == count($this->_path)) && ('login' == $this->_path[0])) {
+                if (isset($this->_vars) && isset($this->_vars['login_id']) && isset($this->_vars['password'])) {
+                    $login_id = $this->_vars['login_id'];
+                    $password = $this->_vars['password'];
+                    $andisol_instance = new CO_Andisol($login_id, '', $password);
+                    
+                    if (isset($andisol_instance) && ($andisol_instance instanceof CO_Andisol) && $andisol_instance->logged_in()) {
+                        $login_item = $andisol_instance->get_login_item();
+                        
+                        // If we are logging in, we shortcut the process, and simply return the API key.
+                        if (isset($login_item) && ($login_item instanceof CO_Security_Login)) {
+                            $api_key = $login_item->get_api_key();
+                            if (isset($api_key)) {
+                                echo($api_key);
+                            } else {
+                                header('HTTP/1.1 403 Unauthorized Login');
+                            }
+                        } else {
+                            header('HTTP/1.1 403 Unauthorized Login');
+                        }
                     } else {
-                        header('HTTP/1.1 401 Unauthorized');
-                        exit();
+                        header('HTTP/1.1 403 Unauthorized Login');
                     }
                 } else {
-                    header('HTTP/1.1 401 SSSL Authorization Required');
-                    exit();
+                    header('HTTP/1.1 403 Unauthorized Login');
                 }
-            } else {
-echo('<pre>'.htmlspecialchars(print_r($_SESSION, true)).'</pre>');
-                // See if we have a saved session. If so, we extract the hashed credentials from there.
-                if (isset($_SESSION[_SESSION_NAME_])) {
-                    // Are we still open for business?
-                    $now = time();
-                    $then = isset($_SESSION[_SESSION_NAME_]['last_access_time']) ? intval($_SESSION[_SESSION_NAME_]['last_access_time']) : $now;
-                    $time_elapsed = time() - intval($_SESSION[_SESSION_NAME_]['last_access_time']);
-                    if (CO_Config::$session_timeout_in_seconds >= $time_elapsed) {
-                        $login_id_string ='';
-                        $hashed_password = '';
                 
-                        if (isset($_SESSION[_SESSION_NAME_]['hashed_password'])) {
-                            $hashed_password = $_SESSION[_SESSION_NAME_]['hashed_password'];
-                        }
+                exit();
+            } else {
+                $api_key1 = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : NULL;
+                $api_key2 = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : NULL;
             
-                        if (isset($_SESSION[_SESSION_NAME_]['login_id_string'])) {
-                            $login_id_string = $_SESSION[_SESSION_NAME_]['login_id_string'];
-                        }
-            
-                        $this->_andisol_instance = new CO_Andisol($login_id_string, $hashed_password);
-                        
-                        $_SESSION[_SESSION_NAME_]['last_access_time'] = time();   // Give the flywheel another spin.
-                    } else {
-                        header('HTTP/1.1 408 Request Timeout: More Than '.CO_Config::$session_timeout_in_seconds.' Seconds Elapsed.');
-                        exit();
-                    }
-                } else {    // If no session login, then we look for the standard HTTP login.
-                    $this->_andisol_instance = new CO_Andisol();
+                // If we don't have a valid API key pair, we just forget about API keys.
+                if(!(isset($api_key1) && isset($api_key2) && $api_key1 && ($api_key1 == $api_key2))) {
+                    $api_key1 = NULL;
+                }
+
+                $andisol_instance = new CO_Andisol('', '', '', $api_key1);
+                
+                if (isset($andisol_instance) && ($andisol_instance instanceof CO_Andisol)) {
+                    $this->_andisol_instance = $andisol_instance;
                 }
             }
         } else {
@@ -284,34 +327,8 @@ echo('<pre>'.htmlspecialchars(print_r($_SESSION, true)).'</pre>');
             exit();
         }
         
-        // OK. By the time we get here, we are either logged in, or not logged in, and have a valid ANDISOL instance.
-        // The next thing that we do, is decipher our marching orders for GET/POST/PUT/DELETE.
-        $this->_request_type = strtoupper(trim($_SERVER['REQUEST_METHOD']));
-        // Break up the request parameters.
-        $this->_process_parameters();
-        // OK. We're ready to go. Put on our shades. We're on a mission for Glod.
-        $result = $this->_process_command();
-        
-        $header = 'Content-Type:';
-        
-        switch ($this->_response_type) {
-            case 'xsd':
-            case 'xml':
-                $header .= 'text/xml';
-                break;
-                
-            case 'json':
-                $header .= 'application/json';
-                break;
-                
-            default:
-                $header = 'HTTP/1.1 400 Improper Return Type';
-                $result = '';
-        }
-        
-        header($header);
-        echo($result);
-        exit();
+        // OK. By the time we get here, we are either logged in, or not logged in, and have a valid ANDISOL instance. We're ready to go. Put on our shades. We're on a mission for Glod.
+        $this->_process_command();
     }
     
     /***********************/

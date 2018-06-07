@@ -272,13 +272,12 @@ function display_record($in_record_object, $in_hierarchy_level = 0, $shorty = fa
 function call_REST_API( $method,
                         $url,
                         $data = NULL,
-                        $username = NULL,
-                        $password = NULL,
+                        $api_key = NULL,
                         &$httpCode = NULL
                         ) {
     // Create a new cURL resource.
     $curl = curl_init();
-
+    
     switch ($method) {
         case "POST":
             curl_setopt($curl, CURLOPT_POST, 1);
@@ -306,9 +305,9 @@ function call_REST_API( $method,
     }
 
     // Authentication
-    if (isset($username) && isset($password)) {
+    if (isset($api_key)) {
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($curl, CURLOPT_USERPWD, "$username:$password");
+        curl_setopt($curl, CURLOPT_USERPWD, "$api_key:$api_key");
     }
 
     curl_setopt($curl, CURLOPT_URL, $url);
