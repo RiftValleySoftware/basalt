@@ -30,7 +30,7 @@ class CO_Config {
     
     static $lang = 'en';                            ///< The default language for the server.
     static $min_pw_len = 8;                         ///< The minimum password length.
-    static $session_timeout_in_seconds = 600;       ///< Ten-minute timeout.
+    static $session_timeout_in_seconds = 2;      ///< One-hour API key timeout.
     static $require_ssl_for_authentication = false; ///< If false (default is true), then the HTTP authentication can be sent over non-TLS (Should only be false for testing).
     static $require_ssl_for_all = false;            ///< If true (default is false), then all interactions should be SSL (If true, then $require_ssl_for_authentication is ignored).
     

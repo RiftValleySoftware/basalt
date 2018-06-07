@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:b='%%%%%SERVER#URI%%%%%' elementFormDefault='qualified' targetNamespace='%%%%%SERVER#URI%%%%%'>
+    <xs:element name='users'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs='0' maxOccurs='unbounded' ref='b:value'/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name='value'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref='b:id'/>
+                <xs:element minOccurs='0' ref='b:name'/>
+                <xs:element minOccurs='0' ref='b:login_id'/>
+            </xs:sequence>
+            <xs:attribute name='sequence_index' use='required' type='xs:integer'/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name='id'>
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base='xs:integer'>
+                    <xs:attribute name='sequence_index' type='xs:integer'/>
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name='name'>
+        <xs:complexType mixed='true'>
+            <xs:attribute name='sequence_index' type='xs:integer'/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name='login_id'>
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base='xs:integer'>
+                    <xs:attribute name='sequence_index' type='xs:integer'/>
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

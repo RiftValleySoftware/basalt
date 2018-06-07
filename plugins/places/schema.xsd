@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:b='%%%%%SERVER#URI%%%%%' elementFormDefault='qualified' targetNamespace='%%%%%SERVER#URI%%%%%'>
+    <xs:element name='places'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs='0' maxOccurs='unbounded' ref='b:value'/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name='value'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref='b:id'/>
+                <xs:element ref='b:name'/>
+                <xs:element ref='b:address'/>
+                <xs:element ref='b:lat_lng'/>
+            </xs:sequence>
+            <xs:attribute name='sequence_index' type='xs:integer'/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name='id' type='xs:integer'/>
+    <xs:element name='name' type='xs:string'/>
+    <xs:element name='address' type='xs:string'/>
+    <xs:element name='lat_lng' type='xs:string'/>
+</xs:schema>

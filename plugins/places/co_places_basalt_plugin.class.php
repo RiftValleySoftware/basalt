@@ -21,12 +21,37 @@ require_once(CO_Config::main_class_dir().'/a_co_basalt_plugin.class.php');
 class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
     /***********************/
     /**
-    This returns the appropriate XML header for our response.
-    
-    \returns a string, with the entire XML header (including the preamble).
      */
-    protected function _get_xml_header() {
-        return '';
+    protected function _get_short_place_description($in_place_object) {
+        $ret = Array('id' => $in_place_object->id(), 'name' => $in_place_object->name);
+        
+        return $ret;
+    }
+
+    /***********************/
+    /**
+     */
+    protected function _get_long_place_description($in_place_object) {
+        $longitude = $in_place_object->longitude();
+        $latitude = $in_place_object->latitude();
+        $address = $in_place_object->get_readable_address();
+        $name = $in_place_object->name;
+        
+        $ret = Array('id' => $in_place_object->id());
+        
+        if (isset($name) && $name) {
+            $ret['name'] = $name;
+        }
+        
+        if (isset($address) && $address) {
+            $ret['address'] = $address;
+        }
+        
+        if (isset($longitude) && is_float($longitude) && isset($latitude) && is_float($latitude)) {
+            $ret['lat_lng'] = sprintf("%f,%f", $latitude, $longitude);
+        }
+
+        return $ret;
     }
     
     /***********************/
@@ -36,7 +61,19 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
     \returns XML, containing the schema for this plugin's responses. The schema needs to be comprehensive.
      */
     protected function _get_xsd() {
-        return '';
+        $ret = '';
+        
+        $replacement_token = '%%%%%SERVER#URI%%%%%';
+        
+        $schema_file_path = dirname(__FILE__).'/schema.xsd';
+        
+        $schema_file = file_get_contents($schema_file_path);
+        
+        if ($schema_file) {
+            $ret = str_replace($replacement_token, self::_server_url(), $schema_file);
+        }
+        
+        return $ret;
     }
         
     /***********************/
@@ -60,7 +97,39 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                         $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
                                         $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                     ) {
-        $ret = NULL;
+        $ret = [];
+        
+        // For the default (no place ID), we simply return a list of places, in "short" format.
+        if (0 == count($in_path)) {
+            $placelist = $in_andisol_instance->generic_search(Array('access_class' => Array('%_Place', '%_Place_Collection', 'use_like' => 1)));
+            
+            if (isset($placelist) && is_array($placelist) && (0 < count($placelist))) {
+                foreach ($placelist as $place) {
+                    $ret[] = $this->_get_short_place_description($place);
+                }
+            }
+        } else {
+            $main_command = $in_path[0];    // Get the main command.
+            
+            // The first thing that we'll do, is look for a list of user IDs. If that is the case, we split them into an array of int.
+            
+            $place_id_list = explode(',', $main_command);
+            
+            // If we do, indeed, have a list, we will force them to be ints, and cycle through them.
+            if (1 < count($place_id_list)) {
+                $place_id_list = array_map('intval', $place_id_list);
+                
+                foreach ($place_id_list as $id) {
+                    if (0 < $id) {
+                        $place = $in_andisol_instance->get_single_data_record_by_id($id);
+                        if (isset($place) && ($place instanceof CO_Place)) {
+                            $ret[] = $this->_get_long_place_description($place);
+                        }
+                    }
+                }
+            } else {
+            }
+        }
         
         return $this->_condition_response($in_response_type, $ret);
     }

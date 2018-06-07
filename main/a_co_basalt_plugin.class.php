@@ -46,13 +46,16 @@ abstract class A_CO_Basalt_Plugin {
     protected static function _array2xml(	$in_array   ///< REQUIRED: The input associative array
                                         ) {
         $output = '';
-        $index = (1 < count($in_array)) ? 0 : NULL;
+        $index = 0;
         
         foreach ($in_array as $name => $value) {
-            $name = is_int($name) ? 'value' : htmlspecialchars(trim($name));
+            $plurality = is_int($name);
+            $name = $plurality ? 'value' : htmlspecialchars(trim($name));
+            
+            $plurality = $plurality || (1 < count(array_keys($in_array, $name))); 
                 
             if ($value) {
-                if (NULL !== $index) {
+                if ($plurality) {
                     $output .= '<'.$name.' sequence_index="'.strval ( $index++ ).'">';
                 } else {
                     $output .= '<'.$name.'>';
@@ -64,7 +67,7 @@ abstract class A_CO_Basalt_Plugin {
                     $output .= htmlspecialchars(strval($value));
                 }
                 
-                $output .= '</'.htmlspecialchars($name).'>';
+                $output .= '</'.$name.'>';
             }
         }
     
@@ -139,13 +142,15 @@ abstract class A_CO_Basalt_Plugin {
         $ret = '';
         
         if ('xml' == $in_response_type) {
-            $ret = $this->_get_xml_header().self::_array2xml($in_response_as_associative_array).'</'.$this->plugin_name().'>';
+            $header = $this->_get_xml_header();
+            $body = self::_array2xml($in_response_as_associative_array);
+            $footer = '</'.$this->plugin_name().'>';
+            $ret = "$header$body$footer";
         } elseif ('xsd' == $in_response_type) {
             $ret = $this->_get_xsd();
         } else {
             $ret = json_encode(Array($this->plugin_name() => $in_response_as_associative_array));
         }
-        
         return $ret;
     }
 }

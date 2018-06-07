@@ -32,7 +32,7 @@ if ( !defined('LGV_LANG_CATCHER') ) {
 
 require_once(CO_Config::lang_class_dir().'/common.inc.php');
 
-define('_SESSION_NAME_', '___RVP_BASALT_SESSION___');
+define('_PLUGIN_NAME_', 'baseline');
 
 /****************************************************************************************************************************/
 /**
@@ -77,6 +77,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
 
         $this->_request_type = strtoupper(trim($_SERVER['REQUEST_METHOD']));
         
+        // Look to see if we are doing a login. In that case, we only grab a couple of things.
         if ((1 < count($paths)) || isset($paths[0]) && ('login' == $paths[0])) { // We need at least the response and plugin types.
             $response_type = strtolower(trim($paths[0]));
             
@@ -180,61 +181,77 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
     \returns the HTTP response string.
      */
     protected function _process_command() {
-        $result = NULL;
+        $header = '';
+        $result = '';
         
-        if ('baseline' == $this->_plugin_selector) {
-            $result = $this->process_command($this->_andisol_instance, $this->_response_type, $this->_path, $this->_vars);
-        } else {
-            $plugin_filename = 'co_'.$this->_plugin_selector.'_basalt_plugin.class.php';
-            $plugin_classname = 'CO_'.$this->_plugin_selector.'_Basalt_Plugin';
-            $plugin_dirs = CO_Config::plugin_dirs();
-            $plugin_file = '';
+        if (isset($this->_andisol_instance) && ($this->_andisol_instance instanceof CO_Andisol) && $this->_andisol_instance->valid()) {
+            if ('baseline' == $this->_plugin_selector) {
+                $result = $this->process_command($this->_andisol_instance, $this->_response_type, $this->_path, $this->_vars);
+            } else {
+                $plugin_filename = 'co_'.$this->_plugin_selector.'_basalt_plugin.class.php';
+                $plugin_classname = 'CO_'.$this->_plugin_selector.'_Basalt_Plugin';
+                $plugin_dirs = CO_Config::plugin_dirs();
+                $plugin_file = '';
             
-            foreach ($plugin_dirs as $plugin_dir) {
-                if (isset($plugin_dir) && is_dir($plugin_dir)) {
-                    // Iterate through that directory, and get each plugin directory.
-                    foreach (new DirectoryIterator($plugin_dir) as $fileInfo) {
-                        if ($plugin_filename == $fileInfo->getBasename()) {
-                            $plugin_file = $fileInfo->getPathname();
-                            break;
+                foreach ($plugin_dirs as $plugin_dir) {
+                    if (isset($plugin_dir) && is_dir($plugin_dir)) {
+                        // Iterate through that directory, and get each plugin directory.
+                        foreach (new DirectoryIterator($plugin_dir) as $fileInfo) {
+                            if ($plugin_filename == $fileInfo->getBasename()) {
+                                $plugin_file = $fileInfo->getPathname();
+                                break;
+                            }
                         }
                     }
                 }
-            }
             
-            if ($plugin_file) {
-                require_once($plugin_file);
-                $plugin_instance = new $plugin_classname();
-                if ($plugin_instance instanceof A_CO_Basalt_Plugin) {
-                    $result = $plugin_instance->process_command($this->_andisol_instance, $this->_response_type, $this->_path, $this->_vars);
+                if ($plugin_file) {
+                    require_once($plugin_file);
+                    $plugin_instance = new $plugin_classname();
+                    if ($plugin_instance instanceof A_CO_Basalt_Plugin) {
+                        $result = $plugin_instance->process_command($this->_andisol_instance, $this->_response_type, $this->_path, $this->_vars);
+                    } else {
+                        header('HTTP/1.1 400 Unsupported or Missing Plugin');
+                        exit();
+                    }
                 } else {
                     header('HTTP/1.1 400 Unsupported or Missing Plugin');
                     exit();
                 }
+            }
+        
+            switch ($this->_response_type) {
+                case 'xsd':
+                case 'xml':
+                    $header .= 'Content-Type: text/xml';
+                    break;
+                
+                case 'json':
+                    $header .= 'Content-Type: application/json';
+                    break;
+                
+                default:
+                    $header = 'HTTP/1.1 400 Improper Return Type';
+                    $result = '';
+            }
+        } else {
+            if (isset($this->_andisol_instance) && ($this->_andisol_instance instanceof CO_Andisol)) {
+                $this->error = $this->_andisol_instance->error;
+                if (isset($this->error) && ($this->error->error_code == CO_Lang_Common::$login_error_code_api_key_mismatch) || ($this->error->error_code == CO_Lang_Common::$pdo_error_code_invalid_login)) {
+                    $header = 'HTTP/1.1 401 Unauthorized';
+                } elseif (isset($this->error) && ($this->error->error_code == CO_Lang_Common::$login_error_code_api_key_invalid)) {
+                    $header = 'HTTP/1.1 408 API Key Timeout';
+                } else {
+                    $header = 'HTTP/1.1 400 General Error';
+                }
             } else {
-                header('HTTP/1.1 400 Unsupported or Missing Plugin');
-                exit();
+                $header = 'HTTP/1.1 400 General Error';
             }
         }
         
-        $header = 'Content-Type:';
-        
-        switch ($this->_response_type) {
-            case 'xsd':
-            case 'xml':
-                $header .= 'text/xml';
-                break;
-                
-            case 'json':
-                $header .= 'application/json';
-                break;
-                
-            default:
-                $header = 'HTTP/1.1 400 Improper Return Type';
-                $result = '';
+        if ($header) {
+            header($header);
         }
-        
-        header($header);
         echo($result);
         exit();
     }
@@ -249,20 +266,14 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                                                     $in_query = []  ///< OPTIONAL: The query parameters, as an associative array.
                                                 ) {
         $ret = Array('plugins' => CO_Config::plugin_names());
-        array_unshift($ret['plugins'], 'baseline');
+        array_unshift($ret['plugins'], $this->plugin_name());
         
         return $ret;
     }
-    
-    /***********************/
-    /**
-    This runs our plugin name.
-    
-    \returns a string, with our plugin name.
-     */
-    public function plugin_name() {
-        return 'baseline';
-    }
+
+    /************************************************************************************************************************/    
+    /*##################################################### PUBLIC METHODS #################################################*/
+    /************************************************************************************************************************/
     
     /***********************/
     /**
@@ -281,18 +292,26 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
             // If this is a login, we do nothing else. We simply handle the login.
             if ((1 == count($this->_path)) && ('login' == $this->_path[0])) {
                 if (isset($this->_vars) && isset($this->_vars['login_id']) && isset($this->_vars['password'])) {
-                    $login_id = $this->_vars['login_id'];
-                    $password = $this->_vars['password'];
-                    $andisol_instance = new CO_Andisol($login_id, '', $password);
-                    
-                    if (isset($andisol_instance) && ($andisol_instance instanceof CO_Andisol) && $andisol_instance->logged_in()) {
-                        $login_item = $andisol_instance->get_login_item();
+                    // We have the option (default on) of requiring TLS/SSL for logging in, so we check for that now.
+                    if ($https || !CO_Config::$require_ssl_for_authentication) {
+                        $login_id = $this->_vars['login_id'];
+                        $password = $this->_vars['password'];
                         
-                        // If we are logging in, we shortcut the process, and simply return the API key.
-                        if (isset($login_item) && ($login_item instanceof CO_Security_Login)) {
-                            $api_key = $login_item->get_api_key();
-                            if (isset($api_key)) {
-                                echo($api_key);
+                        // We do a simple login. This will also generate an API key, which is the only response to this command.
+                        $andisol_instance = new CO_Andisol($login_id, '', $password);
+                    
+                        if (isset($andisol_instance) && ($andisol_instance instanceof CO_Andisol) && $andisol_instance->logged_in()) {
+                            $login_item = $andisol_instance->get_login_item();
+                        
+                            // If we are logging in, we shortcut the process, and simply return the API key.
+                            if (isset($login_item) && ($login_item instanceof CO_Security_Login)) {
+                                $api_key = $login_item->get_api_key();
+                                // From now on, in order to access the login resources, you'll need to include the API key in the username/password fields.
+                                if (isset($api_key)) {
+                                    echo($api_key);
+                                } else {
+                                    header('HTTP/1.1 403 Unauthorized Login');
+                                }
                             } else {
                                 header('HTTP/1.1 403 Unauthorized Login');
                             }
@@ -303,7 +322,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                         header('HTTP/1.1 403 Unauthorized Login');
                     }
                 } else {
-                    header('HTTP/1.1 403 Unauthorized Login');
+                    header('HTTP/1.1 401 SSL Connection Required');
                 }
                 
                 exit();
@@ -315,11 +334,12 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                 if(!(isset($api_key1) && isset($api_key2) && $api_key1 && ($api_key1 == $api_key2))) {
                     $api_key1 = NULL;
                 }
-
                 $andisol_instance = new CO_Andisol('', '', '', $api_key1);
                 
                 if (isset($andisol_instance) && ($andisol_instance instanceof CO_Andisol)) {
                     $this->_andisol_instance = $andisol_instance;
+                } else {
+                    header('HTTP/1.1 500 Internal Server Error');
                 }
             }
         } else {
@@ -333,11 +353,19 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
     
     /***********************/
     /**
+    \returns a string, with our plugin name.
+     */
+    public function plugin_name() {
+        return _PLUGIN_NAME_;
+    }
+    
+    /***********************/
+    /**
     \returns an array of strings, all lowercase, with the names of all the plugins used by BASALT.
      */
     public function get_plugin_names() {
         $ret = CO_Config::plugin_names();
-        array_unshift($ret, 'baseline');
+        array_unshift($ret, $this->plugin_name());
         return $ret;
     }
     

@@ -48,16 +48,6 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
         return $ret;
     }
-
-    /***********************/
-    /**
-    This returns the appropriate XML header for our response.
-    
-    \returns a string, with the entire XML header (including the preamble).
-     */
-    protected function _get_xml_header() {
-        return '';
-    }
     
     /***********************/
     /**
@@ -66,7 +56,19 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
     \returns XML, containing the schema for this plugin's responses. The schema needs to be comprehensive.
      */
     protected function _get_xsd() {
-        return '';
+        $ret = '';
+        
+        $replacement_token = '%%%%%SERVER#URI%%%%%';
+        
+        $schema_file_path = dirname(__FILE__).'/schema.xsd';
+        
+        $schema_file = file_get_contents($schema_file_path);
+        
+        if ($schema_file) {
+            $ret = str_replace($replacement_token, self::_server_url(), $schema_file);
+        }
+        
+        return $ret;
     }
         
     /***********************/
