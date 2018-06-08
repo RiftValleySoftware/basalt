@@ -1,5 +1,16 @@
 <xs:element name='users'>
     <xs:complexType>
+        <xs:choice minOccurs='0'>
+            <xs:element ref='b:logins'/>
+            <xs:choice maxOccurs='unbounded'>
+                <xs:element ref='b:users'/>
+                <xs:element ref='b:value'/>
+            </xs:choice>
+        </xs:choice>
+    </xs:complexType>
+</xs:element>
+<xs:element name='logins'>
+    <xs:complexType>
         <xs:sequence>
             <xs:element maxOccurs='unbounded' ref='b:value'/>
         </xs:sequence>
@@ -9,22 +20,32 @@
     <xs:complexType mixed='true'>
         <xs:choice maxOccurs='unbounded'>
             <xs:element ref='b:id'/>
-            <xs:element minOccurs='0' ref='b:login'/>
+            <xs:element ref='b:login'/>
             <xs:element ref='b:name'/>
+            <xs:element ref='b:user_object_id'/>
         </xs:choice>
         <xs:attribute name='sequence_index' use='required' type='xs:integer'/>
     </xs:complexType>
 </xs:element>
+<xs:element name='id' type='xs:integer'/>
+<xs:element name='name' type='xs:string'/>
 <xs:element name='login'>
     <xs:complexType>
         <xs:sequence>
-            <xs:element ref='b:id'/>
-            <xs:element ref='b:login_id'/>
-            <xs:element ref='b:security_tokens'/>
-            <xs:element ref='b:last_login'/>
+            <xs:sequence minOccurs='0'>
+                <xs:element ref='b:id'/>
+                <xs:element ref='b:name'/>
+                <xs:element ref='b:user_object_id'/>
+                <xs:element ref='b:login'/>
+            </xs:sequence>
+            <xs:sequence minOccurs='0'>
+                <xs:element ref='b:login_id'/>
+                <xs:element ref='b:security_tokens'/>
+                <xs:element ref='b:last_login'/>
+            </xs:sequence>
             <xs:sequence minOccurs='0'>
                 <xs:element ref='b:current_api_key'/>
-                <xs:element minOccurs='0' ref='b:api_key'/>
+                <xs:element ref='b:api_key'/>
             </xs:sequence>
         </xs:sequence>
     </xs:complexType>
@@ -33,12 +54,11 @@
 <xs:element name='security_tokens'>
     <xs:complexType>
         <xs:sequence>
-            <xs:element maxOccurs='unbounded' ref='b:value'/>
+            <xs:element minOccurs='0' maxOccurs='unbounded' ref='b:value'/>
         </xs:sequence>
     </xs:complexType>
 </xs:element>
-<xs:element name='last_login' type='xs:NMTOKEN'/>
+<xs:element name='last_login' type='xs:string'/>
 <xs:element name='current_api_key' type='xs:integer'/>
 <xs:element name='api_key' type='xs:string'/>
-<xs:element name='name' type='xs:string'/>
-<xs:element name='id' type='xs:integer'/>
+<xs:element name='user_object_id' type='xs:integer'/>
