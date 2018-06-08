@@ -74,7 +74,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         $this->_vars = [];
         $this->_response_type = NULL;
         $this->_plugin_selector = NULL;
-
+        
         $this->_request_type = strtoupper(trim($_SERVER['REQUEST_METHOD']));
         
         // Look to see if we are doing a login. In that case, we only grab a couple of things.

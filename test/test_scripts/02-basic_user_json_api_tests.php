@@ -15,15 +15,15 @@
 
 require_once(dirname(dirname(__FILE__)).'/run_basalt_tests.php');
 
-basalt_run_tests(1, 'BASIC JSON USER TESTS', 'In which our intrepid hero does some basic REST Logins, and asks for information about users in JSON.');
+basalt_run_tests(4, 'BASIC JSON USER TESTS', 'In which our intrepid hero does some basic REST Logins, and asks for information about users in JSON.');
 
 // -------------------------- DEFINITIONS AND TESTS -----------------------------------
 
-function basalt_test_define_0001() {
-    basalt_run_single_direct_test(1, 'PASS: List Users (No Login)', 'Do not log in, and see what users are returned.', 'user_tests');
+function basalt_test_define_0004() {
+    basalt_run_single_direct_test(4, 'PASS: List Users (No Login)', 'Do not log in, and see what users are returned.', 'user_tests');
 }
 
-function basalt_test_0001($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+function basalt_test_0004($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/users', NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
@@ -35,11 +35,11 @@ function basalt_test_0001($in_login = NULL, $in_hashed_password = NULL, $in_pass
 
 // --------------------
 
-function basalt_test_define_0002() {
-    basalt_run_single_direct_test(2, 'PASS: List Users (Normal Login)', 'Log in with a standard login, and see what users are returned.', 'user_tests', 'norm', '', 'CoreysGoryStory');
+function basalt_test_define_0005() {
+    basalt_run_single_direct_test(5, 'PASS: List Users (Normal Login)', 'Log in with a standard login, and see what users are returned.', 'user_tests', 'norm', '', 'CoreysGoryStory');
 }
 
-function basalt_test_0002($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+function basalt_test_0005($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
@@ -57,11 +57,11 @@ function basalt_test_0002($in_login = NULL, $in_hashed_password = NULL, $in_pass
 
 // --------------------
 
-function basalt_test_define_0003() {
-    basalt_run_single_direct_test(3, 'PASS: List Users (Manager Login)', 'Log in with a manager login, and see what users are returned.', 'user_tests', 'asp', '', 'CoreysGoryStory');
+function basalt_test_define_0006() {
+    basalt_run_single_direct_test(6, 'PASS: List Users (Manager Login)', 'Log in with a manager login, and see what users are returned.', 'user_tests', 'asp', '', 'CoreysGoryStory');
 }
 
-function basalt_test_0003($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+function basalt_test_0006($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
@@ -79,11 +79,11 @@ function basalt_test_0003($in_login = NULL, $in_hashed_password = NULL, $in_pass
 
 // --------------------
 
-function basalt_test_define_0004() {
-    basalt_run_single_direct_test(4, 'PASS: List Users With Logins (Manager Login)', 'Log in with a manager login, and see what users are returned.', 'user_tests', 'asp', '', 'CoreysGoryStory');
+function basalt_test_define_0007() {
+    basalt_run_single_direct_test(7, 'PASS: List Users With Logins (Manager Login)', 'Log in with a manager login, and see what users are returned.', 'user_tests', 'asp', '', 'CoreysGoryStory');
 }
 
-function basalt_test_0004($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+function basalt_test_0007($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
@@ -123,11 +123,11 @@ function basalt_test_0004($in_login = NULL, $in_hashed_password = NULL, $in_pass
 
 // --------------------
 
-function basalt_test_define_0005() {
-    basalt_run_single_direct_test(5, 'PASS: List Users With Session (Manager Login)', 'Log in with a manager login, look for a couple of specific users. We then go in again with no login, and make sure the session works by looking for another single user.', 'user_tests', 'asp', '', 'CoreysGoryStory');
+function basalt_test_define_0008() {
+    basalt_run_single_direct_test(8, 'PASS: List Users With Session (Manager Login)', 'Log in with a manager login, look for a couple of specific users. We then go in again with no login, and make sure the session works by looking for another single user.', 'user_tests', 'asp', '', 'CoreysGoryStory');
 }
 
-function basalt_test_0005($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+function basalt_test_0008($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
@@ -153,11 +153,11 @@ function basalt_test_0005($in_login = NULL, $in_hashed_password = NULL, $in_pass
 
 // --------------------
 
-function basalt_test_define_0006() {
-    basalt_run_single_direct_test(6, 'FAIL: List Users With Session (Manager Login), But Running Out the Clock', 'Log in with a manager login, and see what users are returned. We then wait for three seconds (the timeout is two) and go in again with no login, and make sure the session works.', 'user_tests', 'asp', '', 'CoreysGoryStory');
+function basalt_test_define_0009() {
+    basalt_run_single_direct_test(9, 'FAIL: List Users With Session (Manager Login), But Running Out the Clock', 'Log in with a manager login, and see what users are returned. We then wait for three seconds (the timeout is two) and go in again with no login, and make sure the session works.', 'user_tests', 'asp', '', 'CoreysGoryStory');
 }
 
-function basalt_test_0006($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+function basalt_test_0009($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
@@ -199,11 +199,11 @@ function basalt_test_0006($in_login = NULL, $in_hashed_password = NULL, $in_pass
 
 // --------------------
 
-function basalt_test_define_0007() {
-    basalt_run_single_direct_test(7, 'FAIL: List Users (God Login)', 'Log in with a God login, and see what users are returned.', 'user_tests', 'admin', '', CO_Config::god_mode_password());
+function basalt_test_define_0010() {
+    basalt_run_single_direct_test(10, 'FAIL: List Users (God Login)', 'Log in with a God login, and see what users are returned.', 'user_tests', 'admin', '', CO_Config::god_mode_password());
 }
 
-function basalt_test_0007($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+function basalt_test_0010($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {

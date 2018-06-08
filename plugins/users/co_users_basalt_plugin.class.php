@@ -20,7 +20,8 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
     /***********************/
     /**
      */
-    protected function _get_short_user_description($in_user_object) {
+    protected function _get_short_user_description( $in_user_object ///< REQUIRED: The user object to extract information from.
+                                                    ) {
         $ret = Array('id' => $in_user_object->id(), 'name' => $in_user_object->name);
         
         return $ret;
@@ -29,25 +30,29 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
     /***********************/
     /**
      */
-    protected function _get_long_user_description($in_user_object) {
+    protected function _get_long_user_description(  $in_user_object,            ///< REQUIRED: The user object to extract information from.
+                                                    $in_with_login_info = false ///< OPTIONAL: Default is false. If true, then the login information is appended.
+                                                ) {
         $ret = $this->_get_short_user_description($in_user_object);
         
-        $login_instance = $in_user_object->get_login_instance();
+        if ($in_with_login_info) {
+            $login_instance = $in_user_object->get_login_instance();
         
-        if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
-            $ret['login']['id'] = $login_instance->id();
-            $ret['login']['login_id'] = $login_instance->login_id;
-            $ret['login']['security_tokens'] = $login_instance->ids();
-            $ret['login']['last_login'] = date('Y-m-d H:i:s', $login_instance->last_access);
+            if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
+                $ret['login']['id'] = $login_instance->id();
+                $ret['login']['login_id'] = $login_instance->login_id;
+                $ret['login']['security_tokens'] = $login_instance->ids();
+                $ret['login']['last_login'] = date('Y-m-d H:i:s', $login_instance->last_access);
             
-            $api_key = $login_instance->get_api_key();
+                $api_key = $login_instance->get_api_key();
             
-            if ($api_key) {
-                // Most users can see whether or not the user has a current API key.
-                $ret['login']['current_api_key'] = true;
-                // God can see the key, itself.
-                if ($login_instance->get_access_object()->god_mode()) {
-                    $ret['login']['api_key'] = $api_key;
+                if ($api_key) {
+                    // Most users can see whether or not the user has a current API key.
+                    $ret['login']['current_api_key'] = true;
+                    // God can see the key, itself.
+                    if ($login_instance->get_access_object()->god_mode()) {
+                        $ret['login']['api_key'] = $api_key;
+                    }
                 }
             }
         }
@@ -104,7 +109,7 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
                             $login_instance = $user->get_login_instance();
         
                             if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
-                                $desc = $this->_get_long_user_description($user);
+                                $desc = $this->_get_long_user_description($user, true);
                                 $ret[] = $desc;
                             }
                         }
