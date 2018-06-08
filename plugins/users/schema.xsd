@@ -23,6 +23,7 @@
             <xs:element ref='b:login'/>
             <xs:element ref='b:name'/>
             <xs:element ref='b:user_object_id'/>
+            <xs:element ref='b:writeable'/>
         </xs:choice>
         <xs:attribute name='sequence_index' use='required' type='xs:integer'/>
     </xs:complexType>
@@ -42,6 +43,7 @@
                 <xs:element ref='b:login_id'/>
                 <xs:element ref='b:security_tokens'/>
                 <xs:element ref='b:last_login'/>
+                <xs:element ref='b:writeable'/>
             </xs:sequence>
             <xs:sequence minOccurs='0'>
                 <xs:element ref='b:current_api_key'/>
@@ -60,5 +62,6 @@
 </xs:element>
 <xs:element name='last_login' type='xs:string'/>
 <xs:element name='current_api_key' type='xs:integer'/>
+<xs:element name='writeable' type='xs:integer'/>
 <xs:element name='api_key' type='xs:string'/>
 <xs:element name='user_object_id' type='xs:integer'/>

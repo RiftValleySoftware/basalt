@@ -43,7 +43,11 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
         $ret['login']['login_id'] = $in_login_object->login_id;
         $ret['login']['security_tokens'] = $in_login_object->ids();
         $ret['login']['last_login'] = date('Y-m-d H:i:s', $in_login_object->last_access);
-    
+        
+        if ($in_login_object->user_can_write()) {
+            $ret['login']['writeable'] = true;
+        }
+        
         $api_key = $in_login_object->get_api_key();
     
         if ($api_key) {
@@ -68,6 +72,10 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
         if ($in_with_login_info) {
             $login_instance = $in_user_object->get_login_instance();
+        
+            if ($in_user_object->user_can_write()) {
+                $ret['login']['writeable'] = true;
+            }
         
             if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
                 $ret['login'] = $this->_get_long_login_description($login_instance);

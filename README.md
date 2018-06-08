@@ -46,19 +46,20 @@ RESPONSE TYPES
 --------------
 BASALT's REST API can return data in the following formats:
 
-- [JSON](https://json.org)
+- [`json`](https://json.org)
 
     This is the most common "lightweight" protocol used for access. It is well-supported by most libraries and [ECMAScript](https://en.wikipedia.org/wiki/ECMAScript) implementations, such as [JavaScript](https://www.w3.org/standards/webdesign/script), and other programming languages.
     
-- [XML](https://www.w3.org/XML/)
+- [`xml`](https://www.w3.org/XML/)
 
     This is a strictly-defined protocol that is common for a lot of semantic implementations. XML output exactly correlates to JSON. Additionally, all XML output must validate to a published schema.
     
-- [XML XSD (Schema)](https://www.w3.org/XML/Schema)
+- [`xsd`](https://www.w3.org/XML/Schema)
 
     This is the validation schema for the XML output. Each plugin must publish a schema to validate its XML against.
     
 - Simple String
+
     This is only returned by the login operation. The API key is returned as a simple UTF-8 string.
     
 AUTHENTICATION
