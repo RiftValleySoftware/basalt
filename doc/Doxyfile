@@ -812,7 +812,10 @@ INPUT                  = ../main \
                          ../andisol/cobra/chameleon/badger/shared \
                          ../andisol/cobra/README.md \
                          ../andisol/cobra/chameleon/README.md \
-                         ../andisol/cobra/chameleon/badger/README.md
+                         ../andisol/cobra/chameleon/badger/README.md \
+                         ../plugins \
+                         ../plugins/places \
+                         ../plugins/users
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses

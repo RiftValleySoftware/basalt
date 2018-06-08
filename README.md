@@ -10,11 +10,116 @@ Part of the Rift Valley Platform
 
 INTRODUCTION
 ============
+BASALT is the REST API and extension framework of the Rift Valley Platform.
+
+EXTENSIONS
+==========
+BASALT allows the creation of "REST Plugins." These are fairly simple PHP executables that are placed in known directories. BASALT correlates these to the plugin parameters in the REST URIs.
+
+REST API
+========
+BASALT expresses true [RESTful](https://restfulapi.net) API access to the Rift Valley BAOBAB server.
+
+The server can be configured to require that all REST access be done as [TLS (SSL/HTTPS)](https://en.wikipedia.org/wiki/Transport_Layer_Security).
+
+REST METHODS
+------------
+BASALT's REST API implements the following [methods](http://www.restapitutorial.com/lessons/httpmethods.html):
+
+- [GET](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3)
+
+    This is the classic "show me the money" method. It can be easily expressed in a standard browser URI. Use this to fetch resources (like doing searches). You do not have to be authenticated to use this method.
+    
+- [POST](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5)
+
+    This is used to create new resources. You must have an authenticated login to use this.
+    
+- [PUT](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6)
+
+    This is used to update/modify resources. It can be used in a fashion like [the PATCH method](https://tools.ietf.org/html/rfc5789), where only the changed portion of a resource is provided. You must have an authenticated login to use this.
+    
+- [DELETE](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7)
+
+    This deletes a resource. You must have an authenticated login to use this.
+
+RESPONSE TYPES
+--------------
+BASALT's REST API can return data in the following formats:
+
+- [JSON](https://json.org)
+
+    This is the most common "lightweight" protocol used for access. It is well-supported by most libraries and [ECMAScript](https://en.wikipedia.org/wiki/ECMAScript) implementations, such as [JavaScript](https://www.w3.org/standards/webdesign/script), and other programming languages.
+    
+- [XML](https://www.w3.org/XML/)
+
+    This is a strictly-defined protocol that is common for a lot of semantic implementations. XML output exactly correlates to JSON. Additionally, all XML output must validate to a published schema.
+    
+- [XML XSD (Schema)](https://www.w3.org/XML/Schema)
+
+    This is the validation schema for the XML output. Each plugin must publish a schema to validate its XML against.
+    
+- Simple String
+    This is only returned by the login operation. The API key is returned as a simple UTF-8 string.
+    
+AUTHENTICATION
+--------------
+In order to log into the BAOBAB server, you must call it once with a basic username/password combination, in a simple GET call. The server can be configured to require that this always be [TLS (SSL/HTTPS)](https://en.wikipedia.org/wiki/Transport_Layer_Security).
+
+Once you have successfully logged in, the server will respond with a simple text resonse, containing a timed API key. You will then place this API key in BOTH the user and password fields of the [HTTP authorization header](https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.8) of subsequent calls.
+
+Example in [a PHP cURL](http://php.net/manual/en/function.curl-setopt.php) implementation (where "$api_key" contains the string returned from the login call):
+
+    curl_setopt($curl, CURLOPT_USERPWD, "$api_key:$api_key");
+
+The API key is timed with a fixed clock. The time is determined by the server, but the default is 1 hour (60 minutes) for standard logins, and 10 minutes for the "God" login (the superuser). The clock is not reset during use, so it is an absolute time limit. Once you log in, the clock starts ticking, whether or not you access the server afterwards.
+
+REST API URI STRUCTURE
+----------------------
+When you call the REST API, you will do so in the standard fashion, where you define the method ([HTTP 1.1 header](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html)), and specify the resource in a URI, which can include query data.
+    
+**Initial Login Call:**
+
+    http[s]://{SERVER URL}/login?login_id={LOGIN ID STRING}&password={PASSWORD STRING}
+
+The {SERVER URL} is the URL path that specifies the BAOBAB server REST entrypoint (like "`example.com/rest_api/baobab/entrypoint.php`").
+
+In this instance, you directly call the REST entrypoint, specifying only "`login`" (which also means that you can't create a plugin named "login").
+The query parameters are:
+
+- `login_id`
+
+    This is the user's login ID (a simple string)
+    
+- `password`
+
+    This is the cleartext password for that login.
+    
+This is only called once, and cannot be combined with any other commands. The only operation permitted is a simple login.
+
+The response will be a simple string. This will be a 64-character random token that should be applied in the authentication header of subsequent calls.
+    
+**Standard REST Calls:**
+
+    http[s]://{SERVER URL}/{RESPONSE TYPE}/{PLUGIN}/[{COMMAND[S]}][?][{QUERY PARAMETER NAME}[={QUERY PARAMETER VALUE}]]
+
+- `{RESPONSE TYPE}`
+
+    This is "xml", "json" or "xsd". If it is "xsd," then commands and query parameters will be ignored.
+    
+- `{PLUGIN}`
+
+    This is the all-lowercase name of the BASALT Extension plugin.
+    There is a BASALT "virtual plugin" called "baseline". This will return a list of available plugins, if called directly. (Example: `http[s]://{SERVER URL}/{RESPONSE TYPE}/baseline/`)
+    
+- `{COMMAND[S]}`
+
+    This represents a single command (or a series of commads, which are expressed as "`command1/command2/command3/`" etc.) for the plugin.
+    
+If you will be providing query parameters to the REST call, then these are attached after the question mark.
+`{RESPONSE TYPE}` and `{PLUGIN}` are required. The other elements are optional, and plugin-dependent. Each plugin will define its own REST query structure that is parsed after the `{PLUGIN}`.
 
 SUBPROJECTS
 ===========
-BASALT is the extension framework of the Rift Valley Platform. It implements the REST API, as well as a plugin extension mechanism.
-
 ![BASALT Diagram](images/BASALTLayers.png)
 
 \ref ANDISOL is the "public face" of the lowest levels of the Rift Valley Platform. It encapsulates the model (database or server connections), and provides an object-based, functional model to the implementation layers.
