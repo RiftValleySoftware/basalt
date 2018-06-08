@@ -219,7 +219,6 @@ function basalt_test_0014($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>We\'re going in again, looking at individual users:</h3>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/users/2,3,5', NULL, $api_result, $result_code);
-    echo('<h3>We\'re going in again, using the API key:</h3>');
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
