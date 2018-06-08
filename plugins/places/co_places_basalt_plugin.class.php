@@ -111,13 +111,16 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
         } else {
             $main_command = $in_path[0];    // Get the main command.
             
-            // The first thing that we'll do, is look for a list of user IDs. If that is the case, we split them into an array of int.
+            // This tests to see if we only got one single digit as our "command."
+            $single_place_id = (ctype_digit($main_command) && (1 < intval($main_command))) ? intval($main_command) : NULL;    // This will be for if we are looking only one single place.
+            
+            // The first thing that we'll do, is look for a list of place IDs. If that is the case, we split them into an array of int.
             
             $place_id_list = explode(',', $main_command);
             
             // If we do, indeed, have a list, we will force them to be ints, and cycle through them.
-            if (1 < count($place_id_list)) {
-                $place_id_list = array_map('intval', $place_id_list);
+            if ($single_place_id || (1 < count($place_id_list))) {
+                $place_id_list = ($single_place_id ? [$single_place_id] : array_map('intval', $place_id_list));
                 
                 foreach ($place_id_list as $id) {
                     if (0 < $id) {
@@ -127,7 +130,9 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         }
                     }
                 }
-            } else {
+            } else {    // Otherwise, let's see what they want to do...
+                switch ($main_command) {
+                }
             }
         }
         

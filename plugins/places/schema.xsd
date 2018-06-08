@@ -15,7 +15,7 @@
                 <xs:element ref='b:address'/>
                 <xs:element ref='b:lat_lng'/>
             </xs:sequence>
-            <xs:attribute name='sequence_index' type='xs:integer'/>
+            <xs:attribute name='sequence_index' use='required' type='xs:integer'/>
         </xs:complexType>
     </xs:element>
     <xs:element name='id' type='xs:integer'/>
