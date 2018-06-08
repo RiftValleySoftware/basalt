@@ -1,43 +1,44 @@
-<?xml version="1.0" encoding="utf-8"?>
-<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:b='%%%%%SERVER#URI%%%%%' elementFormDefault='qualified' targetNamespace='%%%%%SERVER#URI%%%%%'>
-    <xs:element name='users'>
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element minOccurs='0' maxOccurs='unbounded' ref='b:value'/>
+<xs:element name='users'>
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element maxOccurs='unbounded' ref='b:value'/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
+<xs:element name='value'>
+    <xs:complexType mixed='true'>
+        <xs:choice maxOccurs='unbounded'>
+            <xs:element ref='b:id'/>
+            <xs:element minOccurs='0' ref='b:login'/>
+            <xs:element ref='b:name'/>
+        </xs:choice>
+        <xs:attribute name='sequence_index' use='required' type='xs:integer'/>
+    </xs:complexType>
+</xs:element>
+<xs:element name='login'>
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element ref='b:id'/>
+            <xs:element ref='b:login_id'/>
+            <xs:element ref='b:security_tokens'/>
+            <xs:element ref='b:last_login'/>
+            <xs:sequence minOccurs='0'>
+                <xs:element ref='b:current_api_key'/>
+                <xs:element minOccurs='0' ref='b:api_key'/>
             </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name='value'>
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element ref='b:id'/>
-                <xs:element minOccurs='0' ref='b:name'/>
-                <xs:element minOccurs='0' ref='b:login_id'/>
-            </xs:sequence>
-            <xs:attribute name='sequence_index' use='required' type='xs:integer'/>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name='id'>
-        <xs:complexType>
-            <xs:simpleContent>
-                <xs:extension base='xs:integer'>
-                    <xs:attribute name='sequence_index' type='xs:integer'/>
-                </xs:extension>
-            </xs:simpleContent>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name='name'>
-        <xs:complexType mixed='true'>
-            <xs:attribute name='sequence_index' type='xs:integer'/>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name='login_id'>
-        <xs:complexType>
-            <xs:simpleContent>
-                <xs:extension base='xs:integer'>
-                    <xs:attribute name='sequence_index' type='xs:integer'/>
-                </xs:extension>
-            </xs:simpleContent>
-        </xs:complexType>
-    </xs:element>
-</xs:schema>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
+<xs:element name='login_id' type='xs:NCName'/>
+<xs:element name='security_tokens'>
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element maxOccurs='unbounded' ref='b:value'/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
+<xs:element name='last_login' type='xs:NMTOKEN'/>
+<xs:element name='current_api_key' type='xs:integer'/>
+<xs:element name='api_key' type='xs:string'/>
+<xs:element name='name' type='xs:string'/>
+<xs:element name='id' type='xs:integer'/>

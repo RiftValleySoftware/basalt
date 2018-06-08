@@ -90,24 +90,45 @@ abstract class A_CO_Basalt_Plugin {
     
     /***********************/
     /**
+    This returns the appropriate XML header for our schema file.
+    
+    \returns a string, with the entire XML header for the schema file (including the preamble).
+     */
+    protected function _get_xsd_header() {
+        $ret = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+        $xsd_uri = self::_server_url().'/xsd/'.$this->plugin_name();
+        $ret .= "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:b='".self::_server_url()."' elementFormDefault='qualified' targetNamespace='".self::_server_url()."'>";
+        
+        return $ret;
+    }
+    
+    /***********************/
+    /**
+    This processes the schema for this plugin as XML XSD.
+    
+    \returns XML, containing the schema for this plugin's responses. The schema needs to be comprehensive.
+     */
+    protected function _process_xsd(    $in_schema_file_path    ///< The file path (POSIX) to the schema file to process.
+                                    ) {
+        $ret = '';
+        
+        $schema_file = file_get_contents($in_schema_file_path);
+        
+        if ($schema_file) {
+            $ret = $this->_get_xsd_header()."$schema_file</xs:schema>";
+        }
+        
+        return $ret;
+    }
+    
+    /***********************/
+    /**
     This returns the schema for this plugin as XML XSD.
     
     \returns XML, containing the schema for this plugin's responses. The schema needs to be comprehensive.
      */
     protected function _get_xsd() {
-        $ret = '';
-        
-        $replacement_token = '%%%%%SERVER#URI%%%%%';
-        
-        $schema_file_path = dirname(__FILE__).'/schema.xsd';
-        
-        $schema_file = file_get_contents($schema_file_path);
-        
-        if ($schema_file) {
-            $ret = str_replace($replacement_token, self::_server_url(), $schema_file);
-        }
-        
-        return $ret;
+        return $this->_process_xsd(dirname(__FILE__).'/schema.xsd');
     }
         
     /***********************/

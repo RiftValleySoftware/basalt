@@ -13,8 +13,6 @@
 */
 defined( 'LGV_BASALT_CATCHER' ) or die ( 'Cannot Execute Directly' );	// Makes sure that this file is in the correct context.
 
-require_once(CO_Config::main_class_dir().'/a_co_basalt_plugin.class.php');
-
 /****************************************************************************************************************************/
 /**
  */
@@ -25,12 +23,6 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
     protected function _get_short_user_description($in_user_object) {
         $ret = Array('id' => $in_user_object->id(), 'name' => $in_user_object->name);
         
-        $login_instance = $in_user_object->get_login_instance();
-        
-        if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
-            $ret['login_id'] = $login_instance->id();
-        }
-        
         return $ret;
     }
 
@@ -40,35 +32,39 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
     protected function _get_long_user_description($in_user_object) {
         $ret = $this->_get_short_user_description($in_user_object);
         
-        return $ret;
-    }
-    
-    /***********************/
-    /**
-    This returns the schema for this plugin as XML XSD.
-    
-    \returns XML, containing the schema for this plugin's responses. The schema needs to be comprehensive.
-     */
-    protected function _get_xsd() {
-        $ret = '';
+        $login_instance = $in_user_object->get_login_instance();
         
-        $replacement_token = '%%%%%SERVER#URI%%%%%';
-        
-        $schema_file_path = dirname(__FILE__).'/schema.xsd';
-        
-        $schema_file = file_get_contents($schema_file_path);
-        
-        if ($schema_file) {
-            $ret = str_replace($replacement_token, self::_server_url(), $schema_file);
+        if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
+            $ret['login']['id'] = $login_instance->id();
+            $ret['login']['login_id'] = $login_instance->login_id;
+            $ret['login']['security_tokens'] = $login_instance->ids();
+            $ret['login']['last_login'] = date('Y-m-d H:i:s', $login_instance->last_access);
+            
+            $api_key = $login_instance->get_api_key();
+            
+            if ($api_key) {
+                // Most users can see whether or not the user has a current API key.
+                $ret['login']['current_api_key'] = true;
+                // God can see the key, itself.
+                if ($login_instance->get_access_object()->god_mode()) {
+                    $ret['login']['api_key'] = $api_key;
+                }
+            }
         }
         
         return $ret;
     }
+    
+    /***********************/
+    /**
+    \returns XML, containing the schema for this plugin's responses. The schema needs to be comprehensive.
+     */
+    protected function _get_xsd() {
+        return $this->_process_xsd(dirname(__FILE__).'/schema.xsd');
+    }
         
     /***********************/
     /**
-    This runs our plugin name.
-    
     \returns a string, with our plugin name.
      */
     public function plugin_name() {
@@ -105,8 +101,10 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     if (0 < $id) {
                         $user = $in_andisol_instance->get_single_data_record_by_id($id);
                         if (isset($user) && ($user instanceof CO_User_Collection)) {
-                            $desc = $this->_get_short_user_description($user);
-                            if (isset($desc['login_id'])) {
+                            $login_instance = $user->get_login_instance();
+        
+                            if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
+                                $desc = $this->_get_long_user_description($user);
                                 $ret[] = $desc;
                             }
                         }
@@ -118,7 +116,7 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
             if (0 < count($userlist)) {
                 foreach ($userlist as $user) {
                     if (isset($user) && ($user instanceof CO_User_Collection)) {
-                        $ret[] = $this->_get_long_user_description($user);
+                        $ret[] = $this->_get_short_user_description($user);
                     }
                 }
             }

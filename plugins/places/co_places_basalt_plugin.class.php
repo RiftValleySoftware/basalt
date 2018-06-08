@@ -13,8 +13,6 @@
 */
 defined( 'LGV_BASALT_CATCHER' ) or die ( 'Cannot Execute Directly' );	// Makes sure that this file is in the correct context.
 
-require_once(CO_Config::main_class_dir().'/a_co_basalt_plugin.class.php');
-
 /****************************************************************************************************************************/
 /**
  */
@@ -56,30 +54,14 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     /***********************/
     /**
-    This returns the schema for this plugin as XML XSD.
-    
     \returns XML, containing the schema for this plugin's responses. The schema needs to be comprehensive.
      */
     protected function _get_xsd() {
-        $ret = '';
-        
-        $replacement_token = '%%%%%SERVER#URI%%%%%';
-        
-        $schema_file_path = dirname(__FILE__).'/schema.xsd';
-        
-        $schema_file = file_get_contents($schema_file_path);
-        
-        if ($schema_file) {
-            $ret = str_replace($replacement_token, self::_server_url(), $schema_file);
-        }
-        
-        return $ret;
+        return $this->_process_xsd(dirname(__FILE__).'/schema.xsd');
     }
         
     /***********************/
     /**
-    This runs our plugin name.
-    
     \returns a string, with our plugin name.
      */
     public function plugin_name() {
