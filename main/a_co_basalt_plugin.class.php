@@ -51,8 +51,6 @@ abstract class A_CO_Basalt_Plugin {
         foreach ($in_array as $name => $value) {
             $plurality = is_int($name);
             $name = $plurality ? 'value' : htmlspecialchars(trim($name));
-            
-            $plurality = $plurality || (1 < count(array_keys($in_array, $name))); 
                 
             if ($value) {
                 if ($plurality) {

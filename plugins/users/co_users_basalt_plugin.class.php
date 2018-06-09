@@ -40,22 +40,22 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $ret['user_object_id'] = $user_item->id();
         }
         
-        $ret['login']['login_id'] = $in_login_object->login_id;
-        $ret['login']['security_tokens'] = $in_login_object->ids();
-        $ret['login']['last_login'] = date('Y-m-d H:i:s', $in_login_object->last_access);
+        $ret['login_id'] = $in_login_object->login_id;
+        $ret['security_tokens'] = $in_login_object->ids();
+        $ret['last_login'] = date('Y-m-d H:i:s', $in_login_object->last_access);
         
         if ($in_login_object->user_can_write()) {
-            $ret['login']['writeable'] = true;
+            $ret['writeable'] = true;
         }
         
         $api_key = $in_login_object->get_api_key();
     
         if ($api_key) {
             // Most users can see whether or not the user has a current API key.
-            $ret['login']['current_api_key'] = true;
+            $ret['current_api_key'] = true;
             // God can see the key, itself.
             if ($in_login_object->get_access_object()->god_mode()) {
-                $ret['login']['api_key'] = $api_key;
+                $ret['api_key'] = $api_key;
             }
         }
         
@@ -74,7 +74,7 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $login_instance = $in_user_object->get_login_instance();
         
             if ($in_user_object->user_can_write()) {
-                $ret['login']['writeable'] = true;
+                $ret['writeable'] = true;
             }
         
             if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {

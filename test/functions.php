@@ -338,7 +338,8 @@ function call_REST_API( $method,
                         $url,
                         $data = NULL,
                         $api_key = NULL,
-                        &$httpCode = NULL
+                        &$httpCode = NULL,
+                        $display_log = false
                         ) {
     // Create a new cURL resource.
     $curl = curl_init();
@@ -378,31 +379,40 @@ function call_REST_API( $method,
     curl_setopt($curl, CURLOPT_URL, $url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     
-    echo('<div style="margin:1em;">');
-    echo("<h4>Sending REST $method CALL:</h4>");
-    echo('URL: <code>'.htmlspecialchars($url).'</code>');
-    if ($api_key) {
-        echo('API KEY:<code>'.htmlspecialchars($api_key).'</code>');
-    }
-    if ($data) {
-        echo('ADDITIONAL DATA:<code>'.htmlspecialchars($data).'</code>');
+    if (isset($display_log) && $display_log) {
+        echo('<div style="margin:1em">');
+        echo("<h4>Sending REST $method CALL:</h4>");
+        echo('<div>URL: <code>'.htmlspecialchars($url).'</code></div>');
+
+        if ($api_key) {
+            echo('<div>API KEY:<pre>'.htmlspecialchars($api_key).'</pre></div>');
+        }
+
+        if ($data) {
+            echo('<div>ADDITIONAL DATA:<pre>'.htmlspecialchars(print_r($data, true)).'</pre></div>');
+        }
     }
     
     $result = curl_exec($curl);
-    
+
     if ($result === false) {
         $info = curl_getinfo($curl);
         $result = 'error occured during curl. Info: '.var_export($info);
-        echo('<div style="color:red;font-weight:bold">ERROR!:<pre>'.htmlspecialchars(print_r($result, true)).'</pre></div>');
-    } else {
-        echo('<div>RESULT:<pre>'.htmlspecialchars(print_r($result, true)).'</pre></div>');
     }
-    echo("</div>");
+    
     if (isset($httpCode)) {
         $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
     }
 
     curl_close($curl);
+    
+    if (isset($display_log) && $display_log) {
+        if (isset($httpCode) && $httpCode) {
+            echo('<div>HTTP CODE:<code>'.htmlspecialchars($httpCode, true).'</code></div>');
+        }
+        echo('<div>RESULT:<pre>'.htmlspecialchars(print_r($result, true)).'</pre></div>');
+        echo("</div>");
+    }
 
     return $result;
 }

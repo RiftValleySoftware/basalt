@@ -15,15 +15,15 @@
 
 require_once(dirname(dirname(__FILE__)).'/run_basalt_tests.php');
 
-basalt_run_tests(20, 'BASIC JSON PLACES TESTS', 'In which our intrepid hero does some basic REST Logins, and asks for information about places in JSON.');
+basalt_run_tests(22, 'BASIC JSON PLACES TESTS', 'In which our intrepid hero does some basic REST Logins, and asks for information about places in JSON.');
 
 // -------------------------- DEFINITIONS AND TESTS -----------------------------------
 
-function basalt_test_define_0020() {
-    basalt_run_single_direct_test(20, 'PASS: List Places (No Login)', 'Do not log in, and see what places are returned.', 'dc_area_tests');
+function basalt_test_define_0022() {
+    basalt_run_single_direct_test(22, 'PASS: List Places (No Login)', 'Do not log in, and see what places are returned.', 'dc_area_tests');
 }
 
-function basalt_test_0020($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+function basalt_test_0022($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places', NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
@@ -35,11 +35,11 @@ function basalt_test_0020($in_login = NULL, $in_hashed_password = NULL, $in_pass
 
 // --------------------
 
-function basalt_test_define_0021() {
-    basalt_run_single_direct_test(21, 'PASS: List Specific Places (No Login)', 'Do not log in, and see what places are returned.', 'dc_area_tests');
+function basalt_test_define_0023() {
+    basalt_run_single_direct_test(23, 'PASS: List Specific Places (No Login)', 'Do not log in, and see what places are returned.', 'dc_area_tests');
 }
 
-function basalt_test_0021($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+function basalt_test_0023($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/13,880,20424,21200', NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
