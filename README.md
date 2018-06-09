@@ -84,7 +84,7 @@ When you call the REST API, you will do so in the standard fashion, where you de
 
 The {SERVER URL} is the URL path that specifies the BAOBAB server REST entrypoint (like "`example.com/rest_api/baobab/entrypoint.php`").
 
-In this instance, you directly call the REST entrypoint, specifying only "`login`" (which also means that you can't create a plugin named "login").
+In this instance, you directly call the REST entrypoint, specifying only `"login"` (which also means that you can't create a plugin named "login").
 The query parameters are:
 
 - `login_id`
@@ -105,12 +105,12 @@ The response will be a simple string. This will be a 64-character random token t
 
 - `{RESPONSE TYPE}`
 
-    This is "xml", "json" or "xsd". If it is "xsd," then commands and query parameters will be ignored.
+    This is `"xml"`, `"json"` or `"xsd"`. If it is `"xsd"`, then commands and query parameters will be ignored.
     
 - `{PLUGIN}`
 
     This is the all-lowercase name of the BASALT Extension plugin.
-    There is a BASALT "virtual plugin" called "baseline". This will return a list of available plugins, if called directly. (Example: `http[s]://{SERVER URL}/{RESPONSE TYPE}/baseline/`)
+    There is a BASALT "virtual plugin" called `"baseline"`. This will return a list of available plugins, if called directly. (Example: `http[s]://{SERVER URL}/{RESPONSE TYPE}/baseline/`)
     
 - `{COMMAND[S]}`
 
