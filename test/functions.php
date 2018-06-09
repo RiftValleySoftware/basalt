@@ -377,14 +377,27 @@ function call_REST_API( $method,
 
     curl_setopt($curl, CURLOPT_URL, $url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-
+    
+    echo('<div style="margin:1em;">');
+    echo("<h4>Sending REST $method CALL:</h4>");
+    echo('URL: <code>'.htmlspecialchars($url).'</code>');
+    if ($api_key) {
+        echo('API KEY:<code>'.htmlspecialchars($api_key).'</code>');
+    }
+    if ($data) {
+        echo('ADDITIONAL DATA:<code>'.htmlspecialchars($data).'</code>');
+    }
+    
     $result = curl_exec($curl);
     
     if ($result === false) {
         $info = curl_getinfo($curl);
         $result = 'error occured during curl. Info: '.var_export($info);
+        echo('<div style="color:red;font-weight:bold">ERROR!:<pre>'.htmlspecialchars(print_r($result, true)).'</pre></div>');
+    } else {
+        echo('<div>RESULT:<pre>'.htmlspecialchars(print_r($result, true)).'</pre></div>');
     }
-    
+    echo("</div>");
     if (isset($httpCode)) {
         $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
     }
