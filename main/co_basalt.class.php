@@ -188,7 +188,12 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         
         if (isset($this->_andisol_instance) && ($this->_andisol_instance instanceof CO_Andisol) && $this->_andisol_instance->valid()) {
             if ('baseline' == $this->_plugin_selector) {
-                $result = $this->process_command($this->_andisol_instance, $this->_response_type, $this->_path, $this->_vars);
+                if ('GET' == $this->_request_type) {
+                    $result = $this->process_command($this->_andisol_instance, $this->_request_type, $this->_response_type, $this->_path, $this->_vars);
+                } else {
+                    $header = 'HTTP/1.1 400 Incorrect HTTP Request Method';
+                    exit();
+                }
             } else {
                 $plugin_filename = 'co_'.$this->_plugin_selector.'_basalt_plugin.class.php';
                 $plugin_classname = 'CO_'.$this->_plugin_selector.'_Basalt_Plugin';
@@ -211,7 +216,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                     require_once($plugin_file);
                     $plugin_instance = new $plugin_classname();
                     if ($plugin_instance instanceof A_CO_Basalt_Plugin) {
-                        $result = $plugin_instance->process_command($this->_andisol_instance, $this->_response_type, $this->_path, $this->_vars);
+                        $result = $plugin_instance->process_command($this->_andisol_instance, $this->_request_type, $this->_response_type, $this->_path, $this->_vars);
                     } else {
                         header('HTTP/1.1 400 Unsupported or Missing Plugin');
                         exit();
@@ -422,6 +427,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
     \returns the HTTP response string, as either JSON or XML.
      */
     public function process_command(    $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases (ignored).
+                                        $in_http_method,        ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
                                         $in_response_type,      ///< REQUIRED: 'json', 'xml' or 'xsd' -the response type.
                                         $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings. For the baseline, this should be exactly one element.
                                         $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.

@@ -26,7 +26,7 @@ function basalt_test_define_0001() {
 function basalt_test_0001($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     echo('<h3>First, we try directly:</h3>');
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/', NULL, NULL, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/', NULL, NULL, $result_code, true);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -50,7 +50,7 @@ function basalt_test_define_0002() {
 function basalt_test_0002($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     echo('<h3>First, we try directly:</h3>');
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/', NULL, NULL, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/', NULL, NULL, $result_code, true);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -74,7 +74,7 @@ function basalt_test_define_0003() {
 function basalt_test_0003($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     echo('<h3>First, try a direct call (should fail):</h3>');
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xsd/', NULL, NULL, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xsd/', NULL, NULL, $result_code, true);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {

@@ -341,7 +341,6 @@ function call_REST_API( $method,
                         &$httpCode = NULL,
                         $display_log = false
                         ) {
-    // Create a new cURL resource.
     $curl = curl_init();
     
     switch ($method) {
@@ -380,6 +379,11 @@ function call_REST_API( $method,
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     
     if (isset($display_log) && $display_log) {
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_HEADERFUNCTION, function ( $curl, $header_line ) {
+            echo "<pre>".$header_line.'</pre>';
+            return strlen($header_line);
+        });
         echo('<div style="margin:1em">');
         echo("<h4>Sending REST $method CALL:</h4>");
         echo('<div>URL: <code>'.htmlspecialchars($url).'</code></div>');

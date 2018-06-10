@@ -144,6 +144,7 @@ abstract class A_CO_Basalt_Plugin {
     \returns the HTTP response string, as either JSON or XML.
      */
     abstract public function process_command(   $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                                $in_http_method,        ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
                                                 $in_response_type,      ///< REQUIRED: 'json', 'xml' or 'xsd' -the response type.
                                                 $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings. For the baseline, this should be exactly one element.
                                                 $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
