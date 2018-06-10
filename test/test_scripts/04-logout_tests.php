@@ -36,7 +36,7 @@ function basalt_test_0022($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // -------------------
 
 function basalt_test_define_0023() {
-    basalt_run_single_direct_test(23, 'FAIL: Log Out Logged-In Low-Level User', 'Log in, and try logging out. This should work.', 'user_tests', 'norm', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(23, 'FAIL: Log Out Logged-In Low-Level User', 'Log in, and try logging out. This should work the first time, but fail the second time.', 'user_tests', 'norm', '', 'CoreysGoryStory');
 }
 
 function basalt_test_0023($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -76,7 +76,7 @@ function basalt_test_0023($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // -------------------
 
 function basalt_test_define_0024() {
-    basalt_run_single_direct_test(24, 'FAIL: Log Out Logged-In Normal User', 'Log in, and try logging out. This should work.', 'user_tests', 'krait', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(24, 'FAIL: Log Out Logged-In Normal User', 'Log in, and try logging out. This should work the first time, but fail the second time.', 'user_tests', 'krait', '', 'CoreysGoryStory');
 }
 
 function basalt_test_0024($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -116,7 +116,7 @@ function basalt_test_0024($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // -------------------
 
 function basalt_test_define_0025() {
-    basalt_run_single_direct_test(25, 'FAIL: Log Out Logged-In Manager User', 'Log in, and try logging out. This should work.', 'user_tests', 'asp', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(25, 'FAIL: Log Out Logged-In Manager User', 'Log in, and try logging out. This should work the first time, but fail the second time.', 'user_tests', 'asp', '', 'CoreysGoryStory');
 }
 
 function basalt_test_0025($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -156,7 +156,7 @@ function basalt_test_0025($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // -------------------
 
 function basalt_test_define_0026() {
-    basalt_run_single_direct_test(26, 'FAIL: Log Out Logged-In God User', 'Log in, and try logging out. This should work.', 'user_tests', 'admin', '', CO_Config::god_mode_password());
+    basalt_run_single_direct_test(26, 'FAIL: Log Out Logged-In God User', 'Log in, and try logging out. This should work the first time, but fail the second time.', 'user_tests', 'admin', '', CO_Config::god_mode_password());
 }
 
 function basalt_test_0026($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
