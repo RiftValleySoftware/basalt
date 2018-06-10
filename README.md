@@ -105,6 +105,8 @@ The {SERVER URL} is the URL path that specifies the BAOBAB server REST entrypoin
 In this instance, you directly call the REST entrypoint, specifying only `"login"` (which also means that you can't create a plugin named "login").
 The query parameters are:
 
+The query parameters are:
+
 - `login_id`
 
     This is the user's login ID (a simple string)
@@ -117,6 +119,12 @@ This is only called once, and cannot be combined with any other commands. The on
 
 The response will be a simple string. This will be a 64-character random token that should be applied in the authentication header of subsequent calls.
     
+**Logout Call:**
+
+    http[s]://{SERVER URL}/logout
+
+This is a call that should be made while a valid API key has been assigned to a user. It should be made with the user's valid API key in the [HTTP authorization header](https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.8), and will terminate the API key, and require that subsequent calls by the same user require another login. 
+
 **Standard REST Calls:**
 
     http[s]://{SERVER URL}/{RESPONSE TYPE}/{PLUGIN}/[{COMMAND[S]}][?][{QUERY PARAMETER NAME}[={QUERY PARAMETER VALUE}]]
