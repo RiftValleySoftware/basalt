@@ -20,7 +20,7 @@ BASALT matches these to the plugin parameters in the REST URIs, and routes REST 
 
 REST Plugins are simple subclasses of the `A_CO_Basalt_Plugin` class, and are used in a very basic stateless fashion; inheriting utility functions from the abstract base class.
 
-BASALT REST Plugins only have two exposed methods:
+BASALT REST Plugins only have two public abstract methods, and one protected method:
 
 - `A_CO_Basalt_Plugin::plugin_name`
 
@@ -31,6 +31,10 @@ BASALT REST Plugins only have two exposed methods:
     This is the method that actually processes the REST command. The (possibly logged-in) \ref ANDISOL object is passed in, along with the HTTP method, response type, and any further commands and/or query parameters.
     
     The method will respond with a string to be returned, reflecting the result of the requested command.
+    
+- `A_CO_Basalt_Plugin::_get_xsd`
+
+    This is a very simple method that simply returns the POSIX path to the [XSD](https://www.w3.org/XML/Schema) file fragment for this plugin. This schema must be comprehensive for ALL possible XML responses from the plugin.
     
 BASALT will include a few "built in" plugins, but the implementor of the server can write and install more plugins, giving a very powerful facility for managing REST interactions.
 

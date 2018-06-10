@@ -121,37 +121,6 @@ abstract class A_CO_Basalt_Plugin {
     
     /***********************/
     /**
-    This returns the schema for this plugin as XML XSD.
-    
-    \returns XML, containing the schema for this plugin's responses. The schema needs to be comprehensive.
-     */
-    protected function _get_xsd() {
-        return $this->_process_xsd(dirname(__FILE__).'/schema.xsd');
-    }
-        
-    /***********************/
-    /**
-    This runs our plugin name.
-    
-    \returns a string, with our plugin name.
-     */
-    abstract public function plugin_name();
-    
-    /***********************/
-    /**
-    This runs our plugin command.
-    
-    \returns the HTTP response string, as either JSON or XML.
-     */
-    abstract public function process_command(   $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
-                                                $in_http_method,        ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
-                                                $in_response_type,      ///< REQUIRED: 'json', 'xml' or 'xsd' -the response type.
-                                                $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings. For the baseline, this should be exactly one element.
-                                                $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
-                                            );
-    
-    /***********************/
-    /**
     This conditions our response.
     
     \returns the HTTP response string, as either JSON or XML.
@@ -173,4 +142,36 @@ abstract class A_CO_Basalt_Plugin {
         }
         return $ret;
     }
+    
+    /************************************************************************************************************************/    
+    /*#################################################### ABSTRACT METHODS ################################################*/
+    /************************************************************************************************************************/
+    /***********************/
+    /**
+    This returns the schema for this plugin as XML XSD.
+    
+    \returns XML, containing the schema for this plugin's responses. The schema needs to be comprehensive.
+     */
+    abstract protected function _get_xsd();
+        
+    /***********************/
+    /**
+    This runs our plugin name.
+    
+    \returns a string, with our plugin name.
+     */
+    abstract public function plugin_name();
+    
+    /***********************/
+    /**
+    This runs our plugin command.
+    
+    \returns the HTTP response string, as either JSON or XML.
+     */
+    abstract public function process_command(   $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                                $in_http_method,        ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
+                                                $in_response_type,      ///< REQUIRED: 'json', 'xml' or 'xsd' -the response type.
+                                                $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings. For the baseline, this should be exactly one element.
+                                                $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
+                                            );
 }

@@ -277,6 +277,16 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         
         return $ret;
     }
+    
+    /***********************/
+    /**
+    This returns the schema for this plugin as XML XSD.
+    
+    \returns XML, containing the schema for this plugin's responses. The schema needs to be comprehensive.
+     */
+    protected function _get_xsd() {
+        return $this->_process_xsd(dirname(__FILE__).'/schema.xsd');
+    }
 
     /************************************************************************************************************************/    
     /*##################################################### PUBLIC METHODS #################################################*/
