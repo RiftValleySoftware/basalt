@@ -117,7 +117,7 @@ The query parameters are:
     
 This is only called once, and cannot be combined with any other commands. The only operation permitted is a simple login.
 
-The response will be a simple string. This will be a 64-character random token that should be applied in the authentication header of subsequent calls.
+The response will be a simple string. This will be a 64-character random token that should be applied in the username AND password sections of the [HTTP authorization header](https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.8) header of subsequent calls.
     
 **Logout Call:**
 
