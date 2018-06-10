@@ -98,7 +98,7 @@ When you call the REST API, you will do so in the standard fashion, where you de
     
 **Initial Login Call:**
 
-    http[s]://{SERVER URL}/login?login_id={LOGIN ID STRING}&password={PASSWORD STRING}
+    {GET} http[s]://{SERVER URL}/login?login_id={LOGIN ID STRING}&password={PASSWORD STRING}
 
 The {SERVER URL} is the URL path that specifies the BAOBAB server REST entrypoint (like `"example.com/rest_api/baobab/entrypoint.php"`).
 
@@ -121,13 +121,13 @@ The response will be a simple string. This will be a 64-character random token t
     
 **Logout Call:**
 
-    http[s]://{SERVER URL}/logout
+    {GET} http[s]://{SERVER URL}/logout
 
 This is a call that should be made while a valid API key has been assigned to a user. It should be made with the user's valid API key in the [HTTP authorization header](https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.8), and will terminate the API key, requiring subsequent calls by the same user to perform another login. 
 
 **Standard REST Calls:**
 
-    http[s]://{SERVER URL}/{RESPONSE TYPE}/{PLUGIN}/[{COMMAND[S]}][?][{QUERY PARAMETER NAME}[={QUERY PARAMETER VALUE}]]
+    {GET | POST | PUT | DELETE} http[s]://{SERVER URL}/{RESPONSE TYPE}/{PLUGIN}/[{COMMAND[S]}][?][{QUERY PARAMETER NAME}[={QUERY PARAMETER VALUE}]]
 
 - `{RESPONSE TYPE}`
 

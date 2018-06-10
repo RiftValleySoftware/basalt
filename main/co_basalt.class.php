@@ -112,7 +112,9 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                     header('HTTP/1.1 403 Unauthorized Login');
                     exit();
                 }
-            } elseif ('logout' != $response_type) { // We simply ignore anything else for logout.
+            } elseif ('logout' == $response_type) { // We simply ignore anything else for logout.
+                $this->_path = Array('logout');
+            } else { // We handle the rest
                 // Get the response type.
                 if (('json' == $response_type) || ('xml' == $response_type) || ('xsd' == $response_type)) {
                     array_shift($paths);
@@ -285,7 +287,6 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         $this->_andisol_instance = NULL;
         // IIS puts "off" in the HTTPS field, so we need to test for that.
         $https = ((!empty ( $_SERVER['HTTPS'] ) && (($_SERVER['HTTPS'] !== 'off') || ($port == 443)))) ? true : false;
-        
         if (!CO_Config::$require_ssl_for_all || $https) {
             $this->_process_parameters();
 
@@ -329,35 +330,31 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
             } elseif ((1 == count($this->_path)) && ('logout' == $this->_path[0]))  {   // See if the user wants to log out a session.
                 $api_key1 = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : NULL;
                 $api_key2 = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : NULL;
-            
                 // If we don't have a valid API key pair, we scrag the process.
                 if(!(isset($api_key1) && isset($api_key2) && $api_key1 && ($api_key1 == $api_key2))) {
                     header('HTTP/1.1 403 Unauthorized Login');
-                    exit();
-                }
-                
-                $andisol_instance = new CO_Andisol('', '', '', $api_key1);
-                
-                if (isset($andisol_instance) && ($andisol_instance instanceof CO_Andisol) && $andisol_instance->logged_in()) {
-                    $login_item = $andisol_instance->get_login_item();
-                    
-                    // We "log out" by clearing the API key.
-                    if (isset($login_item) && ($login_item instanceof CO_Security_Login)) {
-                        if ($login_item->clear_api_key()) {
-                            header('HTTP/1.1 205 Lougout Successful');
-                            exit();
-                        } else {    // This will probably never happen, but belt and suspenders...
-                            header('HTTP/1.1 200 Logout Unneccessary');
-                            exit();
-                        }
-                    } else {    // This will probably never happen, but belt and suspenders...
-                        header('HTTP/1.1 500 Internal Server Error');
-                        exit();
-                    }
                 } else {
-                    header('HTTP/1.1 403 Unauthorized Login');
-                    exit();
+                    $andisol_instance = new CO_Andisol('', '', '', $api_key1);
+                
+                    if (isset($andisol_instance) && ($andisol_instance instanceof CO_Andisol) && $andisol_instance->logged_in()) {
+                        $login_item = $andisol_instance->get_login_item();
+                    
+                        // We "log out" by clearing the API key.
+                        if (isset($login_item) && ($login_item instanceof CO_Security_Login)) {
+                            if ($login_item->clear_api_key()) {
+                                header('HTTP/1.1 205 Lougout Successful');
+                            } else {    // This will probably never happen, but belt and suspenders...
+                                header('HTTP/1.1 200 Logout Unneccessary');
+                            }
+                        } else {    // This will probably never happen, but belt and suspenders...
+                            header('HTTP/1.1 500 Internal Server Error');
+                        }
+                    } else {
+                        header('HTTP/1.1 403 Unauthorized Login');
+                    }
                 }
+                
+                exit();
             } else {
                 $api_key1 = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : NULL;
                 $api_key2 = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : NULL;
