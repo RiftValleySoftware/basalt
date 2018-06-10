@@ -15,6 +15,7 @@ defined( 'LGV_BASALT_CATCHER' ) or die ( 'Cannot Execute Directly' );	// Makes s
 
 /****************************************************************************************************************************/
 /**
+This is a very basic, GET-only plugin that returns information about users and logins.
  */
 class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
     /***********************/
@@ -49,13 +50,18 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
         }
         
         $api_key = $in_login_object->get_api_key();
-    
+        $key_age = $in_login_object->get_api_key_age_in_seconds();
+
         if ($api_key) {
             // Most users can see whether or not the user has a current API key.
             $ret['current_api_key'] = true;
             // God can see the key, itself.
             if ($in_login_object->get_access_object()->god_mode()) {
                 $ret['api_key'] = $api_key;
+                //...and how old it is.
+                if ( 0 <= $key_age) {
+                    $ret['api_key_age_in_seconds'] = $key_age;
+                }
             }
         }
         

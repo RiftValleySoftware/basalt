@@ -77,6 +77,7 @@
                                         <xs:element minOccurs="0" name="writeable" type="xs:integer"/>
                                         <xs:element minOccurs="0" name="current_api_key" type="xs:integer"/>
                                         <xs:element minOccurs="0" name="api_key" type="xs:string"/>
+                                        <xs:element minOccurs="0" name="api_key_age_in_seconds" type="xs:integer"/>
 									</xs:choice>
 									<xs:attribute name="sequence_index" use="required" type="xs:integer"/>
 								</xs:complexType>

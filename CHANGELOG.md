@@ -2,6 +2,8 @@
 
 - Improving BASALT documentation.
 - Added support for explicit LOGOUT.
+- Added support for API key age.
+- Continuing to improve the tests.
 
 **1.0.0.1000** *(June 9, 2018)*
 
