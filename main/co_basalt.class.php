@@ -78,7 +78,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         $this->_request_type = strtoupper(trim($_SERVER['REQUEST_METHOD']));
         
         // Look to see if we are doing a login. In that case, we only grab a couple of things.
-        if ((1 < count($paths)) || isset($paths[0]) && ('login' == $paths[0])) { // We need at least the response and plugin types.
+        if ((1 < count($paths)) || isset($paths[0]) && (('login' == $paths[0]) || ('logout' == $paths[0]))) { // We need at least the response and plugin types. Login and Logout get special handling.
             $response_type = strtolower(trim($paths[0]));
             
             if ('login' == $response_type) {
@@ -112,7 +112,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                     header('HTTP/1.1 403 Unauthorized Login');
                     exit();
                 }
-            } else {
+            } elseif ('logout' != $response_type) { // We simply ignore anything else for logout.
                 // Get the response type.
                 if (('json' == $response_type) || ('xml' == $response_type) || ('xsd' == $response_type)) {
                     array_shift($paths);
@@ -326,6 +326,38 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                 }
                 
                 exit();
+            } elseif ((1 == count($this->_path)) && ('logout' == $this->_path[0]))  {   // See if the user wants to log out a session.
+                $api_key1 = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : NULL;
+                $api_key2 = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : NULL;
+            
+                // If we don't have a valid API key pair, we scrag the process.
+                if(!(isset($api_key1) && isset($api_key2) && $api_key1 && ($api_key1 == $api_key2))) {
+                    header('HTTP/1.1 403 Unauthorized Login');
+                    exit();
+                }
+                
+                $andisol_instance = new CO_Andisol('', '', '', $api_key1);
+                
+                if (isset($andisol_instance) && ($andisol_instance instanceof CO_Andisol) && $andisol_instance->logged_in()) {
+                    $login_item = $andisol_instance->get_login_item();
+                    
+                    // We "log out" by clearing the API key.
+                    if (isset($login_item) && ($login_item instanceof CO_Security_Login)) {
+                        if ($login_item->clear_api_key()) {
+                            header('HTTP/1.1 205 Lougout Successful');
+                            exit();
+                        } else {    // This will probably never happen, but belt and suspenders...
+                            header('HTTP/1.1 200 Logout Unneccessary');
+                            exit();
+                        }
+                    } else {    // This will probably never happen, but belt and suspenders...
+                        header('HTTP/1.1 500 Internal Server Error');
+                        exit();
+                    }
+                } else {
+                    header('HTTP/1.1 403 Unauthorized Login');
+                    exit();
+                }
             } else {
                 $api_key1 = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : NULL;
                 $api_key2 = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : NULL;
@@ -340,6 +372,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                     $this->_andisol_instance = $andisol_instance;
                 } else {
                     header('HTTP/1.1 500 Internal Server Error');
+                    exit();
                 }
             }
         } else {

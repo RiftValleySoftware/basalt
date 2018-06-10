@@ -1,6 +1,7 @@
 **1.0.0.1001** *(TBD)*
 
 - Improving BASALT documentation.
+- Added support for explicit LOGOUT.
 
 **1.0.0.1000** *(June 9, 2018)*
 
