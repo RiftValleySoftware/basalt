@@ -10,11 +10,29 @@ Part of the Rift Valley Platform
 
 INTRODUCTION
 ============
-BASALT is the REST API and extension framework of the Rift Valley Platform.
+BASALT is the [REST API](https://restfulapi.net) and extension framework of the Rift Valley Platform.
 
 EXTENSIONS
 ==========
-BASALT allows the creation of "REST Plugins." These are fairly simple PHP executables that are placed in known directories. BASALT correlates these to the plugin parameters in the REST URIs.
+BASALT allows the creation of "REST Plugins." These are fairly simple PHP executables that are placed in known directories.
+
+BASALT matches these to the plugin parameters in the REST URIs, and routes REST HTTP calls to the designated plugins, returning the result of the plugin processing.
+
+REST Plugins are simple subclasses of the `A_CO_Basalt_Plugin` class, and are used in a very basic stateless fashion; inheriting utility functions from the abstract base class.
+
+BASALT REST Plugins only have two exposed methods:
+
+- `A_CO_Basalt_Plugin::plugin_name`
+
+    This is an extremely basic method that simply returns the name of the plugin for use by the main BASALT system.
+    
+- `A_CO_Basalt_Plugin::process_command`
+
+    This is the method that actually processes the REST command. The (possibly logged-in) \ref `ANDISOL` object is passed in, along with the HTTP method, response type, and any further commands and/or query parameters.
+    
+    The method will respond with a string to be returned, reflecting the result of the requested command.
+    
+BASALT will include a few "built in" plugins, but the implementor of the server can write and install more plugins, giving a very powerful facility for managing REST interactions.
 
 REST API
 ========
@@ -26,19 +44,19 @@ REST METHODS
 ------------
 BASALT's REST API implements the following [methods](http://www.restapitutorial.com/lessons/httpmethods.html):
 
-- [GET](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3)
+- [`GET`](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3)
 
     This is the classic "show me the money" method. It can be easily expressed in a standard browser URI. Use this to fetch resources (like doing searches). You do not have to be authenticated to use this method.
     
-- [POST](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5)
+- [`POST`](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5)
 
     This is used to create new resources. You must have an authenticated login to use this.
     
-- [PUT](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6)
+- [`PUT`](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6)
 
-    This is used to update/modify resources. It can be used in a fashion like [the PATCH method](https://tools.ietf.org/html/rfc5789), where only the changed portion of a resource is provided. You must have an authenticated login to use this.
+    This is used to update/modify resources. It can be used in a fashion like [the `PATCH` method](https://tools.ietf.org/html/rfc5789), where only the changed portion of a resource is provided. You must have an authenticated login to use this.
     
-- [DELETE](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7)
+- [`DELETE`](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7)
 
     This deletes a resource. You must have an authenticated login to use this.
 
@@ -82,7 +100,7 @@ When you call the REST API, you will do so in the standard fashion, where you de
 
     http[s]://{SERVER URL}/login?login_id={LOGIN ID STRING}&password={PASSWORD STRING}
 
-The {SERVER URL} is the URL path that specifies the BAOBAB server REST entrypoint (like "`example.com/rest_api/baobab/entrypoint.php`").
+The {SERVER URL} is the URL path that specifies the BAOBAB server REST entrypoint (like `"example.com/rest_api/baobab/entrypoint.php"`).
 
 In this instance, you directly call the REST entrypoint, specifying only `"login"` (which also means that you can't create a plugin named "login").
 The query parameters are:
@@ -105,7 +123,7 @@ The response will be a simple string. This will be a 64-character random token t
 
 - `{RESPONSE TYPE}`
 
-    This is `"xml"`, `"json"` or `"xsd"`. If it is `"xsd"`, then commands and query parameters will be ignored.
+    This is `"xml"`, `"json"` or `"xsd"`. If it is `"xsd"`, then commands and query parameters will be ignored. The response will be an [XML Schema](https://www.w3.org/XML/Schema) document.
     
 - `{PLUGIN}`
 
@@ -114,7 +132,7 @@ The response will be a simple string. This will be a 64-character random token t
     
 - `{COMMAND[S]}`
 
-    This represents a single command (or a series of commads, which are expressed as "`command1/command2/command3/`" etc.) for the plugin.
+    This represents a single command (or a series of commads, which are expressed as `"command1/command2/command3/"` etc.) for the plugin. These follow the `/{PLUGIN}/` URI component.
     
 If you will be providing query parameters to the REST call, then these are attached after the question mark.
 `{RESPONSE TYPE}` and `{PLUGIN}` are required. The other elements are optional, and plugin-dependent. Each plugin will define its own REST query structure that is parsed after the `{PLUGIN}`.
