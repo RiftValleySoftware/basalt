@@ -8,6 +8,8 @@ Part of the Rift Valley Platform
 --------------------------------
 ![Rift Valley Platform](images/RVPLogo.png)
 
+![BAOBAB Server](images/BAOBABLogo.png)
+
 INTRODUCTION
 ============
 BASALT is the [REST API](https://restfulapi.net) and extension framework of the Rift Valley Platform.
