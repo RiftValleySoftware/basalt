@@ -123,7 +123,7 @@ The response will be a simple string. This will be a 64-character random token t
 
     http[s]://{SERVER URL}/logout
 
-This is a call that should be made while a valid API key has been assigned to a user. It should be made with the user's valid API key in the [HTTP authorization header](https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.8), and will terminate the API key, and require that subsequent calls by the same user require another login. 
+This is a call that should be made while a valid API key has been assigned to a user. It should be made with the user's valid API key in the [HTTP authorization header](https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.8), and will terminate the API key, requiring subsequent calls by the same user to perform another login. 
 
 **Standard REST Calls:**
 
