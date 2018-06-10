@@ -28,7 +28,7 @@ BASALT REST Plugins only have two exposed methods:
     
 - `A_CO_Basalt_Plugin::process_command`
 
-    This is the method that actually processes the REST command. The (possibly logged-in) \ref `ANDISOL` object is passed in, along with the HTTP method, response type, and any further commands and/or query parameters.
+    This is the method that actually processes the REST command. The (possibly logged-in) \ref ANDISOL object is passed in, along with the HTTP method, response type, and any further commands and/or query parameters.
     
     The method will respond with a string to be returned, reflecting the result of the requested command.
     

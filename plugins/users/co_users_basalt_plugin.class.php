@@ -21,9 +21,9 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
     /***********************/
     /**
      */
-    protected function _get_short_object_description( $in_user_object ///< REQUIRED: The user object to extract information from.
+    protected function _get_short_object_description( $in_object    ///< REQUIRED: The user or login object to extract information from.
                                                     ) {
-        $ret = Array('id' => $in_user_object->id(), 'name' => $in_user_object->name);
+        $ret = Array('id' => $in_object->id(), 'name' => $in_object->name, 'lang' => $in_object->get_lang());
         
         return $ret;
     }
