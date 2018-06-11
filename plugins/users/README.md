@@ -56,7 +56,7 @@ There are two "special" calls that can be made with this plugin:
 
     {GET} http[s]://{SERVER URL}/{json|xml}/users/
     
-Simply calling `users`, specifying only JSON or XML as the response type.
+Simply calling `users`, specifying only JSON or XML as the response type. Any query parameters are ignored.
     
 Calling this will return a simple listing of the two top-level commands (`users` and `logins`); either in JSON or XML.
     
