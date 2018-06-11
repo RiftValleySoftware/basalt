@@ -175,9 +175,9 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $user_nums = strtolower($in_path[0]);
             
             $single_user_id = (ctype_digit($user_nums) && (1 < intval($user_nums))) ? intval($user_nums) : NULL;    // This will be for if we are looking only one single user.
+            $login_user = isset($in_query) && is_array($in_query) && isset($in_query['login_user']);    // Flag saying they are only looking for login users.
             
             // The first thing that we'll do, is look for a list of user IDs. If that is the case, we split them into an array of int.
-            
             $user_list = explode(',', $user_nums);
             
             // If we do, indeed, have a list, we will force them to be ints, and cycle through them.
@@ -188,8 +188,10 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     if (0 < $id) {
                         $user = $in_andisol_instance->get_single_data_record_by_id($id);
                         if (isset($user) && ($user instanceof CO_User_Collection)) {
-                            $desc = $this->_get_long_user_description($user, true);
-                            $ret[] = $desc;
+                            if (!$login_user || ($login_user && $user->has_login())) {
+                                $desc = $this->_get_long_user_description($user, true);
+                                $ret[] = $desc;
+                            }
                         }
                     }
                 }
@@ -199,7 +201,9 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
             if (0 < count($userlist)) {
                 foreach ($userlist as $user) {
                     if (isset($user) && ($user instanceof CO_User_Collection)) {
-                        $ret[] = $this->_get_short_object_description($user);
+                        if (!$login_user || ($login_user && $user->has_login())) {
+                            $ret[] = $this->_get_short_object_description($user);
+                        }
                     }
                 }
             }

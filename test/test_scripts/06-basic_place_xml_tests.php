@@ -15,15 +15,15 @@
 
 require_once(dirname(dirname(__FILE__)).'/run_basalt_tests.php');
 
-basalt_run_tests(29, 'BASIC XML PLACES TESTS', 'In which our intrepid hero does some basic REST Logins, and asks for information about places in XML.');
+basalt_run_tests(35, 'BASIC XML PLACES TESTS', 'In which our intrepid hero does some basic REST Logins, and asks for information about places in XML.');
 
 // -------------------------- DEFINITIONS AND TESTS -----------------------------------
 
-function basalt_test_define_0029() {
-    basalt_run_single_direct_test(29, 'PASS: List Places (No Login)', 'Do not log in, and see what places are returned.', 'dc_area_tests');
+function basalt_test_define_0035() {
+    basalt_run_single_direct_test(35, 'PASS: List Places (No Login)', 'Do not log in, and see what places are returned.', 'dc_area_tests');
 }
 
-function basalt_test_0029($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+function basalt_test_0035($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/places', NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
@@ -35,11 +35,11 @@ function basalt_test_0029($in_login = NULL, $in_hashed_password = NULL, $in_pass
 
 // --------------------
 
-function basalt_test_define_0030() {
-    basalt_run_single_direct_test(30, 'PASS: List Specific Places (No Login)', 'Do not log in, and see what places are returned.', 'dc_area_tests');
+function basalt_test_define_0036() {
+    basalt_run_single_direct_test(36, 'PASS: List Specific Places (No Login)', 'Do not log in, and see what places are returned.', 'dc_area_tests');
 }
 
-function basalt_test_0030($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+function basalt_test_0036($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/places/13,880,20424,21200', NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
