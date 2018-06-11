@@ -25,6 +25,10 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                                     ) {
         $ret = Array('id' => $in_object->id(), 'name' => $in_object->name, 'lang' => $in_object->get_lang());
         
+        if ($in_object instanceof CO_Security_Login) {
+            $ret['login_id'] = $in_object->login_id;
+        }
+        
         return $ret;
     }
 
@@ -130,27 +134,22 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
         // See if they want the list of logins for users with logins, or particular users
         if (isset($in_path) && is_array($in_path) && (0 < count($in_path))) {
-            $login_nums = strtolower($in_path[0]);
+        
+            // Now, we see if they are a list of integer IDs or strings (login string IDs).
+            $login_id_list = array_map('trim', explode(',', $in_path[0]));
             
-            $single_login_id = (ctype_digit($login_nums) && (1 < intval($login_nums))) ? intval($login_nums) : NULL;    // This will be for if we are looking only one single user.
+            $is_numeric = array_reduce($login_id_list, function($carry, $item){ return $carry && ctype_digit($item); }, true);
             
-            // The first thing that we'll do, is look for a list of user IDs. If that is the case, we split them into an array of int.
+            $login_id_list = $is_numeric ? array_map('intval', $login_id_list) : $login_id_list;
             
-            $login_id_list = explode(',', $login_nums);
-            
-            // If we do, indeed, have a list, we will force them to be ints, and cycle through them.
-            if ($single_login_id || (1 < count($login_id_list))) {
-                $login_id_list = ($single_login_id ? [$single_login_id] : array_map('intval', $login_id_list));
-                
-                foreach ($login_id_list as $id) {
-                    if (0 < $id) {
-                        $login_instance = $in_andisol_instance->get_login_item($id);
-                        if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
-                            if ($show_details) {
-                                $ret[] = $this->_get_long_login_description($login_instance, true);
-                            } else {
-                                $ret[] = $this->_get_short_object_description($login_instance);
-                            }
+            foreach ($login_id_list as $id) {
+                if (($is_numeric && (0 < $id)) || !$is_numeric) {
+                    $login_instance = $is_numeric ? $in_andisol_instance->get_login_item($id) : $in_andisol_instance->get_login_item_by_login_string($id);
+                    if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
+                        if ($show_details) {
+                            $ret[] = $this->_get_long_login_description($login_instance, true);
+                        } else {
+                            $ret[] = $this->_get_short_object_description($login_instance);
                         }
                     }
                 }

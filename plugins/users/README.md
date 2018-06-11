@@ -23,7 +23,7 @@ USAGE
 
 This plugin is accessed by setting `"users"` as the Command in the GET URI. There are a number of other aspects to the URI that will be explained:
 
-    {GET} http[s]://{SERVER URL}/{json|xml|xsd}/users/[{users|logins}/[{[INTEGER USER IDS CSV]}|[{login_ids}/{[STRING LOGIN IDS CSV]}][?][{show_details|login_user|}]]
+    {GET} http[s]://{SERVER URL}/{json|xml|xsd}/users/[{users|logins}/[{[INTEGER USER IDS CSV]}|[{login_ids}/{[STRING LOGIN IDS CSV]}][?][{show_details|login_user}]]
 
 GET-ONLY
 --------
@@ -65,6 +65,18 @@ Calling this will return a simple listing of the two top-level commands (`users`
 Calling `users`, specifying `xsd` as the response type.
 
 Calling this will return XML, which will be the XML validation schema for the plugin. It's a comprehensive schema that covers all response types.
+
+REGULAR CALLS
+-------------
+
+**users**
+
+    {GET} http[s]://{SERVER URL}/{json|xml}/users/users/[{[INTEGER USER IDS CSV]}|[{login_ids}/{[STRING LOGIN IDS CSV]}][?][{show_details|login_user}]
+
+**logins**
+
+    {GET} http[s]://{SERVER URL}/{json|xml}/users/logins/[{[INTEGER LOGIN IDS CSV]}|{[STRING LOGIN IDS CSV]}][?][{show_details}]
+
     
 TYPES OF RECORDS
 ----------------

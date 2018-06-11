@@ -79,7 +79,7 @@ function prettify_json($json) {
         } else if ( $char === '\\' ) {
             $in_escape = true;
         }
-        if( $new_line_level !== NULL ) {
+        if( ($new_line_level !== NULL) && (0 < $new_line_level) ) {
             $result .= "\n".str_repeat( "  ", $new_line_level );
         }
         $result .= $char.$post;
