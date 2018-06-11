@@ -1,3 +1,7 @@
+**1.0.0.1002** *(TBD)*
+
+- Tiny adjustment to the BAOBAB logo.
+
 **1.0.0.1001** *(June 11, 2018)*
 
 - Improving BASALT documentation.

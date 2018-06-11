@@ -13,7 +13,7 @@
 */
 defined( 'LGV_BASALT_CATCHER' ) or die ( 'Cannot Execute Directly' );	// Makes sure that this file is in the correct context.
 
-define('__BASALT_VERSION__', '1.0.0.1001');
+define('__BASALT_VERSION__', '1.0.0.1002');
 
 if (!defined('LGV_ACCESS_CATCHER')) {
     define('LGV_ACCESS_CATCHER', 1);
