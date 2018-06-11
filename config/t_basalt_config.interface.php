@@ -21,6 +21,33 @@ require_once(dirname(dirname(__FILE__)).'/andisol/cobra/chameleon/badger/install
 
 trait tCO_Basalt_Config {
     use tCO_Config; // These are the built-in config methods.
+    /***********************/
+    /**
+    This is a special "callback caller" for logging REST calls (BASALT). The callback must be defined in the CO_Config::$_log_handler_function static variable,
+    either as a function (global scope), or as an array (with element 0 being the object, itself, and element 1 being the name of the function).
+    For most functions in the global scope, this will simply be the function name.
+    If this will be an object method, then it should be an array, with element 0 as the object, and element 1 a string, containing the function name.
+    The function signature will be:
+        function log_callback ( $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance at the time of the call.
+                                $in_server_vars         ///< REQUIRED: The $_SERVER array, at the time of the call.
+                                );
+    There is no function return.
+    The function will take care of logging the REST connection in whatever fashion the user desires.
+    This will assume a successful ANDISOL instantiation, and is not designed to replace the traditional server logs.
+    It should be noted that there may be legal, ethical and resource ramifications for logging.
+    It is up to the implementor to ensure compliance with all constraints.
+    */
+    static function call_log_handler_function(  $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance at the time of the call.
+                                                $in_server_vars         ///< REQUIRED: The $_SERVER array, at the time of the call.
+                                                ) {   
+        $log_handler = self::$_log_handler_function;
+        
+        if (isset($log_handler) && is_array($log_handler) && (1 < count($log_handler)) && is_object($log_handler[0]) && method_exists($log_handler[0], $log_handler[1])) {
+            $log_handler[0]->$log_handler[1]($in_andisol_instance, $in_server_vars);
+        } elseif (isset($log_handler) && function_exists($log_handler)) {
+            $log_handler($in_andisol_instance, $in_server_vars);
+        }
+    }
     
     /***********************/
     /**

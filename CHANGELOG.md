@@ -4,6 +4,7 @@
 - Added support for explicit LOGOUT.
 - Added support for API key age.
 - Continuing to improve the tests.
+- Added support for logging REST calls.
 
 **1.0.0.1000** *(June 9, 2018)*
 

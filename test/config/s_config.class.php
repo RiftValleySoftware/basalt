@@ -22,11 +22,32 @@ define('_SECURITY_DB_TYPE_', 'mysql');
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config/t_basalt_config.interface.php');
 
+function global_scope_basalt_logging_function($in_andisol_instance, $in_server_vars) {
+    $log_display = $in_server_vars;
+    $id = (NULL !== $in_andisol_instance->get_login_item()) ? $in_andisol_instance->get_login_item()->id() : 0;
+
+//     echo('<div>LOG-FOR-ID-'.$id.':-<code>REQUEST-METHOD:-'.$in_server_vars['REQUEST_METHOD'].',-REMOTE-IP:-'.$in_server_vars['REMOTE_ADDR'].',-PATH:-'.$in_server_vars['PATH_INFO'].',-QUERY-STRING:-'.$in_server_vars['QUERY_STRING'].'</code></div>');
+}
+
 class CO_Config {
     use tCO_Basalt_Config; // These are the built-in config methods.
     
     static private $_god_mode_id = 2;               ///< God Login Security DB ID. This is private, so it can't be programmatically changed.
     static private $_god_mode_password = 'BWU-HA-HAAAA-HA!'; ///< Plaintext password for the God Mode ID login. This overrides anything in the ID row.
+    static private $_log_handler_function = 'global_scope_basalt_logging_function';
+                                                    /**<    This is a special callback for logging REST calls (BASALT). For most functions in the global scope, this will simply be the function name,
+                                                            or as an array (with element 0 being the object, itself, and element 1 being the name of the function).
+                                                            If this will be an object method, then it should be an array, with element 0 as the object, and element 1 a string, containing the function name.
+                                                            The function signature will be:
+                                                                function log_callback ( $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance at the time of the call.
+                                                                                        $in_server_vars         ///< REQUIRED: The $_SERVER array, at the time of the call.
+                                                                                        );
+                                                            There is no function return.
+                                                            The function will take care of logging the REST connection in whatever fashion the user desires.
+                                                            This will assume a successful ANDISOL instantiation, and is not designed to replace the traditional server logs.
+                                                            It should be noted that there may be legal, ethical and resource ramifications for logging.
+                                                            It is up to the implementor to ensure compliance with all constraints.
+                                                    */
     
     static $lang = 'en';                            ///< The default language for the server.
     static $min_pw_len = 8;                         ///< The minimum password length.
