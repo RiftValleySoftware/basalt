@@ -66,7 +66,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
     If a query element is provided only as a key, then its value will be set to true.
      */
     protected function _process_parameters() {
-        $paths = isset($_SERVER['PATH_INFO']) ? explode("/", substr(@$_SERVER['PATH_INFO'], 1)) : [];
+        $paths = isset($_SERVER['PATH_INFO']) ? explode("/", substr($_SERVER['PATH_INFO'], 1)) : [];
         $query = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : NULL;
         $path_final = [];
         $vars_final = [];

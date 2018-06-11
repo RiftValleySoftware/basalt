@@ -37,6 +37,10 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
         $user_item = $in_login_object->get_user_object();
         
+        if ($in_login_object->id() == $in_login_object->get_access_object()->get_login_id()) {
+            $ret['current_login'] = true;
+        }
+        
         if (isset($user_item) && ($user_item instanceof CO_User_Collection)) {
             $ret['user_object_id'] = $user_item->id();
         }
@@ -84,6 +88,10 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
             }
         
             if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
+                if ($login_instance->id() == $in_user_object->get_access_object()->get_login_id()) {
+                    $ret['current_login'] = true;
+                }
+        
                 $ret['login'] = $this->_get_long_login_description($login_instance);
             }
         }
@@ -113,11 +121,12 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     \returns an array, with the resulting users.
      */
-    public function handle_logins(  $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
-                                    $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
-                                    $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
-                                ) {
+    protected function _handle_logins(  $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                        $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
+                                        $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
+                                    ) {
         $ret = [];
+        $show_details = isset($in_query) && is_array($in_query) && isset($in_query['show_details']);    // Flag that applies only for lists, forcing all users to be shown in detail.
         
         // See if they want the list of logins for users with logins, or particular users
         if (isset($in_path) && is_array($in_path) && (0 < count($in_path))) {
@@ -137,8 +146,11 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     if (0 < $id) {
                         $login_instance = $in_andisol_instance->get_login_item($id);
                         if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
-                            $desc = $this->_get_long_login_description($login_instance);
-                            $ret[] = $desc;
+                            if ($show_details) {
+                                $ret[] = $this->_get_long_login_description($login_instance, true);
+                            } else {
+                                $ret[] = $this->_get_short_object_description($login_instance);
+                            }
                         }
                     }
                 }
@@ -147,9 +159,13 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $login_id_list = $in_andisol_instance->get_all_login_users();
             $login_id_list = $in_andisol_instance->get_cobra_instance()->get_all_logins();
             if (0 < count($login_id_list)) {
-                foreach ($login_id_list as $login) {
-                    if (isset($login) && ($login instanceof CO_Security_Login)) {
-                        $ret[] = $this->_get_short_object_description($login);
+                foreach ($login_id_list as $login_instance) {
+                    if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
+                        if ($show_details) {
+                            $ret[] = $this->_get_long_login_description($login_instance, true);
+                        } else {
+                            $ret[] = $this->_get_short_object_description($login_instance);
+                        }
                     }
                 }
             }
@@ -164,19 +180,35 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     \returns an array, with the resulting users.
      */
-    public function handle_users(   $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
-                                    $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
-                                    $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
-                                ) {
+    protected function _handle_users(   $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                        $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
+                                        $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
+                                    ) {
         $ret = [];
+        $login_ids = NULL;
+        $login_user = isset($in_query) && is_array($in_query) && isset($in_query['login_user']);    // Flag saying they are only looking for login users.
+        $show_details = isset($in_query) && is_array($in_query) && isset($in_query['show_details']);    // Flag that applies only for lists, forcing all users to be shown in detail.
         
-        // See if they want the list of logins for users with logins, or particular users
-        if (isset($in_path) && is_array($in_path) && (0 < count($in_path))) {
+        if (isset($in_path) && is_array($in_path) && (1 < count($in_path) && ('login_ids' == $in_path[0]))) {    // See if they are looking for users associated with string login IDs.
+            $login_list = explode(',', $in_path[1]);    // See if they want several logins, or only one.
+            if (1 == count($login_list)) {
+                $login_list = [$in_path[1]];
+            }
+            
+            foreach ($login_list as $login_id) {
+                $user = $in_andisol_instance->get_user_from_login_string($login_id);
+                if (isset($user) && ($user instanceof CO_User_Collection)) {
+                    if ($show_details) {
+                        $ret[] = $this->_get_long_user_description($user, true);
+                    } else {
+                        $ret[] = $this->_get_short_object_description($user);
+                    }
+                }
+            }
+        } elseif (isset($in_path) && is_array($in_path) && (0 < count($in_path))) { // See if they are looking for a list of individual discrete integer IDs.
             $user_nums = strtolower($in_path[0]);
             
             $single_user_id = (ctype_digit($user_nums) && (1 < intval($user_nums))) ? intval($user_nums) : NULL;    // This will be for if we are looking only one single user.
-            $login_user = isset($in_query) && is_array($in_query) && isset($in_query['login_user']);    // Flag saying they are only looking for login users.
-            
             // The first thing that we'll do, is look for a list of user IDs. If that is the case, we split them into an array of int.
             $user_list = explode(',', $user_nums);
             
@@ -189,8 +221,11 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         $user = $in_andisol_instance->get_single_data_record_by_id($id);
                         if (isset($user) && ($user instanceof CO_User_Collection)) {
                             if (!$login_user || ($login_user && $user->has_login())) {
-                                $desc = $this->_get_long_user_description($user, true);
-                                $ret[] = $desc;
+                                if ($show_details) {
+                                    $ret[] = $this->_get_long_user_description($user, true);
+                                } else {
+                                    $ret[] = $this->_get_short_object_description($user);
+                                }
                             }
                         }
                     }
@@ -202,7 +237,11 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 foreach ($userlist as $user) {
                     if (isset($user) && ($user instanceof CO_User_Collection)) {
                         if (!$login_user || ($login_user && $user->has_login())) {
-                            $ret[] = $this->_get_short_object_description($user);
+                            if ($show_details) {
+                                $ret[] = $this->_get_long_user_description($user, true);
+                            } else {
+                                $ret[] = $this->_get_short_object_description($user);
+                            }
                         }
                     }
                 }
@@ -231,14 +270,14 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
             if (0 == count($in_path)) {
                 $ret = ['users', 'logins'];
             } else {
-                $main_command = strtolower(array_shift($in_path));    // Get the main command.
-            
-                switch ($main_command) {
+                $main_command = $in_path[0];    // Get the main command.
+                array_shift($in_path);
+                switch (strtolower($main_command)) {
                     case 'users':
-                        $ret['users'] = $this->handle_users($in_andisol_instance, $in_path, $in_query);
+                        $ret['users'] = $this->_handle_users($in_andisol_instance, $in_path, $in_query);
                         break;
                     case 'logins':
-                        $ret['logins'] = $this->handle_logins($in_andisol_instance, $in_path, $in_query);
+                        $ret['logins'] = $this->_handle_logins($in_andisol_instance, $in_path, $in_query);
                         break;
                 }
             }

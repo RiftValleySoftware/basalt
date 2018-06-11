@@ -1,10 +1,12 @@
-**1.0.0.1001** *(TBD)*
+**1.0.0.1001** *(June 11, 2018)*
 
 - Improving BASALT documentation.
 - Added support for explicit LOGOUT.
 - Added support for API key age.
 - Continuing to improve the tests.
 - Added support for logging REST calls.
+- Completed the basic users REST plugin.
+- Updated ANDISOL/COBRA/CHAMELEON/BADGER.
 
 **1.0.0.1000** *(June 9, 2018)*
 

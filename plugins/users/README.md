@@ -5,11 +5,9 @@
 BASALT USERS PLUGIN
 ===================
 
-Part of the Rift Valley Platform
---------------------------------
-![Rift Valley Platform](images/RVPLogo.png)
-
-![BAOBAB Server](images/BAOBABLogo.png)
+Part of the BASALT Extension Layer, Which is Part of the BAOBAB Server, which is part of the Rift Valley Platform
+-----------------------------------------------------------------------------------------------------------------
+![BAOBAB Server and The Rift Valley Platform](images/BothLogos.png)
 
 INTRODUCTION
 ============
