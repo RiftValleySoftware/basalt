@@ -1,4 +1,4 @@
-[]: # \page BASALT BASALT
+\page BASALT BASALT
 
 ![BASALT](images/BASALT.png)
 

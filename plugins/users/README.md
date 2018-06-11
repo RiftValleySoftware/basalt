@@ -1,4 +1,4 @@
-[]: # \page users-plugin USERS STANDARD PLUGIN
+\page users-plugin USERS STANDARD PLUGIN
 
 ![USERS PLUGIN](images/BASALT-PLUGIN.png)
 
