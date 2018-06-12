@@ -1,8 +1,8 @@
-	<xs:element name="users">
+	<xs:element name="people">
 		<xs:complexType mixed="true">
 			<xs:choice minOccurs="0" maxOccurs="unbounded">
 			
-				<xs:element minOccurs="0" name="users">
+				<xs:element minOccurs="0" name="people">
 					<xs:complexType mixed="true">
 						<xs:sequence maxOccurs="unbounded">
 							<xs:element name="value">

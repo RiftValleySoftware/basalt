@@ -78,6 +78,8 @@ trait tCO_Basalt_Config {
             }
         }
         
+        sort($ret);
+        
         return $ret;
     }
     

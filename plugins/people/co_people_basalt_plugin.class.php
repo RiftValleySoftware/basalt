@@ -15,9 +15,9 @@ defined( 'LGV_BASALT_CATCHER' ) or die ( 'Cannot Execute Directly' );	// Makes s
 
 /****************************************************************************************************************************/
 /**
-This is a very basic, GET-only plugin that returns information about users and logins.
+This is a very basic, GET-only plugin that returns information about people and logins.
  */
-class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
+class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     /***********************/
     /**
      */
@@ -61,7 +61,7 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
         $key_age = $in_login_object->get_api_key_age_in_seconds();
 
         if ($api_key) {
-            // Most users can see whether or not the user has a current API key.
+            // Most people can see whether or not the user has a current API key.
             $ret['current_api_key'] = true;
             // God can see the key, itself.
             if ($in_login_object->get_access_object()->god_mode()) {
@@ -116,23 +116,23 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
     \returns a string, with our plugin name.
      */
     public function plugin_name() {
-        return 'users';
+        return 'people';
     }
         
     /***********************/
     /**
     This handles logins.
     
-    \returns an array, with the resulting users.
+    \returns an array, with the resulting people.
      */
     protected function _handle_logins(  $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
                                         $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
                                         $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                     ) {
         $ret = [];
-        $show_details = isset($in_query) && is_array($in_query) && isset($in_query['show_details']);    // Flag that applies only for lists, forcing all users to be shown in detail.
+        $show_details = isset($in_query) && is_array($in_query) && isset($in_query['show_details']);    // Flag that applies only for lists, forcing all people to be shown in detail.
         
-        // See if they want the list of logins for users with logins, or particular users
+        // See if they want the list of logins for people with logins, or particular people
         if (isset($in_path) && is_array($in_path) && (0 < count($in_path))) {
         
             // Now, we see if they are a list of integer IDs or strings (login string IDs).
@@ -177,18 +177,18 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
     /**
     This handles logins.
     
-    \returns an array, with the resulting users.
+    \returns an array, with the resulting people.
      */
-    protected function _handle_users(   $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+    protected function _handle_people(   $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
                                         $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
                                         $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                     ) {
         $ret = [];
         $login_ids = NULL;
-        $login_user = isset($in_query) && is_array($in_query) && isset($in_query['login_user']);    // Flag saying they are only looking for login users.
-        $show_details = isset($in_query) && is_array($in_query) && isset($in_query['show_details']);    // Flag that applies only for lists, forcing all users to be shown in detail.
+        $login_user = isset($in_query) && is_array($in_query) && isset($in_query['login_user']);    // Flag saying they are only looking for login people.
+        $show_details = isset($in_query) && is_array($in_query) && isset($in_query['show_details']);    // Flag that applies only for lists, forcing all people to be shown in detail.
         
-        if (isset($in_path) && is_array($in_path) && (1 < count($in_path) && ('login_ids' == $in_path[0]))) {    // See if they are looking for users associated with string login IDs.
+        if (isset($in_path) && is_array($in_path) && (1 < count($in_path) && ('login_ids' == $in_path[0]))) {    // See if they are looking for people associated with string login IDs.
             // Now, we see if they are a list of integer IDs or strings (login string IDs).
             $login_id_list = array_map('trim', explode(',', $in_path[1]));
             
@@ -272,15 +272,15 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
         $ret = [];
         
         if ('GET' == $in_http_method) {
-            // For the default (no user ID), we simply return a list of users, in "short" format.
+            // For the default (no user ID), we simply return a list of people, in "short" format.
             if (0 == count($in_path)) {
-                $ret = ['users', 'logins'];
+                $ret = ['people', 'logins'];
             } else {
                 $main_command = $in_path[0];    // Get the main command.
                 array_shift($in_path);
                 switch (strtolower($main_command)) {
-                    case 'users':
-                        $ret['users'] = $this->_handle_users($in_andisol_instance, $in_path, $in_query);
+                    case 'people':
+                        $ret['people'] = $this->_handle_people($in_andisol_instance, $in_path, $in_query);
                         break;
                     case 'logins':
                         $ret['logins'] = $this->_handle_logins($in_andisol_instance, $in_path, $in_query);

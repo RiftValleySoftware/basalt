@@ -26,7 +26,6 @@ function basalt_test_define_0001() {
 function basalt_test_0001($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     echo('<h3>First, we try directly:</h3>');
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/json/</code></p>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/', NULL, NULL, $result_code, true);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
@@ -34,7 +33,6 @@ function basalt_test_0001($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<pre style="color:green">'.prettify_json($result).'</pre>');
     }
     echo('<h3>Next, we add \'/baseline\':</h3>');
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/json/baseline</code></p>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/baseline', NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
@@ -52,7 +50,6 @@ function basalt_test_define_0002() {
 function basalt_test_0002($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     echo('<h3>First, we try directly:</h3>');
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/xml/</code></p>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/', NULL, NULL, $result_code, true);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
@@ -60,7 +57,6 @@ function basalt_test_0002($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
     }
     echo('<h3>Next, we add \'/baseline\':</h3>');
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/xml/baseline</code></p>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/baseline', NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
@@ -78,7 +74,6 @@ function basalt_test_define_0003() {
 function basalt_test_0003($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     echo('<h3>First, try a direct call (should fail):</h3>');
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/xsd/</code></p>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xsd/', NULL, NULL, $result_code, true);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
@@ -86,7 +81,6 @@ function basalt_test_0003($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
     }
     echo('<h3>Next, get all of our plugins:</h3>');
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/json/baseline</code></p>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/baseline', NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
@@ -94,7 +88,6 @@ function basalt_test_0003($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<pre style="color:green">'.prettify_json($result).'</pre>');
         $plugin_list = json_decode($result)->baseline->plugins;
         foreach ($plugin_list as $plugin_name) {
-            echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/xsd/'.$plugin_name.'</code></p>');
             echo('<h3 style="margin-top:0.25em">This is the schema for '.$plugin_name.':</h3>');
             $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xsd/'.$plugin_name, NULL, NULL, $result_code);
             if (isset($result_code) && $result_code && (200 != $result_code)) {

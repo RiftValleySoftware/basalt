@@ -25,7 +25,6 @@ function basalt_test_define_0030() {
 
 function basalt_test_0030($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/logout</code></p>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
@@ -42,7 +41,6 @@ function basalt_test_define_0031() {
 
 function basalt_test_0031($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password.'</code></p>');
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
@@ -51,8 +49,7 @@ function basalt_test_0031($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>Do a simple user test.</h3>');
     $result_code = '';
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/json/users/users</code></p>');
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/users/users', NULL, $api_result, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/people', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -60,7 +57,6 @@ function basalt_test_0031($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>Now logout.</h3>');
     $result_code = '';
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/logout</code></p>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (205 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
@@ -69,8 +65,7 @@ function basalt_test_0031($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>Try the same user test again (This time, we should get a 401 error).</h3>');
     $result_code = '';
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/json/users/users</code></p>');
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/users/users', NULL, $api_result, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/people', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -86,7 +81,6 @@ function basalt_test_define_0032() {
 
 function basalt_test_0032($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password.'</code></p>');
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
@@ -95,8 +89,7 @@ function basalt_test_0032($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>Do a simple user test.</h3>');
     $result_code = '';
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/json/users/users</code></p>');
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/users/users', NULL, $api_result, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/people', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -104,7 +97,6 @@ function basalt_test_0032($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>Now logout.</h3>');
     $result_code = '';
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/logout</code></p>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (205 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
@@ -113,8 +105,7 @@ function basalt_test_0032($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>Try the same user test again (This time, we should get a 401 error).</h3>');
     $result_code = '';
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/json/users/users</code></p>');
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/users/users', NULL, $api_result, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/people', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -130,7 +121,6 @@ function basalt_test_define_0033() {
 
 function basalt_test_0033($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password.'</code></p>');
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
@@ -139,8 +129,7 @@ function basalt_test_0033($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>Do a simple user test.</h3>');
     $result_code = '';
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/json/users/users</code></p>');
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/users/users', NULL, $api_result, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/people', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -148,7 +137,6 @@ function basalt_test_0033($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>Now logout.</h3>');
     $result_code = '';
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/logout</code></p>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (205 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
@@ -157,8 +145,7 @@ function basalt_test_0033($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>Try the same user test again (This time, we should get a 401 error).</h3>');
     $result_code = '';
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/json/users/users</code></p>');
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/users/users', NULL, $api_result, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/people', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -174,7 +161,6 @@ function basalt_test_define_0034() {
 
 function basalt_test_0034($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password.'</code></p>');
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
@@ -183,8 +169,7 @@ function basalt_test_0034($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>Do a simple user test.</h3>');
     $result_code = '';
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/json/users/users</code></p>');
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/users/users', NULL, $api_result, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/people', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -192,7 +177,6 @@ function basalt_test_0034($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>Now logout.</h3>');
     $result_code = '';
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/logout</code></p>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (205 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
@@ -201,8 +185,7 @@ function basalt_test_0034($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>Try the same user test again (This time, we should get a 401 error).</h3>');
     $result_code = '';
-    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/json/users/users</code></p>');
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/users/users', NULL, $api_result, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/people', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {

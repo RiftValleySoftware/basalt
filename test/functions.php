@@ -341,6 +341,7 @@ function call_REST_API( $method,
                         &$httpCode = NULL,
                         $display_log = false
                         ) {
+    echo('<p style="vertical-align:middle;font-style:italic">'.$method.' URI: <big><code>'.$url.'</code></big></p>');
     $curl = curl_init();
     
     switch ($method) {
