@@ -70,11 +70,16 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $ret['fuzzy'] = true;
         }
         
+        $address_elements = $in_place_object->get_address_elements();
+        
+        if (0 < count($address_elements)) {
+            $ret['address_elements'] = $address_elements;
+        }
+        
         $child_objects = $this->_get_child_ids($in_place_object);
         if (0 < count($child_objects)) {
             $ret['children_ids'] = $child_objects;
         }
-        
         return $ret;
     }
     
