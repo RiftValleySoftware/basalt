@@ -15,10 +15,14 @@ defined( 'LGV_BASALT_CATCHER' ) or die ( 'Cannot Execute Directly' );	// Makes s
 
 /****************************************************************************************************************************/
 /**
+This is a REST plugin that allows access to places (locations).
  */
 class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
     /***********************/
     /**
+    This returns a fairly short summary of the place.
+    
+    \returns an associative array of strings and integers.
      */
     protected function _get_short_place_description($in_place_object) {
         $ret = Array('id' => $in_place_object->id(), 'name' => $in_place_object->name);
@@ -28,6 +32,9 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
 
     /***********************/
     /**
+    This returns a more comprehensive description of the place.
+    
+    \returns an associative array of strings and integers.
      */
     protected function _get_long_place_description($in_place_object) {
         $longitude = $in_place_object->longitude();

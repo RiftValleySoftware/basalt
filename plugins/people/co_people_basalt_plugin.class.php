@@ -20,6 +20,9 @@ This is a very basic, GET-only plugin that returns information about people and 
 class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     /***********************/
     /**
+    This returns a fairly short summary of the user or login.
+    
+    \returns an associative array of strings and integers.
      */
     protected function _get_short_object_description( $in_object    ///< REQUIRED: The user or login object to extract information from.
                                                     ) {
@@ -34,6 +37,9 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
 
     /***********************/
     /**
+    This returns a more comprehensive description of the login.
+    
+    \returns an associative array of strings and integers.
      */
     protected function _get_long_login_description( $in_login_object    ///< REQUIRED: The login object to extract information from.
                                                 ) {
@@ -78,6 +84,9 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
 
     /***********************/
     /**
+    This returns a more comprehensive description of the user.
+    
+    \returns an associative array of strings, integers and nested associative arrays.
      */
     protected function _get_long_user_description(  $in_user_object,            ///< REQUIRED: The user object to extract information from.
                                                     $in_with_login_info = false ///< OPTIONAL: Default is false. If true, then the login information is appended.

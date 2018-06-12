@@ -1,0 +1,15 @@
+<xs:element name='things'>
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element minOccurs='0' maxOccurs='unbounded' ref='b:value'/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
+<xs:element name='value'>
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element name="id' type='xs:integer'/>
+        </xs:sequence>
+        <xs:attribute name='sequence_index' use='required' type='xs:integer'/>
+    </xs:complexType>
+</xs:element>
