@@ -12,14 +12,14 @@
 										<xs:element name="name" type="xs:string"/>
 									    <xs:element name="lang" type="xs:string"/>
 										<xs:element minOccurs="0" name="writeable" type="xs:integer"/>
-										<xs:element minOccurs="0" name="current_login" type="xs:integer">
+										<xs:element minOccurs="0" name="current_login" type="xs:integer"/>
 										<xs:element minOccurs="0" name="login">
 											<xs:complexType>
 												<xs:sequence>
 													<xs:element name="id" type="xs:integer"/>
 													<xs:element name="name" type="xs:string"/>
 													<xs:element name="lang" type="xs:string"/>
-										            <xs:element minOccurs="0" name="current_login" type="xs:integer">
+										            <xs:element minOccurs="0" name="current_login" type="xs:integer"/>
 													<xs:element minOccurs="0" name="user_object_id" type="xs:integer"/>
 													<xs:element minOccurs="0" name="login_id" type="xs:NCName"/>
 													<xs:element minOccurs="0" name="security_tokens">
@@ -61,7 +61,7 @@
                                         <xs:element name="id" type="xs:integer"/>
                                         <xs:element name="name" type="xs:string"/>
 									    <xs:element name="lang" type="xs:string"/>
-										<xs:element minOccurs="0" name="current_login" type="xs:integer">
+										<xs:element minOccurs="0" name="current_login" type="xs:integer"/>
                                         <xs:element minOccurs="0" name="user_object_id" type="xs:integer"/>
                                         <xs:element minOccurs="0" name="login_id" type="xs:NCName"/>
                                         <xs:element minOccurs="0" name="security_tokens">

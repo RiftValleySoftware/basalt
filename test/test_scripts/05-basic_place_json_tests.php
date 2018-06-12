@@ -25,6 +25,7 @@ function basalt_test_define_0035() {
 
 function basalt_test_0035($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
+    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/json/places</code></p>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places', NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
@@ -41,6 +42,7 @@ function basalt_test_define_0036() {
 
 function basalt_test_0036($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
+    echo('<p>URI: <code>http://localhost/basalt/test/basalt_runner.php/json/places/13,880,20424,21200</code></p>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/13,880,20424,21200', NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
