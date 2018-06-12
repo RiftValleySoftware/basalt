@@ -154,6 +154,12 @@ This is a call that should be made while a valid API key has been assigned to a 
 If you will be providing query parameters to the [REST](https://restfulapi.net) call, then these are attached after the question mark.
 `{RESPONSE TYPE}` and `{PLUGIN}` are required. The other elements are optional, and plugin-dependent. Each plugin will define its own [REST](https://restfulapi.net) query structure that is parsed after the `{PLUGIN}`.
 
+LOGGING
+-------
+There is facility for logging. You can define a log handler function in the configuration, which will be called upon successful instantiation of an \ref ANDISOL instance. This is not meant to replace the standard HTTP logs from the server, but is focused on the BAOBAB server, and will report the current logged-in user.
+
+Logging is not enabled by default. It should be noted that it is possible that logging can affect by legal, technical and resource limitation issues. You should make sure that there are no issues with logging before enabling it.
+
 SUBPROJECTS
 ===========
 ![BASALT Diagram](images/BASALTLayers.png)

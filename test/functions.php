@@ -341,6 +341,10 @@ function call_REST_API( $method,
                         &$httpCode = NULL,
                         $display_log = false
                         ) {
+    if (isset($api_key) && $api_key) {
+        echo('<p style="vertical-align:middle;font-style:italic">API KEY: <big><code>'.$api_key.'</code></big></p>');
+    }
+    
     echo('<p style="vertical-align:middle;font-style:italic">'.$method.' URI: <big><code>'.$url.'</code></big></p>');
     $curl = curl_init();
     

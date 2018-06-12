@@ -14,6 +14,10 @@
 
 require_once(dirname(__FILE__).'/functions.php');
 
+if (file_exists(dirname(__FILE__).'/log/test.log')) {
+    unlink(dirname(__FILE__).'/log/test.log');
+}
+
 $test_name_array = Array();
 
 date_default_timezone_set ( 'UTC' );

@@ -24,9 +24,15 @@ require_once(dirname(dirname(dirname(__FILE__))).'/config/t_basalt_config.interf
 
 function global_scope_basalt_logging_function($in_andisol_instance, $in_server_vars) {
     $log_display = $in_server_vars;
-    $id = (NULL !== $in_andisol_instance->get_login_item()) ? $in_andisol_instance->get_login_item()->id() : 0;
-
-//     echo('<div>LOG-FOR-ID-'.$id.':-<code>REQUEST-METHOD:-'.$in_server_vars['REQUEST_METHOD'].',-REMOTE-IP:-'.$in_server_vars['REMOTE_ADDR'].',-PATH:-'.$in_server_vars['PATH_INFO'].',-QUERY-STRING:-'.$in_server_vars['QUERY_STRING'].'</code></div>');
+    $id = (NULL !== $in_andisol_instance->get_login_item()) ? $in_andisol_instance->get_login_item()->id() : '';
+    $login_id = (NULL !== $in_andisol_instance->get_login_item()) ? $in_andisol_instance->get_login_item()->login_id : '';
+    $id_entry = '' != $id ? "$id:$login_id" : '-';
+    $date_entry = date('\[d\/M\/Y:H:m:s O\]');
+    $request_entry = $_SERVER['REQUEST_METHOD'].' '.$_SERVER['REQUEST_URI'];
+    $log_entry = $_SERVER['REMOTE_ADDR']. ' - '.$id_entry.' '.$date_entry.' "'.$request_entry.'"';
+    $log_file = fopen(dirname(dirname(__FILE__)).'/log/test.log', 'a');
+    fwrite($log_file, $log_entry."\n");
+    fclose($log_file);
 }
 
 class CO_Config {
