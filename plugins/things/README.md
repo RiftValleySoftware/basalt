@@ -1,4 +1,4 @@
-\page things-plugin THINGS STANDARD REST PLUGIN
+\page things-plugin THINGS
 
 ![THINGS PLUGIN](images/BASALT-PLUGIN.png)
 

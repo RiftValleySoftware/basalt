@@ -813,10 +813,10 @@ INPUT                  = ../main \
                          ../andisol/cobra/README.md \
                          ../andisol/cobra/chameleon/README.md \
                          ../andisol/cobra/chameleon/badger/README.md \
-                         ../plugins \
-                         ../plugins/places \
-                         ../plugins/people \
                          ../entrypoint.php \
+                         ../plugins \
+                         ../plugins/people \
+                         ../plugins/places \
                          ../plugins/things
 
 # This tag can be used to specify the character encoding of the source files
@@ -1205,7 +1205,7 @@ HTML_HEADER            =
 # that doxygen normally uses.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_FOOTER            = 
+HTML_FOOTER            = footer.html
 
 # The HTML_STYLESHEET tag can be used to specify a user-defined cascading style
 # sheet that is used by each HTML page. It can be used to fine-tune the look of

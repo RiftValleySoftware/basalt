@@ -1,4 +1,4 @@
-\page places-plugin PLACES STANDARD REST PLUGIN
+\page places-plugin PLACES
 
 ![PLACES PLUGIN](images/BASALT-PLUGIN.png)
 
