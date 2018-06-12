@@ -189,18 +189,25 @@ class CO_users_Basalt_Plugin extends A_CO_Basalt_Plugin {
         $show_details = isset($in_query) && is_array($in_query) && isset($in_query['show_details']);    // Flag that applies only for lists, forcing all users to be shown in detail.
         
         if (isset($in_path) && is_array($in_path) && (1 < count($in_path) && ('login_ids' == $in_path[0]))) {    // See if they are looking for users associated with string login IDs.
-            $login_list = explode(',', $in_path[1]);    // See if they want several logins, or only one.
-            if (1 == count($login_list)) {
-                $login_list = [$in_path[1]];
-            }
+            // Now, we see if they are a list of integer IDs or strings (login string IDs).
+            $login_id_list = array_map('trim', explode(',', $in_path[1]));
             
-            foreach ($login_list as $login_id) {
-                $user = $in_andisol_instance->get_user_from_login_string($login_id);
-                if (isset($user) && ($user instanceof CO_User_Collection)) {
-                    if ($show_details) {
-                        $ret[] = $this->_get_long_user_description($user, true);
-                    } else {
-                        $ret[] = $this->_get_short_object_description($user);
+            $is_numeric = array_reduce($login_id_list, function($carry, $item){ return $carry && ctype_digit($item); }, true);
+            
+            $login_id_list = $is_numeric ? array_map('intval', $login_id_list) : $login_id_list;
+            
+            foreach ($login_id_list as $login_id) {
+                $login_instance = $is_numeric ? $in_andisol_instance->get_login_item($login_id) : $in_andisol_instance->get_login_item_by_login_string($login_id);
+                
+                if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
+                    $id_string = $login_instance->login_id;
+                    $user = $in_andisol_instance->get_user_from_login_string($id_string);
+                    if (isset($user) && ($user instanceof CO_User_Collection)) {
+                        if ($show_details) {
+                            $ret[] = $this->_get_long_user_description($user, true);
+                        } else {
+                            $ret[] = $this->_get_short_object_description($user);
+                        }
                     }
                 }
             }
