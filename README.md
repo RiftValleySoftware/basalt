@@ -19,7 +19,7 @@ Think of it as "part one" of the [CONTROLLER](https://www.tutorialspoint.com/mvc
 
 EXTENSIONS
 ==========
-BASALT allows the creation of ["REST Plugins."](https://restfulapi.net) These are fairly simple PHP executables that are placed in known directories.
+BASALT allows the creation of ["REST Plugins."](a00164.html) These are fairly simple PHP executables that are placed in known directories.
 
 BASALT matches these to the plugin parameters in the [REST](https://restfulapi.net) URIs, and routes [REST](https://restfulapi.net) HTTP calls to the designated plugins, returning the result of the plugin processing.
 
@@ -158,7 +158,7 @@ LOGGING
 -------
 There is facility for logging. You can define a log handler function in the configuration, which will be called upon successful instantiation of an \ref ANDISOL instance. This is not meant to replace the standard HTTP logs from the server, but is focused on the BAOBAB server, and will report the current logged-in user.
 
-Logging is not enabled by default. It should be noted that it is possible that logging can affect by legal, technical and resource limitation issues. You should make sure that there are no issues with logging before enabling it.
+Logging is not enabled by default. It should be noted that it is possible that logging can have legal, technical and resource limitation issues. You should make sure that there are no issues with logging before enabling it.
 
 SUBPROJECTS
 ===========
