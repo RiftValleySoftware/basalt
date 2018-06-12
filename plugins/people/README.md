@@ -1,9 +1,9 @@
-\page people-plugin PEOPLE STANDARD PLUGIN
+\page people-plugin PEOPLE STANDARD REST PLUGIN
 
 ![USERS PLUGIN](images/BASALT-PLUGIN.png)
 
-BASALT PEOPLE PLUGIN
-====================
+BASALT PEOPLE REST PLUGIN
+=========================
 
 Part of the BASALT Extension Layer, Which is Part of the BAOBAB Server, which is part of the Rift Valley Platform
 -----------------------------------------------------------------------------------------------------------------
@@ -12,7 +12,7 @@ Part of the BASALT Extension Layer, Which is Part of the BAOBAB Server, which is
 INTRODUCTION
 ============
 
-The People Plugin is a basic, `GET`-only \ref BASALT Plugin; part of the "standard" set.
+The People Plugin is a basic, `GET`-only \ref BASALT [REST](https://restfulapi.net) Plugin; part of the "standard" set.
 
 You use this plugin to obtain listings/overall details of users and logins in the BAOBAB server.
 

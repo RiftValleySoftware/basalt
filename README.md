@@ -13,15 +13,19 @@ INTRODUCTION
 ============
 BASALT is the [REST API](https://restfulapi.net) and extension framework of the Rift Valley Platform.
 
+Think of it as "part one" of the [CONTROLLER](https://www.tutorialspoint.com/mvc_framework/mvc_framework_controllers.htm) layer of the [MVC Pattern](https://en.wikipedia.org/wiki/Model–view–controller). "Part two" will be provided by the client SDKs.
+
+\ref ANDISOL is the "public face" of the [MODEL](https://www.tutorialspoint.com/mvc_framework/mvc_framework_models.htm) layer.
+
 EXTENSIONS
 ==========
-BASALT allows the creation of "REST Plugins." These are fairly simple PHP executables that are placed in known directories.
+BASALT allows the creation of "[REST](https://restfulapi.net) Plugins." These are fairly simple PHP executables that are placed in known directories.
 
-BASALT matches these to the plugin parameters in the REST URIs, and routes REST HTTP calls to the designated plugins, returning the result of the plugin processing.
+BASALT matches these to the plugin parameters in the [REST](https://restfulapi.net) URIs, and routes [REST](https://restfulapi.net) HTTP calls to the designated plugins, returning the result of the plugin processing.
 
-REST Plugins are simple subclasses of the `A_CO_Basalt_Plugin` class, and are used in a very basic stateless fashion; inheriting utility functions from the abstract base class.
+[REST](https://restfulapi.net) Plugins are simple subclasses of the `A_CO_Basalt_Plugin` class, and are used in a very basic stateless fashion; inheriting utility functions from the abstract base class.
 
-BASALT REST Plugins only have two public abstract methods, and one protected method:
+BASALT [REST](https://restfulapi.net) Plugins only have two public abstract methods, and one protected method:
 
 - `A_CO_Basalt_Plugin::plugin_name`
 
@@ -29,7 +33,7 @@ BASALT REST Plugins only have two public abstract methods, and one protected met
     
 - `A_CO_Basalt_Plugin::process_command`
 
-    This is the method that actually processes the REST command. The (possibly logged-in) \ref ANDISOL object is passed in, along with the HTTP method, response type, and any further commands and/or query parameters.
+    This is the method that actually processes the [REST](https://restfulapi.net) command. The (possibly logged-in) \ref ANDISOL object is passed in, along with the HTTP method, response type, and any further commands and/or query parameters.
     
     The method will respond with a string to be returned, reflecting the result of the requested command.
     
@@ -37,17 +41,17 @@ BASALT REST Plugins only have two public abstract methods, and one protected met
 
     This is a very simple method that simply returns the POSIX path to the [XSD](https://www.w3.org/XML/Schema) file fragment for this plugin. This schema must be comprehensive for ALL possible XML responses from the plugin.
     
-BASALT will include a few "built in" plugins, but the implementor of the server can write and install more plugins, giving a very powerful facility for managing REST interactions.
+BASALT will include a few "built in" plugins, but the implementor of the server can write and install more plugins, giving a very powerful facility for managing [REST](https://restfulapi.net) interactions.
 
 REST API
 ========
 BASALT expresses true [RESTful](https://restfulapi.net) API access to the Rift Valley BAOBAB server.
 
-The server can be configured to require that all REST access be done as [TLS (SSL/HTTPS)](https://en.wikipedia.org/wiki/Transport_Layer_Security).
+The server can be configured to require that all [REST](https://restfulapi.net) access be done as [TLS (SSL/HTTPS)](https://en.wikipedia.org/wiki/Transport_Layer_Security).
 
 REST METHODS
 ------------
-BASALT's REST API implements the following [methods](http://www.restapitutorial.com/lessons/httpmethods.html):
+BASALT's [REST](https://restfulapi.net) API implements the following [methods](http://www.restapitutorial.com/lessons/httpmethods.html):
 
 - [`GET`](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3)
 
@@ -67,7 +71,7 @@ BASALT's REST API implements the following [methods](http://www.restapitutorial.
 
 RESPONSE TYPES
 --------------
-BASALT's REST API can return data in the following formats:
+BASALT's [REST](https://restfulapi.net) API can return data in the following formats:
 
 - [`json`](https://json.org)
 
@@ -99,15 +103,15 @@ The API key is timed with a fixed clock. The time is determined by the server, b
 
 REST API URI STRUCTURE
 ----------------------
-When you call the REST API, you will do so in the standard fashion, where you define the method ([HTTP 1.1 header](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html)), and specify the resource in a URI, which can include query data.
+When you call the [REST](https://restfulapi.net) API, you will do so in the standard fashion, where you define the method ([HTTP 1.1 header](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html)), and specify the resource in a URI, which can include query data.
     
 **Initial Login Call:**
 
     {GET} http[s]://{SERVER URL}/login?login_id={LOGIN ID STRING}&password={PASSWORD STRING}
 
-The {SERVER URL} is the URL path that specifies the BAOBAB server REST entrypoint (like `"example.com/rest_api/baobab/entrypoint.php"`).
+The {SERVER URL} is the URL path that specifies the BAOBAB server [REST](https://restfulapi.net) entrypoint (like `"example.com/rest_api/baobab/entrypoint.php"`).
 
-In this instance, you directly call the REST entrypoint, specifying only `"login"` (which also means that you can't create a plugin named "login").
+In this instance, you directly call the [REST](https://restfulapi.net) entrypoint, specifying only `"login"` (which also means that you can't create a plugin named "login").
 The query parameters are:
 
 The query parameters are:
@@ -147,8 +151,8 @@ This is a call that should be made while a valid API key has been assigned to a 
 
     This represents a single command (or a series of commads, which are expressed as `"command1/command2/command3/"` etc.) for the plugin. These follow the `/{PLUGIN}/` URI component.
     
-If you will be providing query parameters to the REST call, then these are attached after the question mark.
-`{RESPONSE TYPE}` and `{PLUGIN}` are required. The other elements are optional, and plugin-dependent. Each plugin will define its own REST query structure that is parsed after the `{PLUGIN}`.
+If you will be providing query parameters to the [REST](https://restfulapi.net) call, then these are attached after the question mark.
+`{RESPONSE TYPE}` and `{PLUGIN}` are required. The other elements are optional, and plugin-dependent. Each plugin will define its own [REST](https://restfulapi.net) query structure that is parsed after the `{PLUGIN}`.
 
 SUBPROJECTS
 ===========

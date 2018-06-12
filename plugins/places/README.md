@@ -1,9 +1,9 @@
-\page places-plugin PLACES STANDARD PLUGIN
+\page places-plugin PLACES STANDARD REST PLUGIN
 
 ![PLACES PLUGIN](images/BASALT-PLUGIN.png)
 
-BASALT PLACES PLUGIN
-====================
+BASALT PLACES REST PLUGIN
+=========================
 
 Part of the BASALT Extension Layer, Which is Part of the BAOBAB Server, which is part of the Rift Valley Platform
 -----------------------------------------------------------------------------------------------------------------
@@ -12,7 +12,7 @@ Part of the BASALT Extension Layer, Which is Part of the BAOBAB Server, which is
 INTRODUCTION
 ============
 
-The Places Plugin is a basic, `GET`-only \ref BASALT Plugin; part of the "standard" set.
+The Places Plugin is a basic, `GET`-only \ref BASALT [REST](https://restfulapi.net) Plugin; part of the "standard" set.
 
 You use this plugin to obtain listings/details of places (locations and addresses) in the BAOBAB server.
 
