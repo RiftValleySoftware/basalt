@@ -8,7 +8,7 @@
 <xs:element name='value'>
     <xs:complexType>
         <xs:sequence>
-            <xs:element name="id' type='xs:integer'/>
+            <xs:element name='id' type='xs:integer'/>
         </xs:sequence>
         <xs:attribute name='sequence_index' use='required' type='xs:integer'/>
     </xs:complexType>
