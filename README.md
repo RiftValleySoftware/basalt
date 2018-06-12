@@ -19,7 +19,7 @@ Think of it as "part one" of the [CONTROLLER](https://www.tutorialspoint.com/mvc
 
 EXTENSIONS
 ==========
-BASALT allows the creation of "[REST](https://restfulapi.net) Plugins." These are fairly simple PHP executables that are placed in known directories.
+BASALT allows the creation of ["REST Plugins."](https://restfulapi.net) These are fairly simple PHP executables that are placed in known directories.
 
 BASALT matches these to the plugin parameters in the [REST](https://restfulapi.net) URIs, and routes [REST](https://restfulapi.net) HTTP calls to the designated plugins, returning the result of the plugin processing.
 

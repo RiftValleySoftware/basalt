@@ -815,7 +815,7 @@ INPUT                  = ../main \
                          ../andisol/cobra/chameleon/badger/README.md \
                          ../plugins \
                          ../plugins/places \
-                         ../plugins/users \
+                         ../plugins/people \
                          ../entrypoint.php
 
 # This tag can be used to specify the character encoding of the source files
