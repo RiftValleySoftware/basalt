@@ -16,6 +16,19 @@
             <xs:element minOccurs='0' name='longitude' type='xs:float'/>
             <xs:element minOccurs='0' name='address' type='xs:string'/>
             <xs:element minOccurs='0' name='fuzzy' type='xs:integer'/>
+		    <xs:element minOccurs="0" name="address_elements">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs='0' name='venue' type='xs:string'/>
+                        <xs:element minOccurs='0' name='street_address' type='xs:string'/>
+                        <xs:element minOccurs='0' name='town' type='xs:string'/>
+                        <xs:element minOccurs='0' name='county' type='xs:string'/>
+                        <xs:element minOccurs='0' name='state' type='xs:string'/>
+                        <xs:element minOccurs='0' name='postal_code' type='xs:string'/>
+                        <xs:element minOccurs='0' name='nation' type='xs:string'/>
+                    </xs:sequence>
+                </xs:complexType>
+		    </xs:element>
 		    <xs:element minOccurs="0" name="children_ids">
                 <xs:complexType>
                     <xs:sequence>
