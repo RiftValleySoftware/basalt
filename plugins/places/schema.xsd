@@ -5,18 +5,15 @@
         </xs:sequence>
     </xs:complexType>
 </xs:element>
+
 <xs:element name='value'>
     <xs:complexType>
         <xs:sequence>
-            <xs:element ref='b:id'/>
-            <xs:element ref='b:name'/>
-            <xs:element ref='b:address'/>
-            <xs:element ref='b:lat_lng'/>
+            <xs:element minOccurs='0' name='id' type='xs:integer'/>
+            <xs:element minOccurs='0' name='name' type='xs:string'/>
+            <xs:element minOccurs='0' name='address' type='xs:string'/>
+            <xs:element minOccurs='0' name='coords' type='xs:string'/>
         </xs:sequence>
         <xs:attribute name='sequence_index' use='required' type='xs:integer'/>
     </xs:complexType>
 </xs:element>
-<xs:element name='id' type='xs:integer'/>
-<xs:element name='name' type='xs:string'/>
-<xs:element name='address' type='xs:string'/>
-<xs:element name='lat_lng' type='xs:string'/>

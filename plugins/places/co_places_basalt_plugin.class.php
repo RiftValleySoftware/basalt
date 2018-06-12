@@ -24,8 +24,20 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     \returns an associative array of strings and integers.
      */
-    protected function _get_short_place_description($in_place_object) {
-        $ret = Array('id' => $in_place_object->id(), 'name' => $in_place_object->name);
+    protected function _get_short_place_description(    $in_place_object
+                                                    ) {
+        $ret = Array('id' => $in_place_object->id());
+        $longitude = $in_place_object->longitude();
+        $latitude = $in_place_object->latitude();
+        $name = $in_place_object->name;
+        
+        if (isset($name) && $name) {
+            $ret['name'] = $name;
+        }
+        
+        if (isset($longitude) && is_float($longitude) && isset($latitude) && is_float($latitude)) {
+            $ret['coords'] = sprintf("%f,%f", $latitude, $longitude);
+        }
         
         return $ret;
     }
@@ -36,24 +48,14 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     \returns an associative array of strings and integers.
      */
-    protected function _get_long_place_description($in_place_object) {
-        $longitude = $in_place_object->longitude();
-        $latitude = $in_place_object->latitude();
+    protected function _get_long_place_description( $in_place_object
+                                                    ) {
+        $ret = $this->_get_short_place_description($in_place_object);
+        
         $address = $in_place_object->get_readable_address();
-        $name = $in_place_object->name;
-        
-        $ret = Array('id' => $in_place_object->id());
-        
-        if (isset($name) && $name) {
-            $ret['name'] = $name;
-        }
         
         if (isset($address) && $address) {
             $ret['address'] = $address;
-        }
-        
-        if (isset($longitude) && is_float($longitude) && isset($latitude) && is_float($latitude)) {
-            $ret['lat_lng'] = sprintf("%f,%f", $latitude, $longitude);
         }
 
         return $ret;
