@@ -9,10 +9,28 @@
 <xs:element name='value'>
     <xs:complexType>
         <xs:sequence>
-            <xs:element minOccurs='0' name='id' type='xs:integer'/>
+            <xs:element name='id' type='xs:integer'/>
             <xs:element minOccurs='0' name='name' type='xs:string'/>
-            <xs:element minOccurs='0' name='address' type='xs:string'/>
             <xs:element minOccurs='0' name='coords' type='xs:string'/>
+            <xs:element minOccurs='0' name='latitude' type='xs:float'/>
+            <xs:element minOccurs='0' name='longitude' type='xs:float'/>
+            <xs:element minOccurs='0' name='address' type='xs:string'/>
+            <xs:element minOccurs='0' name='fuzzy' type='xs:integer'/>
+		    <xs:element minOccurs="0" name="children_ids">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" maxOccurs="unbounded" name="value">
+                            <xs:complexType>
+                                <xs:simpleContent>
+                                    <xs:extension base="xs:integer">
+                                        <xs:attribute name="sequence_index" use="required" type="xs:integer"/>
+                                    </xs:extension>
+                                </xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+		    </xs:element>
         </xs:sequence>
         <xs:attribute name='sequence_index' use='required' type='xs:integer'/>
     </xs:complexType>

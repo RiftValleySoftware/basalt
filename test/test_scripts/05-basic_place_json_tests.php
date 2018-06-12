@@ -48,4 +48,36 @@ function basalt_test_0036($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<pre style="color:green">'.prettify_json($result).'</pre>');
     }
 }
+
+// --------------------
+
+function basalt_test_define_0037() {
+    basalt_run_single_direct_test(37, 'PASS: List Places (No Login), With Detail', 'Do not log in, and see what places are returned. This time ask for more details.', 'dc_area_tests');
+}
+
+function basalt_test_0037($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places?show_details', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+}
+
+// --------------------
+
+function basalt_test_define_0038() {
+    basalt_run_single_direct_test(38, 'PASS: List Specific Places (No Login), With Detail', 'Do not log in, and see what places are returned. This time ask for more details.', 'dc_area_tests');
+}
+
+function basalt_test_0038($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/13,880,20424,21200?show_details', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+}
 ?>

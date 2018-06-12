@@ -143,6 +143,24 @@ abstract class A_CO_Basalt_Plugin {
         return $ret;
     }
     
+    /***********************/
+    /**
+    This checks the provided object to see if it's a collection.
+    If so, it queries the collection for its children IDs, and returns them as an array.
+    
+    \returns an empty array if no children (or the object is not a collection), or an array of integers (each being the Data database ID of a child object).
+     */
+    protected function _get_child_ids(  $in_object  ///< This is the object we are testing.
+                                    ) {
+        $ret = [];
+        
+        if (method_exists($in_object, 'children') && (0 < $in_object->count())) {
+            $ret = $in_object->children_ids();
+        }
+        
+        return $ret;
+    }
+    
     /************************************************************************************************************************/    
     /*#################################################### ABSTRACT METHODS ################################################*/
     /************************************************************************************************************************/

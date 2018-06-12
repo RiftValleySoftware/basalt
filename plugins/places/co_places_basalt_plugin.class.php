@@ -52,12 +52,29 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                                     ) {
         $ret = $this->_get_short_place_description($in_place_object);
         
+        $longitude = $in_place_object->longitude();
+        $latitude = $in_place_object->latitude();
+
+        if (isset($longitude) && is_float($longitude) && isset($latitude) && is_float($latitude)) {
+            $ret['latitude'] = floatval($latitude);
+            $ret['longitude'] = floatval($longitude);
+        }
+        
         $address = $in_place_object->get_readable_address();
         
         if (isset($address) && $address) {
             $ret['address'] = $address;
         }
-
+        
+        if ($in_place_object->is_fuzzy()) {
+            $ret['fuzzy'] = true;
+        }
+        
+        $child_objects = $this->_get_child_ids($in_place_object);
+        if (0 < count($child_objects)) {
+            $ret['children_ids'] = $child_objects;
+        }
+        
         return $ret;
     }
     
@@ -90,6 +107,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                         $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                     ) {
         $ret = [];
+        $show_details = isset($in_query) && is_array($in_query) && isset($in_query['show_details']);    // Flag that applies only for lists, forcing all people to be shown in detail.
         
         if ('GET' == $in_http_method) {
             // For the default (no place ID), we simply return a list of places, in "short" format.
@@ -98,7 +116,11 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
             
                 if (isset($placelist) && is_array($placelist) && (0 < count($placelist))) {
                     foreach ($placelist as $place) {
-                        $ret[] = $this->_get_short_place_description($place);
+                        if ($show_details) {
+                            $ret[] = $this->_get_long_place_description($place);
+                        } else {
+                            $ret[] = $this->_get_short_place_description($place);
+                        }
                     }
                 }
             } else {
@@ -119,7 +141,11 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         if (0 < $id) {
                             $place = $in_andisol_instance->get_single_data_record_by_id($id);
                             if (isset($place) && ($place instanceof CO_Place)) {
-                                $ret[] = $this->_get_long_place_description($place);
+                                if ($show_details) {
+                                    $ret[] = $this->_get_long_place_description($place);
+                                } else {
+                                    $ret[] = $this->_get_short_place_description($place);
+                                }
                             }
                         }
                     }

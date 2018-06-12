@@ -96,6 +96,11 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         if ($in_with_login_info) {
             $login_instance = $in_user_object->get_login_instance();
         
+            $child_objects = $this->_get_child_ids($in_user_object);
+            if (0 < count($child_objects)) {
+                $ret['children_ids'] = $child_objects;
+            }
+        
             if ($in_user_object->user_can_write()) {
                 $ret['writeable'] = true;
             }
