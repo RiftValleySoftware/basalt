@@ -12,23 +12,16 @@ Part of the BASALT Extension Layer, Which is Part of the BAOBAB Server, which is
 INTRODUCTION
 ============
 
-The People Plugin is a basic, `GET`-only \ref BASALT [REST](https://restfulapi.net) Plugin; part of the "standard" set.
+The People Plugin is a basic \ref BASALT [REST](https://restfulapi.net) Plugin; part of the "standard" set.
 
-You use this plugin to obtain listings/overall details of users and logins in the BAOBAB server.
-
-It is not a comprehensive user/login plugin. It's meant to give "quick overviews" of these types of records.
+You use this plugin to view and manage users and logins on the BAOBAB server.
 
 USAGE
 =====
 
-This plugin is accessed by setting `"people"` as the Command in the GET URI. There are a number of other aspects to the URI that will be explained:
+This plugin is accessed by setting `"people"` as the Command in the [REST](https://restfulapi.net) URI. There are a number of other aspects to the URI that will be explained:
 
     {GET} http[s]://{SERVER URL}/{json|xml|xsd}/people/[{people|logins}/[{[INTEGER USER IDS CSV]}|[{login_ids}/{[STRING LOGIN IDS CSV]}][?][{show_details|login_user}]]
-
-GET-ONLY
---------
-
-You can only access this plugin via `GET` usage of other methods will result in an error.
 
 MUST BE LOGGED IN
 -----------------
@@ -67,7 +60,7 @@ With the people, it is also possible to get information about associated logins.
 SPECIAL CALLS
 -------------
 
-There are two "special" calls that can be made with this plugin:
+There are two "special" GET calls that can be made with this plugin:
 
     {GET} http[s]://{SERVER URL}/{json|xml}/people/
     
@@ -87,7 +80,7 @@ REGULAR CALLS
 people
 -----
 
-    {GET} http[s]://{SERVER URL}/{json|xml}/people/people/[{[INTEGER USER IDS CSV]}|[{login_ids}/{[INTEGER LOGIN IDS CSV]}|{[STRING LOGIN IDS CSV]}][?][{show_details|login_user}]
+    {GET | POST | PUT | DELETE} http[s]://{SERVER URL}/{json|xml}/people/people/[{[INTEGER USER IDS CSV]}|[{login_ids}/{[INTEGER LOGIN IDS CSV]}|{[STRING LOGIN IDS CSV]}][?][{show_details|login_user}]
     
 In this case, we are asking for user records (as opposed to login records). We have a number of choices as to how we can ask for these:
 
@@ -150,7 +143,7 @@ logins
 
 We can also get login record information; which we do by appending `logins` to the `people` command, like so:
 
-    {GET} http[s]://{SERVER URL}/{json|xml}/people/logins/[{[INTEGER LOGIN IDS CSV]}|{[STRING LOGIN IDS CSV]}][?][{show_details}]
+    {GET | POST | PUT | DELETE} http[s]://{SERVER URL}/{json|xml}/people/logins/[{[INTEGER LOGIN IDS CSV]}|{[STRING LOGIN IDS CSV]}][?][{show_details}]
 
 This URI is followed by a CSV list of numeric login record IDs or string login IDs, in exactly the same fashion as above. In this case, the returned data will be for login records, not user records.
 
