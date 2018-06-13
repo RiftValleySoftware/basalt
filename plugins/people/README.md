@@ -21,7 +21,7 @@ USAGE
 
 This plugin is accessed by setting `"people"` as the Command in the [REST](https://restfulapi.net) URI. There are a number of other aspects to the URI that will be explained:
 
-    {GET | POST | PUT | DELETE} http[s]://{SERVER URL}/{json|xml|xsd}/people/[{people|logins}/[{[INTEGER USER IDS CSV]}|[{login_ids}/{[STRING LOGIN IDS CSV]}][?][{show_details|login_user}]]
+    {GET | POST | PUT | DELETE} http[s]://{SERVER URL}/{json|xml|xsd}/people/[{people|logins}/[{[INTEGER USER IDS CSV]}|[{login_ids/[STRING LOGIN IDS CSV]}][?{show_details|login_user|PUT/POST PARAMETERS -DISCUSSED BELOW}]
 
 MUST BE LOGGED IN
 -----------------
@@ -80,7 +80,7 @@ REGULAR CALLS
 people
 -----
 
-    {GET | POST | PUT | DELETE} http[s]://{SERVER URL}/{json|xml}/people/people/[{[INTEGER USER IDS CSV]}|[{login_ids}/{[INTEGER LOGIN IDS CSV]}|{[STRING LOGIN IDS CSV]}][?][{show_details|login_user}]
+    {GET | POST | PUT | DELETE} http[s]://{SERVER URL}/{json|xml}/people/people/[{[INTEGER USER IDS CSV]}|[{login_ids/[INTEGER LOGIN IDS CSV]|[STRING LOGIN IDS CSV]][?{show_details|login_user}]
     
 In this case, we are asking for user records (as opposed to login records). We have a number of choices as to how we can ask for these:
 
@@ -106,7 +106,7 @@ For example:
 
 Will return every user visible, that also has an associated login ID, in JSON.
 
-    {GET} http[s]://{SERVER URL}/{json|xml}/people/people/{[INTEGER USER IDS CSV]}[?][{show_details|login_user}]
+    {GET} http[s]://{SERVER URL}/{json|xml}/people/people/{[INTEGER USER IDS CSV]}[?{show_details|login_user}]
 
 Calling `people/people/` with one or more integers in a CSV list. For example:
 
@@ -120,7 +120,7 @@ You can also use the two query arguments mentioned in the previous example, or h
     
 Will show you a comprehensive dump of the user with ID 23 in XML.
 
-    {GET} http[s]://{SERVER URL}/{json|xml}/people/people/login_ids}/{[INTEGER LOGIN IDS CSV]}|{[STRING LOGIN IDS CSV]}][?{show_details}]
+    {GET} http[s]://{SERVER URL}/{json|xml}/people/people/login_ids}/{[INTEGER LOGIN IDS CSV]}|{[STRING LOGIN IDS CSV]}][?show_details]
 
 Calling `people/people/login_ids`, followed by a CSV list of either numbers (login record -not user- IDs), or strings (login record string login IDs). You can ask for details, but `login_user` is unnecessary.
 
@@ -143,7 +143,7 @@ logins
 
 We can also get login record information; which we do by appending `logins` to the `people` command, like so:
 
-    {GET | POST | PUT | DELETE} http[s]://{SERVER URL}/{json|xml}/people/logins/[{[INTEGER LOGIN IDS CSV]}|{[STRING LOGIN IDS CSV]}][?][{show_details}]
+    {GET | POST | PUT | DELETE} http[s]://{SERVER URL}/{json|xml}/people/logins/[{[INTEGER LOGIN IDS CSV]}|{[STRING LOGIN IDS CSV]}][?show_details]
 
 This URI is followed by a CSV list of numeric login record IDs or string login IDs, in exactly the same fashion as above. In this case, the returned data will be for login records, not user records.
 
