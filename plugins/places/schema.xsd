@@ -12,6 +12,7 @@
             <xs:element name='id' type='xs:integer'/>
             <xs:element minOccurs='0' name='name' type='xs:string'/>
             <xs:element minOccurs='0' name='coords' type='xs:string'/>
+            <xs:element minOccurs='0' name='distance' type='xs:float'/>
             <xs:element minOccurs='0' name='latitude' type='xs:float'/>
             <xs:element minOccurs='0' name='longitude' type='xs:float'/>
             <xs:element minOccurs='0' name='address' type='xs:string'/>

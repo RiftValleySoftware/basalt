@@ -15,7 +15,7 @@ defined( 'LGV_BASALT_CATCHER' ) or die ( 'Cannot Execute Directly' );	// Makes s
 
 /****************************************************************************************************************************/
 /**
-This is a very basic, GET-only plugin that returns information about people and logins.
+This is a plugin that returns information about people and logins.
  */
 class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     /***********************/
@@ -140,6 +140,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     \returns an array, with the resulting people.
      */
     protected function _handle_logins(  $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                        $in_http_method,        ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
                                         $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
                                         $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                     ) {
@@ -193,7 +194,8 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     \returns an array, with the resulting people.
      */
-    protected function _handle_people(   $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+    protected function _handle_people(  $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                        $in_http_method,        ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
                                         $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
                                         $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                     ) {
@@ -285,26 +287,26 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                     ) {
         $ret = [];
         
-        if ('GET' == $in_http_method) {
-            // For the default (no user ID), we simply return a list of people, in "short" format.
+            // For the default (no user ID), we simply return a list of commands. We also only allow GET to do this.
             if (0 == count($in_path)) {
-                $ret = ['people', 'logins'];
+                if ('GET' == $in_http_method) {
+                    $ret = ['people', 'logins'];
+                } else {
+                    header('HTTP/1.1 400 Incorrect HTTP Request Method');
+                    exit();
+                }
             } else {
                 $main_command = $in_path[0];    // Get the main command.
                 array_shift($in_path);
                 switch (strtolower($main_command)) {
                     case 'people':
-                        $ret['people'] = $this->_handle_people($in_andisol_instance, $in_path, $in_query);
+                        $ret['people'] = $this->_handle_people($in_andisol_instance, $in_http_method, $in_path, $in_query);
                         break;
                     case 'logins':
-                        $ret['logins'] = $this->_handle_logins($in_andisol_instance, $in_path, $in_query);
+                        $ret['logins'] = $this->_handle_logins($in_andisol_instance, $in_http_method, $in_path, $in_query);
                         break;
                 }
             }
-        } else {
-            header('HTTP/1.1 400 Incorrect HTTP Request Method');
-            exit();
-        }
         
         return $this->_condition_response($in_response_type, $ret);
     }

@@ -15,7 +15,7 @@
 
 require_once(dirname(dirname(__FILE__)).'/run_basalt_tests.php');
 
-basalt_run_tests(17, 'BASIC XML PEOPLE TESTS', 'In which our intrepid hero does some basic REST Logins, and asks for information about people in XML.');
+basalt_run_tests(17, 'BASIC XML PEOPLE GET TESTS', 'In which our intrepid hero does some basic REST Logins, and asks for information about people in XML.');
 
 // -------------------------- DEFINITIONS AND TESTS -----------------------------------
 

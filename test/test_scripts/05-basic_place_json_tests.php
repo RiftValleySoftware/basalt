@@ -29,6 +29,8 @@ function basalt_test_0035($in_login = NULL, $in_hashed_password = NULL, $in_pass
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
+        echo('<p>There were '.count(json_decode($result)->places).' places returned.</p>');
+        
         echo('<pre style="color:green">'.prettify_json($result).'</pre>');
     }
 }
@@ -41,7 +43,7 @@ function basalt_test_define_0036() {
 
 function basalt_test_0036($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/13,880,20424,21200', NULL, NULL, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/13,780,424,212,501', NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -61,6 +63,8 @@ function basalt_test_0037($in_login = NULL, $in_hashed_password = NULL, $in_pass
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
+        echo('<p>There were '.count(json_decode($result)->places).' places returned.</p>');
+        
         echo('<pre style="color:green">'.prettify_json($result).'</pre>');
     }
 }
@@ -73,7 +77,151 @@ function basalt_test_define_0038() {
 
 function basalt_test_0038($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/13,880,20424,21200?show_details', NULL, NULL, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/13,780,424,212,501?show_details', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+}
+
+// --------------------
+
+function basalt_test_define_0039() {
+    basalt_run_single_direct_test(39, 'PASS: List Places (With Login)', 'Log in, and see what places are returned.', 'dc_area_tests', 'MDAdmin', '', 'CoreysGoryStory');
+}
+
+function basalt_test_0039($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<p>There were '.count(json_decode($result)->places).' places returned.</p>');
+        
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+}
+
+// --------------------
+
+function basalt_test_define_0040() {
+    basalt_run_single_direct_test(40, 'PASS: List Places (With Login), With Detail', 'Log in, and see what places are returned. This time ask for more details.', 'dc_area_tests', 'MDAdmin', '', 'CoreysGoryStory');
+}
+
+function basalt_test_0040($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places?show_details', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<p>There were '.count(json_decode($result)->places).' places returned.</p>');
+        
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+}
+
+// --------------------
+
+function basalt_test_define_0041() {
+    basalt_run_single_direct_test(41, 'PASS: List Specific Places (With Login), With Detail', 'Log in, and see what places are returned. This time ask for more details.', 'dc_area_tests', 'MDAdmin', '', 'CoreysGoryStory');
+}
+
+function basalt_test_0041($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/13,780,424,212,501?show_details', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+}
+
+// --------------------
+
+function basalt_test_define_0042() {
+    basalt_run_single_direct_test(42, 'PASS: Do A Radius Search (No Login)', 'Do not log in, and saerch for meetings within 5Km of the Lincoln Memorial', 'dc_area_tests');
+}
+
+function basalt_test_0042($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?radius=5&longitude=-77.0502&latitude=38.8893', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<p>There were '.count(json_decode($result)->places).' places returned.</p>');
+        
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+}
+
+// --------------------
+
+function basalt_test_define_0043() {
+    basalt_run_single_direct_test(43, 'PASS: Do A Radius Search (No Login), With Detail', 'Same thing, but ask for more details.', 'dc_area_tests');
+}
+
+function basalt_test_0043($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?radius=5&longitude=-77.0502&latitude=38.8893&show_details', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+}
+
+// --------------------
+
+function basalt_test_define_0044() {
+    basalt_run_single_direct_test(44, 'PASS: Do A Radius Search (No Login)', 'Do not log in, and saerch for meetings within 5Km of the Lincoln Memorial', 'dc_area_tests', 'MDAdmin', '', 'CoreysGoryStory');
+}
+
+function basalt_test_0044($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?radius=5&longitude=-77.0502&latitude=38.8893', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<p>There were '.count(json_decode($result)->places).' places returned.</p>');
+        
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+}
+
+// --------------------
+
+function basalt_test_define_0045() {
+    basalt_run_single_direct_test(45, 'PASS: Do A Radius Search (No Login), With Detail', 'Same thing, but ask for more details.', 'dc_area_tests', 'MDAdmin', '', 'CoreysGoryStory');
+}
+
+function basalt_test_0045($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?radius=5&longitude=-77.0502&latitude=38.8893&show_details', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {

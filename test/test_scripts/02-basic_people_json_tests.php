@@ -15,7 +15,7 @@
 
 require_once(dirname(dirname(__FILE__)).'/run_basalt_tests.php');
 
-basalt_run_tests(4, 'BASIC JSON PEOPLE TESTS', 'In which our intrepid hero does some basic REST Logins, and asks for information about people in JSON.');
+basalt_run_tests(4, 'BASIC JSON PEOPLE GET TESTS', 'In which our intrepid hero does some basic REST Logins, and asks for information about people in JSON.');
 
 // -------------------------- DEFINITIONS AND TESTS -----------------------------------
 
