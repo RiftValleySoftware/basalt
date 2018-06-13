@@ -21,7 +21,7 @@ USAGE
 
 This plugin is accessed by setting `"people"` as the Command in the [REST](https://restfulapi.net) URI. There are a number of other aspects to the URI that will be explained:
 
-    {GET} http[s]://{SERVER URL}/{json|xml|xsd}/people/[{people|logins}/[{[INTEGER USER IDS CSV]}|[{login_ids}/{[STRING LOGIN IDS CSV]}][?][{show_details|login_user}]]
+    {GET | POST | PUT | DELETE} http[s]://{SERVER URL}/{json|xml|xsd}/people/[{people|logins}/[{[INTEGER USER IDS CSV]}|[{login_ids}/{[STRING LOGIN IDS CSV]}][?][{show_details|login_user}]]
 
 MUST BE LOGGED IN
 -----------------
