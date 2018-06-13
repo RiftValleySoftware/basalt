@@ -17,8 +17,8 @@ defined( 'LGV_CONFIG_CATCHER' ) or die ( 'Cannot Execute Directly' );	// Makes s
 /**
 This file contains the implementation-dependent configuration settings.
  */
-define('_MAIN_DB_TYPE_', 'pgsql');
-define('_SECURITY_DB_TYPE_', 'pgsql');
+define('_MAIN_DB_TYPE_', 'mysql');
+define('_SECURITY_DB_TYPE_', 'mysql');
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config/t_basalt_config.interface.php');
 
