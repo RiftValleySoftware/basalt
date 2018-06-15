@@ -146,11 +146,11 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                                 $parts = explode('=', $param, 2);
                                 if (1 < count($parts)) {
                                     $key = trim($parts[0]);
-                                    $value = trim($parts[1]);
+                                    $value = urldecode(trim($parts[1]));
                                 }
                 
                                 if ($key) {
-                                    if (!isset($value) || !$value) {
+                                    if (!isset($value)) {
                                         $value = true;
                                     }
                 
@@ -162,31 +162,30 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
 
                         $file_data = '';
                         
-                        // POST is handled differently from PUT. POST gets proper background handling, while PUT needs a very raw approach.
-                        if (isset($_FILES['payload'])) {
-                            if (!isset($_FILES['payload']['error']) || is_array($_FILES['payload']['error'])) {
-                                header('HTTP/1.1 400 '.print_r($_FILES['upfile']['error'], true));
-                                exit();
-                            } else {
-                                $file_data = file_get_contents($_FILES['payload']['tmp_name']);
-                            }
-                        } else {
-                            $post_data = $_POST;
-                        
-                            // See if they have sent any data to us via the standard HTTP channel (PUT).
-                            $put_data = fopen('php://input', 'r');
-                        
-                            if ($put_data) {
-                                while ($data = fread($put_data, 1024)) {    // Read it in 1K chunks.
-                                    $file_data .= $data;
+                        if (!isset($vars_final['remove_payload'])) { // If they did not specify a payload, maybe they want one removed?
+                            // POST is handled differently from PUT. POST gets proper background handling, while PUT needs a very raw approach.
+                            if ('POST' == $this->_request_type) {
+                                if (!isset($_FILES['payload']['error']) || is_array($_FILES['payload']['error'])) {
+                                    header('HTTP/1.1 400 '.print_r($_FILES['upfile']['error'], true));
+                                    exit();
+                                } elseif (isset($_FILES['payload'])) {
+                                    $file_data = file_get_contents($_FILES['payload']['tmp_name']);
                                 }
-                                fclose($put_data);
+                            } elseif ('PUT' == $this->_request_type) {
+                                // See if they have sent any data to us via the standard HTTP channel (PUT).
+                                $put_data = fopen('php://input', 'r');
+                                if (isset($put_data) && $put_data) {
+                                    while ($data = fread($put_data, 1024)) {    // Read it in 1K chunks.
+                                        $file_data .= $data;
+                                    }
+                                    fclose($put_data);
+                                }
                             }
-                        }
                         
-                        // This can only go to payload.
-                        if (isset($file_data) && $file_data) {
-                            $vars_final['payload'] = base64_decode($file_data);
+                            // This can only go to payload.
+                            if (isset($file_data) && $file_data) {
+                                $vars_final['payload'] = base64_decode($file_data);
+                            }
                         }
                         
                         $this->_vars = $vars_final;

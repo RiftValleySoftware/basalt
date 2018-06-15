@@ -11,6 +11,12 @@
 										<xs:element name="id" type="xs:integer"/>
 										<xs:element name="name" type="xs:string"/>
 									    <xs:element name="lang" type="xs:string"/>
+									    <xs:element minOccurs="0" name="surname" type="xs:string"/>
+									    <xs:element minOccurs="0" name="middle_name" type="xs:string"/>
+									    <xs:element minOccurs="0" name="given_name" type="xs:string"/>
+									    <xs:element minOccurs="0" name="prefix" type="xs:string"/>
+									    <xs:element minOccurs="0" name="suffix" type="xs:string"/>
+									    <xs:element minOccurs="0" name="nickname" type="xs:string"/>
 										<xs:element minOccurs="0" name="writeable" type="xs:integer"/>
 										<xs:element minOccurs="0" name="owner_id" type="xs:integer"/>
 										<xs:element minOccurs="0" name="current_login" type="xs:integer"/>
@@ -60,7 +66,8 @@
                                                 </xs:sequence>
 											</xs:complexType>
 										</xs:element>
-									</xs:choice>
+									    <xs:element name="payload" type="xs:base64Binary"/>
+                                    </xs:choice>
 									<xs:attribute name="sequence_index" use="required" type="xs:integer"/>
 								</xs:complexType>
 							</xs:element>

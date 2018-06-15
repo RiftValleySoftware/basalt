@@ -93,6 +93,36 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                                     ) {
         $ret = $this->_get_short_object_description($in_user_object);
         
+        $test_string = $in_user_object->get_surname();
+        if (isset($test_string) && trim($test_string)) {
+            $ret['surname'] = $test_string;
+        }
+        
+        $test_string = $in_user_object->get_middle_name();
+        if (isset($test_string) && trim($test_string)) {
+            $ret['middle_name'] = $test_string;
+        }
+        
+        $test_string = $in_user_object->get_given_name();
+        if (isset($test_string) && trim($test_string)) {
+            $ret['given_name'] = $test_string;
+        }
+        
+        $test_string = $in_user_object->get_prefix();
+        if (isset($test_string) && trim($test_string)) {
+            $ret['prefix'] = $test_string;
+        }
+        
+        $test_string = $in_user_object->get_suffix();
+        if (isset($test_string) && trim($test_string)) {
+            $ret['suffix'] = $test_string;
+        }
+        
+        $test_string = $in_user_object->get_nickname();
+        if (isset($test_string) && trim($test_string)) {
+            $ret['nickname'] = $test_string;
+        }
+        
         if ($in_with_login_info) {
             $login_instance = $in_user_object->get_login_instance();
         
@@ -213,7 +243,8 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
         $login_user = isset($in_query) && is_array($in_query) && isset($in_query['login_user']);    // Flag saying they are only looking for login people.
         
-        if (0 && ('POST' == $in_http_method) && $in_andisol_instance->manager()) {    // First, see if they want to create a new user. This one is fairly easy. We have to be a manager to create users and logins.
+        if (('POST' == $in_http_method) && $in_andisol_instance->manager()) {    // First, see if they want to create a new user. This one is fairly easy. We have to be a manager to create users and logins.
+            $settings_list = $this->_build_mod_list($in_andisol_instance, $in_http_method, $in_query);   // First, build up a list of the settings for the new user.
         } else {
             // Otherwise, we build up a userlist.
             $user_object_list = [];
@@ -324,6 +355,8 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     header('HTTP/1.1 403 No Editable Records'); // I don't think so. Homey don't play that game.
                     exit();
                 }
+                    
+                $ret = Array ('deleted_users' => [], 'deleted_logins' => []);
                 
                 // Now, we have a full list of users that we have permission to delete.
                 foreach ($user_object_list as $user) {
@@ -359,26 +392,65 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     }
                 }
                 // OK. We have successfully deleted the users (and maybe the logins, as well). We will return the dumps of the users and logins in the function return as associative arrays.
-            } elseif (1 || 'PUT' == $in_http_method) {   // We want to modify existing users.
-                $mod_list = $this->_build_mod_list($in_andisol_instance, $in_query);
+            } elseif ('PUT' == $in_http_method) {   // We want to modify existing users.
+                $mod_list = $this->_build_mod_list($in_andisol_instance, $in_http_method, $in_query);
                 $ret = [];
                 
                 foreach ($user_object_list as $user) {
-                    $user_report = Array('before' => $this->_get_long_user_description($user));
-                    foreach ($mod_list as $key => $value) {
-                        switch ($key) {
-                            case 'payload':
-                                $result = $user->set_payload($value);
-                                break;
+                    if ($user->user_can_write()) {    // We have to be allowed to write to this user.
+                        $user_report = Array('before' => $this->_get_long_user_description($user));
+                        foreach ($mod_list as $key => $value) {
+                            switch ($key) {
+                                case 'payload':
+                                    $result = $user->set_payload($value);
+                                    break;
                                 
-                            case 'name':
-                                $result = $user->set_name($value);
-                                break;
+                                case 'remove_payload':
+                                    $result = $user->set_payload(NULL);
+                                    break;
+                                
+                                case 'name':
+                                    $result = $user->set_name($value);
+                                    break;
+                                
+                                case 'surname':
+                                    $result = $user->set_surname($value);
+                                    break;
+                                
+                                case 'middle_name':
+                                    $result = $user->set_middle_name($value);
+                                    break;
+                                
+                                case 'given_name':
+                                    $result = $user->set_given_name($value);
+                                    break;
+                                
+                                case 'prefix':
+                                    $result = $user->set_prefix($value);
+                                    break;
+                                
+                                case 'suffix':
+                                    $result = $user->set_suffix($value);
+                                    break;
+                                
+                                case 'nickname':
+                                    $result = $user->set_nickname($value);
+                                    break;
+                                
+                                case 'login_id':
+                                    if ($in_andisol_instance->god()) {  // Only God can change login IDs.
+                                        $result = $user->set_login_id(intval($value));
+                                        if ($result) {
+                                            $result = $user->set_write_security_id(intval($value));
+                                        }
+                                    }
+                                    break;
+                            }
                         }
-                    }
                     
-                    $user_report['after'] = $this->_get_long_user_description($user);
-                    $ret['changed_users'][] = $user_report;
+                        $user_report['after'] = $this->_get_long_user_description($user);
+                        $ret['changed_users'][] = $user_report;
+                    }
                 }
             } else {
                 header('HTTP/1.1 400 Incorrect HTTP Request Method');   // Ah-Ah-Aaaahh! You didn't say the magic word!
@@ -393,6 +465,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     /**
      */
     protected function _build_mod_list( $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                        $in_http_method,        ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
                                         $in_query = []          ///< OPTIONAL: The query parameters, as an associative array. If left empty, this method is worthless.
                                         ) {
         // <rubs hands/> Now, let's get to work...
@@ -449,8 +522,38 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $ret['name'] = trim(strval($in_query['name']));
         }
         
+        // Next, we see if we want to change the surname.
+        if (isset($in_query['surname'])) {
+            $ret['surname'] = trim(strval($in_query['surname']));
+        }
+        
+        // Next, we see if we want to change the middle name.
+        if (isset($in_query['middle_name'])) {
+            $ret['middle_name'] = trim(strval($in_query['middle_name']));
+        }
+        
+        // Next, we see if we want to change the first name.
+        if (isset($in_query['given_name'])) {
+            $ret['given_name'] = trim(strval($in_query['given_name']));
+        }
+        
+        // Next, we see if we want to change the prefix.
+        if (isset($in_query['prefix'])) {
+            $ret['prefix'] = trim(strval($in_query['prefix']));
+        }
+        
+        // Next, we see if we want to change the suffix.
+        if (isset($in_query['suffix'])) {
+            $ret['suffix'] = trim(strval($in_query['suffix']));
+        }
+        
+        // Next, we see if we want to change the nickname.
+        if (isset($in_query['nickname'])) {
+            $ret['nickname'] = trim(strval($in_query['nickname']));
+        }
+        
         // Next, we see if we want to change/set the login object asociated with this. You can remove an associated login object by passing in NULL or 0, here.
-        if (isset($in_query['login_id'])) {
+        if (isset($in_query['login_id']) && (('POST' == $in_http_method) || $in_andisol_instance->god())) {  // Only God can change login IDs (unless we are creating a new user).
             $ret['login_id'] = abs(intval(trim($in_query['login_id'])));
         }
         
@@ -459,11 +562,11 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $ret['owner_id'] = abs(intval(trim($in_query['owner_id'])));
         }
         
-        // Next, we see if we the user is supplying a payload to be stored.
-        if (isset($in_query['payload'])) {
-            $ret['payload'] = $in_query['payload'];
-        } elseif (isset($in_query['remove_payload'])) { // If they did not specify a payload, maybe they want one removed?
+        // Next, we see if we the user is supplying a payload to be stored, or removing the existing one.
+        if (isset($in_query['remove_payload'])) { // If they did not specify a payload, maybe they want one removed?
             $ret['remove_payload'] = true;
+        } elseif (isset($in_query['payload'])) {
+            $ret['payload'] = $in_query['payload'];
         }
         
         // See if they want to modify any tags.
