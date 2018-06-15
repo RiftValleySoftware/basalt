@@ -55,7 +55,7 @@ function basalt_test_0057($in_login = NULL, $in_hashed_password = NULL, $in_pass
         $json_object->people->people[0]->payload = '[LARGE PAYLOAD]';
         $json_object = json_encode($json_object);
         echo('<pre style="color:green">'.prettify_json($json_object).'</pre>');
-        echo('<img src="data:'.$type.';base64,'.$payload.'" title="Woah! Norm, have you been taking hormones?" alt="Lena, not Norm" />');
+        echo('<div style="text-align:center;margin:1em"><img src="data:'.$type.','.$payload.'" title="Woah! Norm, have you been taking hormones?" alt="Lena, not Norm" style="width:256px;border-radius:2em;border:none" /></div>');
     }
 }
 
@@ -84,7 +84,7 @@ function basalt_test_0058($in_login = NULL, $in_hashed_password = NULL, $in_pass
         $json_object->people->people[0]->payload = '[LARGE PAYLOAD]';
         $json_object = json_encode($json_object);
         echo('<pre style="color:green">'.prettify_json($json_object).'</pre>');
-        echo('<img src="data:'.$type.';base64,'.$payload.'" title="Woah! Norm, have you been taking hormones?" alt="Lena, not Norm" />');
+        echo('<div style="text-align:center;margin:1em"><img src="data:'.$type.','.$payload.'" title="Woah! Norm, have you been taking hormones?" alt="Lena, not Norm" style="width:256px;border-radius:2em;border:none" /></div>');
     }
     $result = call_REST_API('POST', 'http://localhost/basalt/test/basalt_runner.php/json/people/people/2?name=Marvin', Array('filepath' => dirname(dirname(__FILE__)).'/images/Marvin.jpg', 'type' => 'image/jpeg', 'name' => 'lena.jpg'), $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
@@ -103,7 +103,7 @@ function basalt_test_0058($in_login = NULL, $in_hashed_password = NULL, $in_pass
         $json_object->people->people[0]->payload = '[LARGE PAYLOAD]';
         $json_object = json_encode($json_object);
         echo('<pre style="color:green">'.prettify_json($json_object).'</pre>');
-        echo('<img src="data:'.$type.';base64,'.$payload.'" title="I\'m Very, Very Angry, Right Now!" alt="Marvin, not Lena" />');
+        echo('<div style="text-align:center;margin:1em"><img src="data:'.$type.','.$payload.'" title="I\'m Very, Very Angry, Right Now!" alt="Marvin, not Lena" style="width:256px;border-radius:2em;border:none" /></div>');
     }
 }
 ?>

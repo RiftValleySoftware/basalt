@@ -125,7 +125,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             file_put_contents($temp_file , $payload);
             $finfo = finfo_open(FILEINFO_MIME_TYPE);  
             $content_type = finfo_file($finfo, $temp_file);
-            $ret['payload_type'] = $content_type;
+            $ret['payload_type'] = $content_type.';base64';
         }
         
         return $ret;
