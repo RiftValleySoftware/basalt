@@ -165,8 +165,8 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                         if (!isset($vars_final['remove_payload'])) { // If they did not specify a payload, maybe they want one removed?
                             // POST is handled differently from PUT. POST gets proper background handling, while PUT needs a very raw approach.
                             if ('POST' == $this->_request_type) {
-                                if (!isset($_FILES['payload']['error']) || is_array($_FILES['payload']['error'])) {
-                                    header('HTTP/1.1 400 '.print_r($_FILES['upfile']['error'], true));
+                                if (isset($_FILES['payload']) && (!isset($_FILES['payload']['error']) || is_array($_FILES['payload']['error']))) {
+                                    header('HTTP/1.1 400 '.print_r($_FILES['payload']['error'], true));
                                     exit();
                                 } elseif (isset($_FILES['payload'])) {
                                     $file_data = file_get_contents($_FILES['payload']['tmp_name']);

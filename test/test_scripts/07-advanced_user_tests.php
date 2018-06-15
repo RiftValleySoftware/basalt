@@ -222,4 +222,50 @@ function basalt_test_0061($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<pre style="color:green">'.prettify_json($result).'</pre>');
     }
 }
+
+// --------------------
+
+function basalt_test_define_0062() {
+    basalt_run_single_direct_test(62, 'PASS: Create a Generic User (No Login Associated)', 'We log in as a manager, and create a new user, without any extra frills (or login instance).', 'user_tests', 'asp', '', 'CoreysGoryStory');
+}
+
+function basalt_test_0062($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+    echo('<h3>Welcome to our new user:</h3>');
+    $result = call_REST_API('POST', 'http://localhost/basalt/test/basalt_runner.php/json/people/people/', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+}
+
+// --------------------
+
+function basalt_test_define_0063() {
+    basalt_run_single_direct_test(63, 'PASS: Create a Generic User and Login Pair', 'We log in as a manager, and create a new user and login, without any extra frills.', 'user_tests', 'asp', '', 'CoreysGoryStory');
+}
+
+function basalt_test_0063($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+    echo('<h3>Welcome to our new user:</h3>');
+    $result = call_REST_API('POST', 'http://localhost/basalt/test/basalt_runner.php/json/people/people/?login_id=ColonelSanders', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+}
 ?>
