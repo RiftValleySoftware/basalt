@@ -12,6 +12,7 @@
 										<xs:element name="name" type="xs:string"/>
 									    <xs:element name="lang" type="xs:string"/>
 										<xs:element minOccurs="0" name="writeable" type="xs:integer"/>
+										<xs:element minOccurs="0" name="owner_id" type="xs:integer"/>
 										<xs:element minOccurs="0" name="current_login" type="xs:integer"/>
 										<xs:element minOccurs="0" name="login">
 											<xs:complexType>

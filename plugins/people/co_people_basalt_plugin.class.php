@@ -42,7 +42,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     \returns an associative array of strings and integers.
      */
     protected function _get_long_login_description( $in_login_object    ///< REQUIRED: The login object to extract information from.
-                                                ) {
+                                                    ) {
         $ret = $this->_get_short_object_description($in_login_object);
         
         $user_item = $in_login_object->get_user_object();
@@ -90,7 +90,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
      */
     protected function _get_long_user_description(  $in_user_object,            ///< REQUIRED: The user object to extract information from.
                                                     $in_with_login_info = false ///< OPTIONAL: Default is false. If true, then the login information is appended.
-                                                ) {
+                                                    ) {
         $ret = $this->_get_short_object_description($in_user_object);
         
         if ($in_with_login_info) {
@@ -105,6 +105,10 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $ret['writeable'] = true;
             }
         
+            if (0 < $in_user_object->owner_id()) {
+                $ret['owner_id'] = $in_user_object->owner_id();
+            }
+        
             if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
                 if ($login_instance->id() == $in_user_object->get_access_object()->get_login_id()) {
                     $ret['current_login'] = true;
@@ -112,6 +116,16 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
                 $ret['login'] = $this->_get_long_login_description($login_instance);
             }
+        }
+        
+        $payload = $in_user_object->get_payload();
+        if ($payload) {
+            $ret['payload'] = base64_encode($payload);
+            $temp_file = tempnam(sys_get_temp_dir(), 'RVP');  
+            file_put_contents($temp_file , $payload);
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);  
+            $content_type = finfo_file($finfo, $temp_file);
+            $ret['payload_type'] = $content_type;
         }
         
         return $ret;
@@ -199,7 +213,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
         $login_user = isset($in_query) && is_array($in_query) && isset($in_query['login_user']);    // Flag saying they are only looking for login people.
         
-        if (('POST' == $in_http_method) && $in_andisol_instance->manager()) {    // First, see if they want to create a new user. This one is fairly easy. We have to be a manager to create users and logins.
+        if (0 && ('POST' == $in_http_method) && $in_andisol_instance->manager()) {    // First, see if they want to create a new user. This one is fairly easy. We have to be a manager to create users and logins.
         } else {
             // Otherwise, we build up a userlist.
             $user_object_list = [];
@@ -313,15 +327,14 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 
                 // Now, we have a full list of users that we have permission to delete.
                 foreach ($user_object_list as $user) {
-                    $id = $user->id();
-                    $login_id = NULL;
-                    $login_item = NULL;
+                    $user_dump = $this->_get_long_user_description($user);
+                    $login_dump = NULL;
                     
                     $ok = true;
                     
                     if ($login_user) {
                         $login_item = $user->get_login_instance();
-                        $login_id = $login_item->id();
+                        $login_dump = $this->_get_long_login_description($login_item);
                         $ok = $login_item->delete_from_db();
                     }
                     
@@ -338,59 +351,34 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                             }
                         }
                         
-                        $ret['deleted_users'][] = $id;
+                        $ret['deleted_users'][] = $user_dump;
                         
-                        if ($login_id) {
-                            $ret['deleted_logins'][] = $login_id;
+                        if ($login_dump) {
+                            $ret['deleted_logins'][] = $login_dump;
                         }
                     }
                 }
-                // OK. We have successfully deleted the users (and maybe the logins, as well). The list of IDs of the ones we deleted will be returned in simple arrays.
-            } elseif ('PUT' == $in_http_method) {   // We want to modify existing users.
-                // <rubs hands/> Now, let's get to work...
-                // First, build up a list of the items that we want to change.
-            
-                $modification_items = [];   // We will build up an associative array of changes we want to make.
-            
-                // See if they want to add new data items to each user.
-                if (isset($in_query['child_ids'])) {
-                    $child_item_list = [];          // If we are adding new child items, their IDs go in this list.
-                    $delete_child_item_list = [];   // If we are removing items, we indicate that with negative IDs, and put those in a different list (absvaled).
-                    
-                    $child_id_list = array_map('intval', explode(',', $in_query['child_ids']));
+                // OK. We have successfully deleted the users (and maybe the logins, as well). We will return the dumps of the users and logins in the function return as associative arrays.
+            } elseif (1 || 'PUT' == $in_http_method) {   // We want to modify existing users.
+                $mod_list = $this->_build_mod_list($in_andisol_instance, $in_query);
+                $ret = [];
                 
-                    // Child IDs are a CSV list of integers, with IDs of data records.
-                    if (isset($child_id_list) && is_array($child_id_list) && count($child_id_list)) {
-                        // Check for ones we can't see (we don't need write permission, but we do need read permission).
-                        foreach ($child_id_list as $id) {
-                            if (0 < $id) {  // See if we are adding to the list
-                                $item = $in_andisol_instance->get_single_data_record_by_id($id);
-                                // If we got the item, then it exists, and we can see it. Add its ID to our list.
-                                $child_item_list[] = $id;
-                            } else {    // If we are removing it, we still need read permission, but it goes in a different list.
-                                $item = $in_andisol_instance->get_single_data_record_by_id(-$id);
-                                $delete_child_item_list[] = -$id;
-                            }
+                foreach ($user_object_list as $user) {
+                    $user_report = Array('before' => $this->_get_long_user_description($user));
+                    foreach ($mod_list as $key => $value) {
+                        switch ($key) {
+                            case 'payload':
+                                $result = $user->set_payload($value);
+                                break;
+                                
+                            case 'name':
+                                $result = $user->set_name($value);
+                                break;
                         }
-                    
-                        // Make sure there's no repeats.
-                        $child_item_list = array_unique($child_item_list);
-                        $delete_child_item_list = array_unique($delete_child_item_list);
-                        
-                        // Because we're anal.
-                        sort($child_item_list);
-                        sort($delete_child_item_list);
-                        
-                        // At this point, we have a list of IDs that we want to add, and IDs that we want to remove, from the various (or single) users.
                     }
                     
-                    if (isset($child_item_list) && is_array($child_item_list) && count($child_item_list)) {
-                        $modification_items['child_ids']['add'] = $child_item_list;
-                    }
-                    
-                    if (isset($delete_child_item_list) && is_array($delete_child_item_list) && count($delete_child_item_list)) {
-                        $modification_items['child_ids']['remove'] = $delete_child_item_list;
-                    }
+                    $user_report['after'] = $this->_get_long_user_description($user);
+                    $ret['changed_users'][] = $user_report;
                 }
             } else {
                 header('HTTP/1.1 400 Incorrect HTTP Request Method');   // Ah-Ah-Aaaahh! You didn't say the magic word!
@@ -401,6 +389,96 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         return $ret;
     }
             
+    /***********************/
+    /**
+     */
+    protected function _build_mod_list( $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                        $in_query = []          ///< OPTIONAL: The query parameters, as an associative array. If left empty, this method is worthless.
+                                        ) {
+        // <rubs hands/> Now, let's get to work...
+        // First, build up a list of the items that we want to change.
+    
+        $ret = [];   // We will build up an associative array of changes we want to make.
+    
+        // See if they want to add new child data items to each user, or remove existing ones.
+        // We indicate adding ones via positive integers (the item IDs), and removing via negative integers (minus the item ID).
+        if (isset($in_query['child_ids'])) {
+            $child_item_list = [];          // If we are adding new child items, their IDs go in this list.
+            $delete_child_item_list = [];   // If we are removing items, we indicate that with negative IDs, and put those in a different list (absvaled).
+            
+            $child_id_list = array_map('intval', explode(',', $in_query['child_ids']));
+        
+            // Child IDs are a CSV list of integers, with IDs of data records.
+            if (isset($child_id_list) && is_array($child_id_list) && count($child_id_list)) {
+                // Check for ones we can't see (we don't need write permission, but we do need read permission).
+                foreach ($child_id_list as $id) {
+                    if (0 < $id) {  // See if we are adding to the list
+                        $item = $in_andisol_instance->get_single_data_record_by_id($id);
+                        // If we got the item, then it exists, and we can see it. Add its ID to our list.
+                        $child_item_list[] = $id;
+                    } else {    // If we are removing it, we still need read permission, but it goes in a different list.
+                        $item = $in_andisol_instance->get_single_data_record_by_id(-$id);
+                        $delete_child_item_list[] = -$id;
+                    }
+                }
+            
+                // Make sure there's no repeats.
+                $child_item_list = array_unique($child_item_list);
+                $delete_child_item_list = array_unique($delete_child_item_list);
+                
+                // Because we're anal.
+                sort($child_item_list);
+                sort($delete_child_item_list);
+                
+                // At this point, we have a list of IDs that we want to add, and IDs that we want to remove, from the various (or single) users.
+            }
+            
+            // If we have items we want to add, we add them to our TO DO list.
+            if (isset($child_item_list) && is_array($child_item_list) && count($child_item_list)) {
+                $ret['child_ids']['add'] = $child_item_list;
+            }
+            
+            // If we have items we want to remove, we add those to our TO DO list.
+            if (isset($delete_child_item_list) && is_array($delete_child_item_list) && count($delete_child_item_list)) {
+                $ret['child_ids']['remove'] = $delete_child_item_list;
+            }
+        }
+        
+        // Next, we see if we want to change the name.
+        if (isset($in_query['name'])) {
+            $ret['name'] = trim(strval($in_query['name']));
+        }
+        
+        // Next, we see if we want to change/set the login object asociated with this. You can remove an associated login object by passing in NULL or 0, here.
+        if (isset($in_query['login_id'])) {
+            $ret['login_id'] = abs(intval(trim($in_query['login_id'])));
+        }
+        
+        // Next, we see if we want to change/set the "owner" object asociated with this. You can remove an associated owner object by passing in NULL or 0, here.
+        if (isset($in_query['owner_id'])) {
+            $ret['owner_id'] = abs(intval(trim($in_query['owner_id'])));
+        }
+        
+        // Next, we see if we the user is supplying a payload to be stored.
+        if (isset($in_query['payload'])) {
+            $ret['payload'] = $in_query['payload'];
+        } elseif (isset($in_query['remove_payload'])) { // If they did not specify a payload, maybe they want one removed?
+            $ret['remove_payload'] = true;
+        }
+        
+        // See if they want to modify any tags.
+        for ($tag = 0; $tag < 10; $tag++) {
+            $tag_name = "tag".strval($tag);
+            
+            // Next, we see if we want to change the tag value. You can set a tag value to an empty string (specify "tag[0-9]=" in the URI).
+            if (isset($in_query['tag_name'])) {
+                $ret['tag_name'] = trim(strval($in_query['tag_name']));
+            }
+        }
+        
+        return $ret;
+    }
+        
     /***********************/
     /**
     This handles logins.

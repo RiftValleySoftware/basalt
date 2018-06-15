@@ -159,7 +159,36 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                                 }
                             }
                         }
-        
+
+                        $file_data = '';
+                        
+                        // POST is handled differently from PUT. POST gets proper background handling, while PUT needs a very raw approach.
+                        if (isset($_FILES['payload'])) {
+                            if (!isset($_FILES['payload']['error']) || is_array($_FILES['payload']['error'])) {
+                                header('HTTP/1.1 400 '.print_r($_FILES['upfile']['error'], true));
+                                exit();
+                            } else {
+                                $file_data = file_get_contents($_FILES['payload']['tmp_name']);
+                            }
+                        } else {
+                            $post_data = $_POST;
+                        
+                            // See if they have sent any data to us via the standard HTTP channel (PUT).
+                            $put_data = fopen('php://input', 'r');
+                        
+                            if ($put_data) {
+                                while ($data = fread($put_data, 1024)) {    // Read it in 1K chunks.
+                                    $file_data .= $data;
+                                }
+                                fclose($put_data);
+                            }
+                        }
+                        
+                        // This can only go to payload.
+                        if (isset($file_data) && $file_data) {
+                            $vars_final['payload'] = base64_decode($file_data);
+                        }
+                        
                         $this->_vars = $vars_final;
                     } else {
                         header('HTTP/1.1 400 Unsupported or Missing Plugin');

@@ -333,35 +333,74 @@ function display_record($in_record_object, $in_hierarchy_level = 0, $shorty = fa
         echo("<h4>Invalid Object!</h4>");
     }
 }
+function curl_exec_continue($ch) {
+    curl_setopt($ch, CURLOPT_HEADER, 1);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $result   = curl_exec($ch);
+    $continue = 0 === strpos($result, "HTTP/1.1 100 Continue\x0d\x0a\x0d\x0a");
+    echo "Continue: ", $continue ? 'Yes' : 'No', "\n";
 
+    return $result;
+}
 function call_REST_API( $method,
                         $url,
-                        $data = NULL,
+                        $data_file = NULL,
                         $api_key = NULL,
                         &$httpCode = NULL,
                         $display_log = false
                         ) {
+    $file = NULL;
+    $content_type = NULL;
+    $file_size = 0;
+    $temp_file_name = NULL;
+    
+    if ($data_file) {
+        $file_location = $data_file['filepath'];
+        $file_type = $data_file['type'];
+        
+        $temp_file_name = tempnam(sys_get_temp_dir(), 'RVP');
+        $source_file = fopen($file_location, 'r');
+        $file = fopen($temp_file_name, 'w');
+        
+        $file_data = base64_encode(fread($source_file, filesize($file_location)));
+        fwrite($file, $file_data, strlen($file_data));
+        
+        fclose($file);
+        fclose($source_file);
+
+        $content_type = $file_type.':base64';
+        $file_size = filesize($temp_file_name);
+        $file = fopen($temp_file_name, 'rb');
+    }
+        
     if (isset($api_key) && $api_key) {
         echo('<p style="vertical-align:middle;font-style:italic">API KEY: <big><code>'.$api_key.'</code></big></p>');
     }
     
     echo('<p style="vertical-align:middle;font-style:italic">'.$method.' URI: <big><code>'.$url.'</code></big></p>');
+    
     $curl = curl_init();
     
     switch ($method) {
         case "POST":
-            curl_setopt($curl, CURLOPT_POST, 1);
-
-            if ($data) {
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($curl, CURLOPT_POST, true);
+            
+            if ($file) {
+                curl_setopt($curl, CURLOPT_SAFE_UPLOAD, true);
+                curl_setopt($curl, CURLOPT_HEADER, true);
+                curl_setopt($curl, CURLOPT_HTTPHEADER, ['Expect:', 'Content-type: multipart/form-data']);
+                $post = Array('payload'=> curl_file_create($temp_file_name, $content_type));
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
             }
             break;
             
         case "PUT":
-            curl_setopt($curl, CURLOPT_PUT, 1);
-
-            if ($data) {
-                curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
+            curl_setopt($curl, CURLOPT_PUT, true);
+            
+            if ($file) {
+                curl_setopt($curl, CURLOPT_HEADER, false);
+                curl_setopt($curl, CURLOPT_INFILE, $file);
+                curl_setopt($curl, CURLOPT_INFILESIZE, $file_size);
             }
             break;
             
@@ -369,9 +408,6 @@ function call_REST_API( $method,
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
             
         default:
-            if ($data) {
-                $url = sprintf("%s?%s", $url, http_build_query($data));
-            }
     }
 
     // Authentication
@@ -382,6 +418,7 @@ function call_REST_API( $method,
 
     curl_setopt($curl, CURLOPT_URL, $url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($curl, CURLOPT_BINARYTRANSFER, true);
     
     if (isset($display_log) && $display_log) {
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -395,10 +432,6 @@ function call_REST_API( $method,
 
         if ($api_key) {
             echo('<div>API KEY:<pre>'.htmlspecialchars($api_key).'</pre></div>');
-        }
-
-        if ($data) {
-            echo('<div>ADDITIONAL DATA:<pre>'.htmlspecialchars(print_r($data, true)).'</pre></div>');
         }
     }
     
@@ -415,7 +448,14 @@ function call_REST_API( $method,
 
     curl_close($curl);
     
+    if ($file) {
+        fclose($file);
+    }
+    
     if (isset($display_log) && $display_log) {
+        if (isset($data_file)) {
+            echo('<div>ADDITIONAL DATA:<pre>'.htmlspecialchars(print_r($data_file, true)).'</pre></div>');
+        }
         if (isset($httpCode) && $httpCode) {
             echo('<div>HTTP CODE:<code>'.htmlspecialchars($httpCode, true).'</code></div>');
         }
