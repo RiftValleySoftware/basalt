@@ -20,7 +20,7 @@ basalt_run_tests(57, 'ADVANCED JSON PEOPLE TESTS', '');
 // -------------------------- DEFINITIONS AND TESTS -----------------------------------
 
 function basalt_test_define_0057() {
-//     basalt_run_single_direct_test(57, 'PASS: Add an Image Payload to an Existing User (PUT)', 'We add a picture to \'norm\', and change the user name to \'Lena\' (Guess which picture we\'re uploading).', 'user_tests', 'asp', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(57, 'PASS: Add an Image Payload to an Existing User (PUT)', 'We add a picture to \'norm\', and change the user name to \'Lena\' (Guess which picture we\'re uploading).', 'user_tests', 'asp', '', 'CoreysGoryStory');
 }
 
 function basalt_test_0057($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -62,7 +62,7 @@ function basalt_test_0057($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // --------------------
 
 function basalt_test_define_0058() {
-//     basalt_run_single_direct_test(58, 'PASS: Replace the Image Payload to an Existing User (PUT)', 'We change the picture for \'norm\', and change the name again.', '', 'asp', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(58, 'PASS: Replace the Image Payload to an Existing User (PUT)', 'We change the picture for \'norm\', and change the name again.', '', 'asp', '', 'CoreysGoryStory');
 }
 
 function basalt_test_0058($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -110,7 +110,7 @@ function basalt_test_0058($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // --------------------
 
 function basalt_test_define_0059() {
-//     basalt_run_single_direct_test(59, 'PASS: Delete the Image Payload, and a Lot of Information, from an Existing User (PUT)', 'We remove the picture for \'norm\', change the name again, and delete a lot of the name information we previously set.', '', 'asp', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(59, 'PASS: Delete the Image Payload, and a Lot of Information, from an Existing User (PUT)', 'We remove the picture for \'norm\', change the name again, and delete a lot of the name information we previously set.', '', 'asp', '', 'CoreysGoryStory');
 }
 
 function basalt_test_0059($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -152,7 +152,7 @@ function basalt_test_0059($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // --------------------
 
 function basalt_test_define_0060() {
-//     basalt_run_single_direct_test(60, 'PASS: Delete a User', 'We attempt to remove the user for \'krait\'; However, we are not cleared to remove \'krait\' (We only have read access), so it won\'t happen.', 'user_tests', 'asp', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(60, 'PASS: Delete a User', 'We attempt to remove the user for \'krait\'; However, we are not cleared to remove \'krait\' (We only have read access), so it won\'t happen.', 'user_tests', 'asp', '', 'CoreysGoryStory');
 }
 
 function basalt_test_0060($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -189,7 +189,7 @@ function basalt_test_0060($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // --------------------
 
 function basalt_test_define_0061() {
-//     basalt_run_single_direct_test(61, 'PASS: Delete a User', 'We remove an unaffiliated user, for which we have edit rights (It\'s a \'1\', which means that anyone can write/delete it).', 'user_tests', 'asp', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(61, 'PASS: Delete a User', 'We remove an unaffiliated user, for which we have edit rights (It\'s a \'1\', which means that anyone can write/delete it).', 'user_tests', 'asp', '', 'CoreysGoryStory');
 }
 
 function basalt_test_0061($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -226,7 +226,7 @@ function basalt_test_0061($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // --------------------
 
 function basalt_test_define_0062() {
-//     basalt_run_single_direct_test(62, 'PASS: Create a Generic User (No Login Associated)', 'We log in as a manager, and create a new user, without any extra frills (or login instance).', 'user_tests', 'asp', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(62, 'PASS: Create a Generic User (No Login Associated)', 'We log in as a manager, and create a new user, without any extra frills (or login instance).', 'user_tests', 'asp', '', 'CoreysGoryStory');
 }
 
 function basalt_test_0062($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -249,7 +249,7 @@ function basalt_test_0062($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // --------------------
 
 function basalt_test_define_0063() {
-//     basalt_run_single_direct_test(63, 'PASS: Create a Generic User and Login Pair', 'We log in as a manager, and create a new user and login, without any extra frills.', 'user_tests', 'asp', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(63, 'PASS: Create a Generic User and Login Pair', 'We log in as a manager, and create a new user and login, without any extra frills.', 'user_tests', 'asp', '', 'CoreysGoryStory');
 }
 
 function basalt_test_0063($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
