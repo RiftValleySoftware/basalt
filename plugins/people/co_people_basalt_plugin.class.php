@@ -283,7 +283,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $settings_list = $this->_build_mod_list($in_andisol_instance, $in_http_method, $in_query);   // First, build up a list of the settings for the new user.
                 
                 // Before we start, we make sure that only valid data has been provided. These are the ONLY settings allowed when creating a user.
-                $comp_array = Array('lang', 'payload', 'surname', 'middle_name', 'given_name', 'prefix', 'suffix', 'nickname');
+                $comp_array = Array('lang', 'payload', 'surname', 'middle_name', 'given_name', 'prefix', 'suffix', 'nickname', 'child_ids');
                 $keys = array_keys($settings_list);
                 
                 foreach ($keys as $key) {
@@ -324,6 +324,36 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 if (isset($user) && ($user instanceof CO_User_Collection)) {
                     foreach ($settings_list as $key => $value) {
                         switch ($key) {
+                            case 'child_ids':
+                                $add = $value['add'];
+                                $remove = $value['remove'];
+                                $result = true;
+                                
+                                foreach ($remove as $id) {
+                                    $child = $in_andisol_instance->get_single_data_record_by_id($id);
+                                    if (isset($child)) {
+                                        $result = $user->deleteThisElement($child);
+                                    }
+                                    
+                                    if (!$result) {
+                                        break;
+                                    }
+                                }
+                                
+                                if ($result) {
+                                    foreach ($add as $id) {
+                                        $child = $in_andisol_instance->get_single_data_record_by_id($id);
+                                        if (isset($child)) {
+                                            $result = $user->appendElement($child);
+                                        }
+                                    
+                                        if (!$result) {
+                                            break;
+                                        }
+                                    }
+                                }
+                                break;
+                                    
                             case 'lang':
                                 $result = $user->set_lang($value);
                                 
@@ -421,7 +451,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             } elseif (isset($in_path) && is_array($in_path) && (0 < count($in_path))) { // See if they are looking for a list of individual discrete integer IDs.
                 $user_nums = strtolower($in_path[0]);
         
-                $single_user_id = (ctype_digit($user_nums) && (1 < intval($user_nums))) ? intval($user_nums) : NULL;    // This will be for if we are looking only one single user.
+                $single_user_id = (ctype_digit($user_nums) && (1 < intval($user_nums))) ? intval($user_nums) : NULL;    // This will be set if we are looking for only one single user.
                 // The first thing that we'll do, is look for a list of user IDs. If that is the case, we split them into an array of int.
                 $user_list = explode(',', $user_nums);
         
@@ -550,6 +580,36 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         $user_report = Array('before' => $this->_get_long_user_description($user, $login_user));
                         foreach ($mod_list as $key => $value) {
                             switch ($key) {
+                                case 'child_ids':
+                                    $add = $value['add'];
+                                    $remove = $value['remove'];
+                                    $result = true;
+                                
+                                    foreach ($remove as $id) {
+                                        $child = $in_andisol_instance->get_single_data_record_by_id($id);
+                                        if (isset($child)) {
+                                            $result = $user->deleteThisElement($child);
+                                        }
+                                    
+                                        if (!$result) {
+                                            break;
+                                        }
+                                    }
+                                
+                                    if ($result) {
+                                        foreach ($add as $id) {
+                                            $child = $in_andisol_instance->get_single_data_record_by_id($id);
+                                            if (isset($child)) {
+                                                $result = $user->appendElement($child);
+                                            }
+                                    
+                                            if (!$result) {
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    break;
+                                    
                                 case 'lang':
                                     $result = $user->set_lang($value);
                                 
@@ -628,116 +688,121 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
      */
     protected function _build_mod_list( $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
                                         $in_http_method,        ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
-                                        $in_query = []          ///< OPTIONAL: The query parameters, as an associative array. If left empty, this method is worthless.
+                                        &$in_query = NULL       ///< OPTIONAL: The query parameters, as an associative array, passed by reference. If left empty, this method is worthless.
                                         ) {
         // <rubs hands/> Now, let's get to work...
         // First, build up a list of the items that we want to change.
     
         $ret = [];   // We will build up an associative array of changes we want to make.
-    
-        // See if they want to add new child data items to each user, or remove existing ones.
-        // We indicate adding ones via positive integers (the item IDs), and removing via negative integers (minus the item ID).
-        if (isset($in_query['child_ids'])) {
-            $child_item_list = [];          // If we are adding new child items, their IDs go in this list.
-            $delete_child_item_list = [];   // If we are removing items, we indicate that with negative IDs, and put those in a different list (absvaled).
-            
-            $child_id_list = array_map('intval', explode(',', $in_query['child_ids']));
         
-            // Child IDs are a CSV list of integers, with IDs of data records.
-            if (isset($child_id_list) && is_array($child_id_list) && count($child_id_list)) {
-                // Check for ones we can't see (we don't need write permission, but we do need read permission).
-                foreach ($child_id_list as $id) {
-                    if (0 < $id) {  // See if we are adding to the list
-                        $item = $in_andisol_instance->get_single_data_record_by_id($id);
-                        // If we got the item, then it exists, and we can see it. Add its ID to our list.
-                        $child_item_list[] = $id;
-                    } else {    // If we are removing it, we still need read permission, but it goes in a different list.
-                        $item = $in_andisol_instance->get_single_data_record_by_id(-$id);
-                        $delete_child_item_list[] = -$id;
+        if (isset($in_query) && is_array($in_query) && count($in_query)) {
+            // See if they want to add new child data items to each user, or remove existing ones.
+            // We indicate adding ones via positive integers (the item IDs), and removing via negative integers (minus the item ID).
+            if (isset($in_query['child_ids'])) {
+                $ret['child_ids'] = Array('add' => [], 'remove' => []);
+                $child_item_list = [];          // If we are adding new child items, their IDs go in this list.
+                $delete_child_item_list = [];   // If we are removing items, we indicate that with negative IDs, and put those in a different list (absvaled).
+            
+                $child_id_list = array_map('intval', explode(',', $in_query['child_ids']));
+        
+                // Child IDs are a CSV list of integers, with IDs of data records.
+                if (isset($child_id_list) && is_array($child_id_list) && count($child_id_list)) {
+                    // Check for ones we can't see (we don't need write permission, but we do need read permission).
+                    foreach ($child_id_list as $id) {
+                        if (0 < $id) {  // See if we are adding to the list
+                            $item = $in_andisol_instance->get_single_data_record_by_id($id);
+                            // If we got the item, then it exists, and we can see it. Add its ID to our list.
+                            $child_item_list[] = $id;
+                        } else {    // If we are removing it, we still need read permission, but it goes in a different list.
+                            $item = $in_andisol_instance->get_single_data_record_by_id(-$id);
+                            $delete_child_item_list[] = -$id;
+                        }
                     }
+            
+                    // Make sure there's no repeats.
+                    $child_item_list = array_unique($child_item_list);
+                    $delete_child_item_list = array_unique($delete_child_item_list);
+                
+                    // Because we're anal.
+                    sort($child_item_list);
+                    sort($delete_child_item_list);
+                
+                    // At this point, we have a list of IDs that we want to add, and IDs that we want to remove, from the various (or single) users.
                 }
             
-                // Make sure there's no repeats.
-                $child_item_list = array_unique($child_item_list);
-                $delete_child_item_list = array_unique($delete_child_item_list);
-                
-                // Because we're anal.
-                sort($child_item_list);
-                sort($delete_child_item_list);
-                
-                // At this point, we have a list of IDs that we want to add, and IDs that we want to remove, from the various (or single) users.
-            }
+                // If we have items we want to add, we add them to our TO DO list.
+                if (isset($child_item_list) && is_array($child_item_list) && count($child_item_list)) {
+                    $ret['child_ids']['add'] = $child_item_list;
+                }
             
-            // If we have items we want to add, we add them to our TO DO list.
-            if (isset($child_item_list) && is_array($child_item_list) && count($child_item_list)) {
-                $ret['child_ids']['add'] = $child_item_list;
-            }
+                // If we have items we want to remove, we add those to our TO DO list.
+                if (isset($delete_child_item_list) && is_array($delete_child_item_list) && count($delete_child_item_list)) {
+                    $ret['child_ids']['remove'] = $delete_child_item_list;
+                }
             
-            // If we have items we want to remove, we add those to our TO DO list.
-            if (isset($delete_child_item_list) && is_array($delete_child_item_list) && count($delete_child_item_list)) {
-                $ret['child_ids']['remove'] = $delete_child_item_list;
+                unset($in_query['child_ids']);
             }
-        }
         
-        // Next, we see if we want to change the name.
-        if (isset($in_query['name'])) {
-            $ret['name'] = trim(strval($in_query['name']));
-        }
+            // Next, we see if we want to change the name.
+            if (isset($in_query['name'])) {
+                $ret['name'] = trim(strval($in_query['name']));
+            }
         
-        // Next, we see if we want to change the surname.
-        if (isset($in_query['surname'])) {
-            $ret['surname'] = trim(strval($in_query['surname']));
-        }
+            // Next, we see if we want to change the surname.
+            if (isset($in_query['surname'])) {
+                $ret['surname'] = trim(strval($in_query['surname']));
+            }
         
-        // Next, we see if we want to change the middle name.
-        if (isset($in_query['middle_name'])) {
-            $ret['middle_name'] = trim(strval($in_query['middle_name']));
-        }
+            // Next, we see if we want to change the middle name.
+            if (isset($in_query['middle_name'])) {
+                $ret['middle_name'] = trim(strval($in_query['middle_name']));
+            }
         
-        // Next, we see if we want to change the first name.
-        if (isset($in_query['given_name'])) {
-            $ret['given_name'] = trim(strval($in_query['given_name']));
-        }
+            // Next, we see if we want to change the first name.
+            if (isset($in_query['given_name'])) {
+                $ret['given_name'] = trim(strval($in_query['given_name']));
+            }
         
-        // Next, we see if we want to change the prefix.
-        if (isset($in_query['prefix'])) {
-            $ret['prefix'] = trim(strval($in_query['prefix']));
-        }
+            // Next, we see if we want to change the prefix.
+            if (isset($in_query['prefix'])) {
+                $ret['prefix'] = trim(strval($in_query['prefix']));
+            }
         
-        // Next, we see if we want to change the suffix.
-        if (isset($in_query['suffix'])) {
-            $ret['suffix'] = trim(strval($in_query['suffix']));
-        }
+            // Next, we see if we want to change the suffix.
+            if (isset($in_query['suffix'])) {
+                $ret['suffix'] = trim(strval($in_query['suffix']));
+            }
         
-        // Next, we see if we want to change the nickname.
-        if (isset($in_query['nickname'])) {
-            $ret['nickname'] = trim(strval($in_query['nickname']));
-        }
+            // Next, we see if we want to change the nickname.
+            if (isset($in_query['nickname'])) {
+                $ret['nickname'] = trim(strval($in_query['nickname']));
+            }
         
-        // Next, we see if we want to change/set the login object asociated with this. You can remove an associated login object by passing in NULL or 0, here.
-        if (isset($in_query['login_id']) && (('POST' == $in_http_method) || $in_andisol_instance->god())) {  // Only God can change login IDs (unless we are creating a new user).
-            $ret['login_id'] = abs(intval(trim($in_query['login_id'])));
-        }
+            // Next, we see if we want to change/set the login object asociated with this. You can remove an associated login object by passing in NULL or 0, here.
+            if (isset($in_query['login_id']) && (('POST' == $in_http_method) || $in_andisol_instance->god())) {  // Only God can change login IDs (unless we are creating a new user).
+                $ret['login_id'] = abs(intval(trim($in_query['login_id'])));
+            }
         
-        // Next, we see if we want to change/set the "owner" object asociated with this. You can remove an associated owner object by passing in NULL or 0, here.
-        if (isset($in_query['owner_id'])) {
-            $ret['owner_id'] = abs(intval(trim($in_query['owner_id'])));
-        }
+            // Next, we see if we want to change/set the "owner" object asociated with this. You can remove an associated owner object by passing in NULL or 0, here.
+            if (isset($in_query['owner_id'])) {
+                $ret['owner_id'] = abs(intval(trim($in_query['owner_id'])));
+            }
         
-        // Next, we see if we the user is supplying a payload to be stored, or removing the existing one.
-        if (isset($in_query['remove_payload'])) { // If they did not specify a payload, maybe they want one removed?
-            $ret['remove_payload'] = true;
-        } elseif (isset($in_query['payload'])) {
-            $ret['payload'] = $in_query['payload'];
-        }
+            // Next, we see if we the user is supplying a payload to be stored, or removing the existing one.
+            if (isset($in_query['remove_payload'])) { // If they did not specify a payload, maybe they want one removed?
+                $ret['remove_payload'] = true;
+            } elseif (isset($in_query['payload'])) {
+                $ret['payload'] = $in_query['payload'];
+            }
         
-        // See if they want to modify any tags.
-        for ($tag = 0; $tag < 10; $tag++) {
-            $tag_name = "tag".strval($tag);
+            // See if they want to modify any tags.
+            for ($tag = 0; $tag < 10; $tag++) {
+                $tag_name = "tag".strval($tag);
             
-            // Next, we see if we want to change the tag value. You can set a tag value to an empty string (specify "tag[0-9]=" in the URI).
-            if (isset($in_query['tag_name'])) {
-                $ret['tag_name'] = trim(strval($in_query['tag_name']));
+                // Next, we see if we want to change the tag value. You can set a tag value to an empty string (specify "tag[0-9]=" in the URI).
+                if (isset($in_query['tag_name'])) {
+                    $ret['tag_name'] = trim(strval($in_query['tag_name']));
+                }
             }
         }
         

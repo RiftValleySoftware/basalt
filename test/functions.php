@@ -172,9 +172,10 @@ function prepare_databases($in_file_prefix) {
 
 function display_raw_hierarchy($in_hierarchy_array, $modifier) {
     if (isset($in_hierarchy_array) && is_array($in_hierarchy_array) && count($in_hierarchy_array)) {
+        $new_mod = 'element_'.$in_hierarchy_array['object']->id().'_'.$modifier;
         if (isset($in_hierarchy_array['children'])) {
-            echo('<div id="collection_wrapper_'.$in_hierarchy_array['object']->id().'_'.$modifier.'" class="inner_closed">');
-                echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'collection_wrapper_'.$in_hierarchy_array['object']->id().'_'.$modifier."')\">");
+            echo('<div id="collection_wrapper_'.$new_mod.'" class="inner_closed">');
+                echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\''.$new_mod.'\')">');
         } else {
             echo('<h3 class="inner_header">');
         }
@@ -196,7 +197,7 @@ function display_raw_hierarchy($in_hierarchy_array, $modifier) {
                 } else {
                     $track[] = intval($child['object']->id());
                     echo('<div class="main_div inner_container">');
-                        display_raw_hierarchy($child, $modifier);
+                        display_raw_hierarchy($child, $new_mod);
                     echo('</div>');
                 }
             }
