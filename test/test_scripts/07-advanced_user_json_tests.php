@@ -576,4 +576,70 @@ function basalt_test_0070($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<div style="text-align:center;margin:1em"><img src="data:'.$type.','.$payload.'" title="Has anyone seen my Immodium Q35 Space Modulator?" alt="Marvin" style="width:256px" /></div>');
     }
 }
+
+// --------------------
+
+function basalt_test_define_0071() {
+    basalt_run_single_direct_test(71, 'FAIL: Modify the New User Object Completely', 'We log in as a manager, and run a \'Full Monty\' change to the user we just created.', '', 'aspie', '', 'CoreysGoryStory');
+}
+
+function basalt_test_0071($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+    echo('<h3>BEFORE:</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/people/7?show_details', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        $json_object = json_decode($result);
+        $payload = $json_object->people->people[0]->payload;
+        $type = $json_object->people->people[0]->payload_type;
+        $json_object->people->people[0]->payload = '[LARGE PAYLOAD]';
+        $json_object = json_encode($json_object);
+        echo('<pre style="color:green">'.prettify_json($json_object).'</pre>');
+        echo('<div style="text-align:center;margin:1em"><img src="data:'.$type.','.$payload.'" title="Has anyone seen my Immodium Q35 Space Modulator?" alt="Marvin" style="width:256px" /></div>');
+    }
+    echo('<h3>This Should Fail (No Login User Described, and We Are Setting Tokens):</h3>');
+    $new_image = Array('filepath' => dirname(dirname(__FILE__)).'/images/lena.jpg', 'type' => 'image/jpeg', 'name' => 'lena.jpg');
+    $result = call_REST_API('PUT', 'http://localhost/basalt/test/basalt_runner.php/json/people/people/7?name=Lenna&surname=Söderberg&given_name=Lena&middle_name=Whoah+Nellie!&nickname=Lenna+Sjööblom&prefix=Ms.&suffix=Scanner+Test+Model&tokens=3,4,5&child_ids=-2,-5,-6,7,-8&read_token=1&write_token=11', $new_image, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        $json_object = json_decode($result);
+        $json_object->people->people->changed_users[0]->before->payload = '[LARGE PAYLOAD]';
+        $json_object->people->people->changed_users[0]->after->payload = '[LARGE PAYLOAD]';
+        $json_object = json_encode($json_object);
+        echo('<pre style="color:green">'.prettify_json($json_object).'</pre>');
+    }
+    echo('<h3>Now, This Will Work (We Added the \'login_user\' Parameter). Note That the Only Things Changed in the Login Are the Tokens:</h3>');
+    $new_image = Array('filepath' => dirname(dirname(__FILE__)).'/images/lena.jpg', 'type' => 'image/jpeg', 'name' => 'lena.jpg');
+    $result = call_REST_API('PUT', 'http://localhost/basalt/test/basalt_runner.php/json/people/people/7?login_user&name=Lenna&surname=Söderberg&given_name=Lena&middle_name=Whoah+Nellie!&nickname=Lenna+Sjööblom&prefix=Ms.&suffix=Scanner+Test+Model&tokens=3,4,5&child_ids=-2,-5,-6,7,-8&read_token=1&write_token=11', $new_image, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        $json_object = json_decode($result);
+        $json_object->people->people->changed_users[0]->before->payload = '[LARGE PAYLOAD]';
+        $json_object->people->people->changed_users[0]->after->payload = '[LARGE PAYLOAD]';
+        $json_object = json_encode($json_object);
+        echo('<pre style="color:green">'.prettify_json($json_object).'</pre>');
+    }
+    echo('<h3>AFTER:</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/people/7?show_details', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        $json_object = json_decode($result);
+        $payload = $json_object->people->people[0]->payload;
+        $type = $json_object->people->people[0]->payload_type;
+        $json_object->people->people[0]->payload = '[LARGE PAYLOAD]';
+        $json_object = json_encode($json_object);
+        echo('<pre style="color:green">'.prettify_json($json_object).'</pre>');
+        echo('<div style="text-align:center;margin:1em"><img src="data:'.$type.','.$payload.'" title="That\'s Better!" alt="Lena" style="width:256px;border-radius:2em;border:none" /></div>');
+    }
+}
 ?>

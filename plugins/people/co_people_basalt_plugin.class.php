@@ -130,13 +130,13 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $ret['payload_type'] = $content_type.';base64';
         }
         
+        $child_objects = $this->_get_child_ids($in_user_object);
+        if (0 < count($child_objects)) {
+            $ret['children_ids'] = $child_objects;
+        }
+        
         if ($in_with_login_info) {
             $login_instance = $in_user_object->get_login_instance();
-        
-            $child_objects = $this->_get_child_ids($in_user_object);
-            if (0 < count($child_objects)) {
-                $ret['children_ids'] = $child_objects;
-            }
         
             if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
                 if ($login_instance->id() == $in_user_object->get_access_object()->get_login_id()) {
@@ -144,6 +144,11 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 }
         
                 $ret['associated_login'] = $this->_get_long_description($login_instance);
+            }
+        } else {
+            $login_instance = $in_user_object->get_login_instance();
+            if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
+                $ret['associated_login_id'] = $login_instance->id();
             }
         }
         
@@ -544,7 +549,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 
                 // Now, we have a full list of users that we have permission to delete.
                 foreach ($user_object_list as $user) {
-                    $user_dump = $this->_get_long_user_description($user);
+                    $user_dump = $this->_get_long_user_description($user, $login_user);
                     $login_dump = NULL;
                     
                     $ok = true;
@@ -635,7 +640,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                 case 'read_token':
                                     $result = $user->set_read_security_id($value);
                                 
-                                    if ($result) {
+                                    if ($result && $login_user) {
                                         $login_instance = $user->get_login_instance();
                                 
                                         if ($login_instance) {
@@ -647,7 +652,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                 case 'write_token':
                                     $result = $user->set_write_security_id($value);
                                 
-                                    if ($result) {
+                                    if ($result && $login_user) {
                                         $login_instance = $user->get_login_instance();
                                 
                                         if ($login_instance) {
@@ -655,7 +660,20 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                         }
                                     }
                                     break;
-                    
+                                
+                                case 'tokens':
+                                    if ($login_user) {  // Can only do this, if the caller explicitly requested a login user.
+                                        $login_instance = $user->get_login_instance();
+                            
+                                        if ($login_instance) {
+                                            $result = $login_instance->set_ids($value);
+                                        }
+                                    } else {
+                                        header('HTTP/1.1 400 Improper Data Provided');
+                                        exit();
+                                    }
+                                    break;
+                                
                                 case 'payload':
                                     $result = $user->set_payload($value);
                                     break;
@@ -775,6 +793,26 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             
                 unset($in_query['child_ids']);
             }
+            
+            if (isset($in_query['tokens'])) {
+                $tokens_temp = array_map('intval', explode(',', $in_query['tokens']));
+                $tokens = [];
+            
+                if ($in_andisol_instance->god()) {  // God is on the TSA Pre-Check list.
+                    $tokens = $tokens_temp;
+                } else {    // Otherwise, we need to make sure that we have only tokens that we own.
+                    // BADGER deals with this, but we trust no one.
+                    $my_tokens = array_map('intval', $in_andisol_instance->get_login_item()->ids());
+                    $tokens_temp = array_intersect($my_tokens, $tokens_temp);
+                    foreach ($tokens_temp as $token) {
+                        if ((1 < $token) && ($token != $in_andisol_instance->get_login_item()->id())) {
+                            $tokens[] = $token;
+                        }
+                    }
+                }
+                
+                $ret['tokens'] = $tokens;
+            }
         
             // Next, we see if we want to change the read security.
             if (isset($in_query['read_token'])) {
@@ -882,7 +920,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     $user = $in_andisol_instance->get_user_from_login_string($id_string);
                     if (isset($user) && ($user instanceof CO_User_Collection)) {
                         if ($show_details) {
-                            $ret[] = $this->_get_long_user_description($user, true);
+                            $ret[] = $this->_get_long_user_description($user, $login_user);
                         } else {
                             $ret[] = $this->_get_short_description($user);
                         }
@@ -906,7 +944,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         if (isset($user) && ($user instanceof CO_User_Collection)) {
                             if (!$login_user || ($login_user && $user->has_login())) {
                                 if ($show_details) {
-                                    $ret[] = $this->_get_long_user_description($user, true);
+                                    $ret[] = $this->_get_long_user_description($user, $login_user);
                                 } else {
                                     $ret[] = $this->_get_short_description($user);
                                 }
@@ -922,7 +960,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     if (isset($user) && ($user instanceof CO_User_Collection)) {
                         if (!$login_user || ($login_user && $user->has_login())) {
                             if ($show_details) {
-                                $ret[] = $this->_get_long_user_description($user, true);
+                                $ret[] = $this->_get_long_user_description($user, $login_user);
                             } else {
                                 $ret[] = $this->_get_short_description($user);
                             }
