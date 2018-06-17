@@ -24,8 +24,10 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     \returns an associative array of strings and integers.
      */
-    protected function _get_short_place_description(    $in_place_object
-                                                    ) {
+    protected function _get_short_description(  $in_object,                 ///< REQUIRED: The user or login object to extract information from.
+                                                $in_additional_info = false ///< OPTIONAL: If true (default is false), then some extra information will be added to the basic ID and name.
+                                            ) {
+        $ret = parent::_get_short_description($in_object, $in_additional_info);
         $ret = Array('id' => $in_place_object->id());
         $longitude = $in_place_object->longitude();
         $latitude = $in_place_object->latitude();
@@ -54,7 +56,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
      */
     protected function _get_long_place_description( $in_place_object
                                                     ) {
-        $ret = $this->_get_short_place_description($in_place_object);
+        $ret = $this->_get_short_description($in_place_object, true);
         
         $longitude = $in_place_object->longitude();
         $latitude = $in_place_object->latitude();
@@ -144,7 +146,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     if ($show_details) {
                         $ret[] = $this->_get_long_place_description($place);
                     } else {
-                        $ret[] = $this->_get_short_place_description($place);
+                        $ret[] = $this->_get_short_description($place);
                     }
                 }
             }
@@ -169,7 +171,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                             if ($show_details) {
                                 $ret[] = $this->_get_long_place_description($place);
                             } else {
-                                $ret[] = $this->_get_short_place_description($place);
+                                $ret[] = $this->_get_short_description($place);
                             }
                         }
                     }

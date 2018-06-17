@@ -22,24 +22,30 @@ define('_SECURITY_DB_TYPE_', 'mysql');
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config/t_basalt_config.interface.php');
 
-function global_scope_basalt_logging_function($in_andisol_instance, $in_server_vars) {
-    $log_display = $in_server_vars;
-    $id = (NULL !== $in_andisol_instance->get_login_item()) ? $in_andisol_instance->get_login_item()->id() : '';
-    $login_id = (NULL !== $in_andisol_instance->get_login_item()) ? $in_andisol_instance->get_login_item()->login_id : '';
-    $id_entry = '' != $id ? "$id:$login_id" : '-';
-    $date_entry = date('\[d\/M\/Y:H:m:s O\]');
-    $request_entry = $_SERVER['REQUEST_METHOD'].' '.$_SERVER['REQUEST_URI'];
-    $log_entry = $_SERVER['REMOTE_ADDR']. ' - '.$id_entry.' '.$date_entry.' "'.$request_entry.'"';
-    $log_file = fopen(dirname(dirname(__FILE__)).'/log/test.log', 'a');
-    fwrite($log_file, $log_entry."\n");
-    fclose($log_file);
-}
-
 class CO_Config {
     use tCO_Basalt_Config; // These are the built-in config methods.
     
     static private $_god_mode_id = 2;               ///< God Login Security DB ID. This is private, so it can't be programmatically changed.
     static private $_god_mode_password = 'BWU-HA-HAAAA-HA!'; ///< Plaintext password for the God Mode ID login. This overrides anything in the ID row.
+    /// These are special callbacks for logging. Read carefully. The first logs the bottom of the stack, the second, the top.
+    static private $_low_level_log_handler_function = 'global_scope_basalt_low_level_logging_function';
+                                                     /**<   WARNING: DANGER WILL ROBINSON DANGER
+                                                            This is a special "callback caller" for logging Database calls (PDO). The callback must be defined in the CO_Config::$_low_level_log_handler_function static variable,
+                                                            either as a function (global scope), or as an array (with element 0 being the object, itself, and element 1 being the name of the function).
+                                                            For most functions in the global scope, this will simply be the function name.
+                                                            If this will be an object method, then it should be an array, with element 0 as the object, and element 1 a string, containing the function name.
+                                                            The function signature will be:
+                                                                function log_callback(  $in_id,     ///< REQUIRED: The numeric login ID of the currently logged-in user..
+                                                                                        $in_sql,    ///< REQUIRED: The SQL being sent to the PDO prepared query.
+                                                                                        $in_params  ///< REQUIRED: Any parameters that are being sent in the prepared query.
+                                                                                    );
+                                                            There is no function return.
+                                                            The function will take care of logging the SQL query in whatever fashion the user desires.
+                                                            THIS SHOULD BE DEBUG ONLY!!! There are so many security implications in leaving this on, that I can't even begin to count. Also, performance will SUCK.
+                                                            It should be noted that there may be legal, ethical and resource ramifications for logging.
+                                                            It is up to the implementor to ensure compliance with all constraints.
+                                                    */
+
     static private $_log_handler_function = 'global_scope_basalt_logging_function';
                                                     /**<    This is a special callback for logging REST calls (BASALT). For most functions in the global scope, this will simply be the function name,
                                                             or as an array (with element 0 being the object, itself, and element 1 being the name of the function).
@@ -95,4 +101,37 @@ class CO_Config {
     static function extension_dir() {
         return dirname(dirname(dirname(dirname(__FILE__)))).'/rvp_plugins';
     }
+}
+
+function global_scope_basalt_logging_function($in_andisol_instance, $in_server_vars) {
+    $log_display = $in_server_vars;
+    $id = (NULL !== $in_andisol_instance->get_login_item()) ? $in_andisol_instance->get_login_item()->id() : '';
+    $login_id = (NULL !== $in_andisol_instance->get_login_item()) ? $in_andisol_instance->get_login_item()->login_id : '';
+    $id_entry = '' != $id ? "$id:$login_id" : '-';
+    $date_entry = date('\[d\/M\/Y:H:m:s O\]');
+    $request_entry = $_SERVER['REQUEST_METHOD'].' '.$_SERVER['REQUEST_URI'];
+    $log_entry = $_SERVER['REMOTE_ADDR']. ' - '.$id_entry.' '.$date_entry.' "'.$request_entry.'"';
+    $log_file = fopen(dirname(dirname(__FILE__)).'/log/test.log', 'a');
+    fwrite($log_file, $log_entry."\n");
+    fclose($log_file);
+}
+
+function global_scope_basalt_low_level_logging_function($id, $in_sql, $in_params) {
+    $id_entry = '' != $id ? "$id" : '-';
+    $date_entry = date('\[d\/M\/Y:H:m:s O\]');
+    $request_entry = $_SERVER['REQUEST_METHOD'].' '.$_SERVER['REQUEST_URI'];
+    $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+    $bt_array = [];
+    $bt_trace = '';
+    $indent = '';
+    foreach ($backtrace as $frame) {
+        $bt_array[] = $frame['function'].' ('.$frame['file'].':'.$frame['line'].')';
+        $bt_trace .= $indent.$bt_array[count($bt_array) - 1]."\n";
+        $indent .= "\t";
+    }
+    
+    $log_entry = $id_entry.' "SQL:'.$in_sql.'" "PARAMS:\''.implode('\',\'', $in_params).'\'" "BACKTRACE:'."\n$bt_trace".'"'."\n";
+    $log_file = fopen(dirname(dirname(__FILE__)).'/log/test.log', 'a');
+    fwrite($log_file, $log_entry."\n");
+    fclose($log_file);
 }

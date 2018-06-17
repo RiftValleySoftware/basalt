@@ -24,9 +24,10 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     \returns an associative array of strings and integers.
      */
-    protected function _get_short_object_description( $in_object    ///< REQUIRED: The user or login object to extract information from.
-                                                    ) {
-        $ret = Array('id' => $in_object->id(), 'name' => $in_object->name, 'lang' => $in_object->get_lang());
+    protected function _get_short_description(  $in_object,                 ///< REQUIRED: The user or login object to extract information from.
+                                                $in_additional_info = false ///< OPTIONAL: If true (default is false), then some extra information will be added to the basic ID and name.
+                                            ) {
+        $ret = parent::_get_short_description($in_object, $in_additional_info);
         
         if ($in_object instanceof CO_Security_Login) {
             $ret['login_id'] = $in_object->login_id;
@@ -41,9 +42,9 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     \returns an associative array of strings and integers.
      */
-    protected function _get_long_login_description( $in_login_object    ///< REQUIRED: The login object to extract information from.
-                                                    ) {
-        $ret = $this->_get_short_object_description($in_login_object);
+    protected function _get_long_description( $in_login_object    ///< REQUIRED: The login object to extract information from.
+                                            ) {
+        $ret = parent::_get_long_description($in_login_object);
         
         $user_item = $in_login_object->get_user_object();
         
@@ -91,7 +92,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     protected function _get_long_user_description(  $in_user_object,            ///< REQUIRED: The user object to extract information from.
                                                     $in_with_login_info = false ///< OPTIONAL: Default is false. If true, then the login information is appended.
                                                     ) {
-        $ret = $this->_get_short_object_description($in_user_object);
+        $ret = parent::_get_long_description($in_user_object);
         
         $test_string = $in_user_object->get_surname();
         if (isset($test_string) && trim($test_string)) {
@@ -144,11 +145,12 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     $ret['current_login'] = true;
                 }
         
-                $ret['login'] = $this->_get_long_login_description($login_instance);
+                $ret['login'] = $this->_get_long_description($login_instance);
             }
         }
         
         $payload = $in_user_object->get_payload();
+        
         if ($payload) {
             $ret['payload'] = base64_encode($payload);
             $temp_file = tempnam(sys_get_temp_dir(), 'RVP');  
@@ -205,9 +207,9 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     $login_instance = $is_numeric ? $in_andisol_instance->get_login_item($id) : $in_andisol_instance->get_login_item_by_login_string($id);
                     if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
                         if ($show_details) {
-                            $ret[] = $this->_get_long_login_description($login_instance, true);
+                            $ret[] = $this->_get_long_description($login_instance);
                         } else {
-                            $ret[] = $this->_get_short_object_description($login_instance);
+                            $ret[] = $this->_get_short_description($login_instance);
                         }
                     }
                 }
@@ -219,9 +221,9 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 foreach ($login_id_list as $login_instance) {
                     if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
                         if ($show_details) {
-                            $ret[] = $this->_get_long_login_description($login_instance, true);
+                            $ret[] = $this->_get_long_description($login_instance);
                         } else {
-                            $ret[] = $this->_get_short_object_description($login_instance);
+                            $ret[] = $this->_get_short_description($login_instance);
                         }
                     }
                 }
@@ -330,25 +332,29 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                 $result = true;
                                 
                                 foreach ($remove as $id) {
-                                    $child = $in_andisol_instance->get_single_data_record_by_id($id);
-                                    if (isset($child)) {
-                                        $result = $user->deleteThisElement($child);
-                                    }
+                                    if ($id != $user->id()) {
+                                        $child = $in_andisol_instance->get_single_data_record_by_id($id);
+                                        if (isset($child)) {
+                                            $result = $user->deleteThisElement($child);
+                                        }
                                     
-                                    if (!$result) {
-                                        break;
+                                        if (!$result) {
+                                            break;
+                                        }
                                     }
                                 }
                                 
                                 if ($result) {
                                     foreach ($add as $id) {
-                                        $child = $in_andisol_instance->get_single_data_record_by_id($id);
-                                        if (isset($child)) {
-                                            $result = $user->appendElement($child);
-                                        }
+                                        if ($id != $user->id()) {
+                                            $child = $in_andisol_instance->get_single_data_record_by_id($id);
+                                            if (isset($child)) {
+                                                $result = $user->appendElement($child);
+                                            }
                                     
-                                        if (!$result) {
-                                            break;
+                                            if (!$result) {
+                                                break;
+                                            }
                                         }
                                     }
                                 }
@@ -546,7 +552,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     
                     if ($login_user || $in_login_too) {
                         $login_item = $user->get_login_instance();
-                        $login_dump = $this->_get_long_login_description($login_item);
+                        $login_dump = $this->_get_long_description($login_item);
                         $ok = $login_item->delete_from_db();
                     }
                     
@@ -586,25 +592,29 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                     $result = true;
                                 
                                     foreach ($remove as $id) {
-                                        $child = $in_andisol_instance->get_single_data_record_by_id($id);
-                                        if (isset($child)) {
-                                            $result = $user->deleteThisElement($child);
-                                        }
+                                        if ($id != $user->id()) {
+                                            $child = $in_andisol_instance->get_single_data_record_by_id($id);
+                                            if (isset($child)) {
+                                                $result = $user->deleteThisElement($child);
+                                            }
                                     
-                                        if (!$result) {
-                                            break;
+                                            if (!$result) {
+                                                break;
+                                            }
                                         }
                                     }
                                 
                                     if ($result) {
                                         foreach ($add as $id) {
-                                            $child = $in_andisol_instance->get_single_data_record_by_id($id);
-                                            if (isset($child)) {
-                                                $result = $user->appendElement($child);
-                                            }
+                                            if ($id != $user->id()) {
+                                                $child = $in_andisol_instance->get_single_data_record_by_id($id);
+                                                if (isset($child)) {
+                                                    $result = $user->appendElement($child);
+                                                }
                                     
-                                            if (!$result) {
-                                                break;
+                                                if (!$result) {
+                                                    break;
+                                                }
                                             }
                                         }
                                     }
@@ -841,7 +851,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         if ($show_details) {
                             $ret[] = $this->_get_long_user_description($user, true);
                         } else {
-                            $ret[] = $this->_get_short_object_description($user);
+                            $ret[] = $this->_get_short_description($user);
                         }
                     }
                 }
@@ -865,7 +875,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                 if ($show_details) {
                                     $ret[] = $this->_get_long_user_description($user, true);
                                 } else {
-                                    $ret[] = $this->_get_short_object_description($user);
+                                    $ret[] = $this->_get_short_description($user);
                                 }
                             }
                         }
@@ -881,7 +891,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                             if ($show_details) {
                                 $ret[] = $this->_get_long_user_description($user, true);
                             } else {
-                                $ret[] = $this->_get_short_object_description($user);
+                                $ret[] = $this->_get_short_description($user);
                             }
                         }
                     }

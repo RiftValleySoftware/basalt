@@ -74,6 +74,51 @@ abstract class A_CO_Basalt_Plugin {
     
     /***********************/
     /**
+    This returns a fairly short summary of the given object.
+    
+    \returns an associative array of strings and integers.
+     */
+    protected function _get_short_description(  $in_object  ///< REQUIRED: The object to parse.
+                                            ) {
+        $ret = Array('id' => $in_object->id());
+        
+        $name = $in_object->name;
+        
+        if (isset($name) && trim($name)) {
+            $ret ['name'] = $name;
+        }
+        
+        $lang = $in_object->get_lang();
+
+        if (isset($lang) && trim($lang)) {
+            $ret ['lang'] = $lang;
+        }
+        
+        return $ret;
+    }
+    
+    /***********************/
+    /**
+    This returns a fairly short summary of the given object.
+    
+    \returns an associative array of strings and integers.
+     */
+    protected function _get_long_description(   $in_object  ///< REQUIRED: The object to parse.
+                                            ) {
+        $ret = $this->_get_short_description($in_object);
+
+//         $my_ids = $in_object->get_access_object()->get_security_ids();
+//         $read_item = intval($in_object->read_security_id);
+//         $write_item = intval($in_object->write_security_id);
+//         
+//         $ret['read_token'] = $read_item;
+//         $ret['write_token'] = $write_item;
+        
+        return $ret;
+    }
+
+    /***********************/
+    /**
     This returns the appropriate XML header for our response.
     
     \returns a string, with the entire XML header (including the preamble).
