@@ -58,11 +58,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
         $ret['login_id'] = $in_login_object->login_id;
         $ret['security_tokens'] = $in_login_object->ids();
-        $ret['last_login'] = date('Y-m-d H:i:s', $in_login_object->last_access);
-        
-        if ($in_login_object->user_can_write()) {
-            $ret['writeable'] = true;
-        }
         
         $api_key = $in_login_object->get_api_key();
         $key_age = $in_login_object->get_api_key_age_in_seconds();
@@ -124,31 +119,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $ret['nickname'] = $test_string;
         }
         
-        if ($in_with_login_info) {
-            $login_instance = $in_user_object->get_login_instance();
-        
-            $child_objects = $this->_get_child_ids($in_user_object);
-            if (0 < count($child_objects)) {
-                $ret['children_ids'] = $child_objects;
-            }
-        
-            if ($in_user_object->user_can_write()) {
-                $ret['writeable'] = true;
-            }
-        
-            if (0 < $in_user_object->owner_id()) {
-                $ret['owner_id'] = $in_user_object->owner_id();
-            }
-        
-            if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
-                if ($login_instance->id() == $in_user_object->get_access_object()->get_login_id()) {
-                    $ret['current_login'] = true;
-                }
-        
-                $ret['login'] = $this->_get_long_description($login_instance);
-            }
-        }
-        
         $payload = $in_user_object->get_payload();
         
         if ($payload) {
@@ -158,6 +128,23 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $finfo = finfo_open(FILEINFO_MIME_TYPE);  
             $content_type = finfo_file($finfo, $temp_file);
             $ret['payload_type'] = $content_type.';base64';
+        }
+        
+        if ($in_with_login_info) {
+            $login_instance = $in_user_object->get_login_instance();
+        
+            $child_objects = $this->_get_child_ids($in_user_object);
+            if (0 < count($child_objects)) {
+                $ret['children_ids'] = $child_objects;
+            }
+        
+            if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
+                if ($login_instance->id() == $in_user_object->get_access_object()->get_login_id()) {
+                    $ret['current_login'] = true;
+                }
+        
+                $ret['associated_login'] = $this->_get_long_description($login_instance);
+            }
         }
         
         return $ret;
@@ -420,7 +407,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     $ret = Array('new_user' => $this->_get_long_user_description($user, true));
                     
                     if (isset($new_password)) {
-                        $ret['new_user']['login']['password'] = $new_password;
+                        $ret['new_user']['associated_login']['password'] = $new_password;
                     }
                 } else {
                     header('HTTP/1.1 400 Failed to Create User');

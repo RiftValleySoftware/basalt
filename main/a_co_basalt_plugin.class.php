@@ -106,13 +106,31 @@ abstract class A_CO_Basalt_Plugin {
     protected function _get_long_description(   $in_object  ///< REQUIRED: The object to parse.
                                             ) {
         $ret = $this->_get_short_description($in_object);
-
-//         $my_ids = $in_object->get_access_object()->get_security_ids();
-//         $read_item = intval($in_object->read_security_id);
-//         $write_item = intval($in_object->write_security_id);
-//         
-//         $ret['read_token'] = $read_item;
-//         $ret['write_token'] = $write_item;
+        
+        // We only return tokens that we already know about. It's entirely possible for a record to have read or write token that is not in our set.
+        $my_ids = $in_object->get_access_object()->get_security_ids();
+        $read_item = intval($in_object->read_security_id);
+        $write_item = intval($in_object->write_security_id);
+        
+        if (in_array($read_item, $my_ids)) {
+            $ret['read_token'] = $read_item;
+        }
+        
+        if (in_array($write_item, $my_ids)) {
+            $ret['write_token'] = $write_item;
+        }
+        
+        if (isset($in_object->last_access)) {
+            $ret['last_access'] = date('Y-m-d H:i:s', $in_object->last_access);
+        }
+        
+        if ($in_object->user_can_write()) {
+            $ret['writeable'] = true;
+        }
+        
+        if (method_exists($in_object, 'owner_id') && (0 < $in_object->owner_id())) {
+            $ret['owner_id'] = $in_object->owner_id();
+        }
         
         return $ret;
     }

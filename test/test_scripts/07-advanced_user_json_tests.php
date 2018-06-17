@@ -20,7 +20,7 @@ basalt_run_tests(57, 'ADVANCED JSON PEOPLE TESTS', '');
 // -------------------------- DEFINITIONS AND TESTS -----------------------------------
 
 function basalt_test_define_0057() {
-    basalt_run_single_direct_test(57, 'PASS: Add an Image Payload to an Existing User (PUT)', 'We add a picture to \'norm\', and change the user name to \'Lena\' (Guess which picture we\'re uploading).', 'user_tests', 'asp', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(57, 'PASS: Add an Image Payload to an Existing User', 'We add a picture to \'norm\', and change the user name to \'Lena\' (Guess which picture we\'re uploading).', 'user_tests', 'asp', '', 'CoreysGoryStory');
 }
 
 function basalt_test_0057($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -62,7 +62,7 @@ function basalt_test_0057($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // --------------------
 
 function basalt_test_define_0058() {
-    basalt_run_single_direct_test(58, 'PASS: Replace the Image Payload to an Existing User (PUT)', 'We change the picture for \'norm\', and change the name again.', '', 'asp', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(58, 'PASS: Replace the Image Payload to an Existing User', 'We change the picture for \'norm\', and change the name again.', '', 'asp', '', 'CoreysGoryStory');
 }
 
 function basalt_test_0058($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -110,7 +110,7 @@ function basalt_test_0058($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // --------------------
 
 function basalt_test_define_0059() {
-    basalt_run_single_direct_test(59, 'PASS: Delete the Image Payload, and a Lot of Information, from an Existing User (PUT)', 'We remove the picture for \'norm\', change the name again, and delete a lot of the name information we previously set.', '', 'asp', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(59, 'PASS: Delete the Image Payload, and a Lot of Information, from an Existing User', 'We remove the picture for \'norm\', change the name again, and delete a lot of the name information we previously set.', '', 'asp', '', 'CoreysGoryStory');
 }
 
 function basalt_test_0059($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -494,14 +494,14 @@ function basalt_test_0069($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<pre style="color:green">'.prettify_json($result).'</pre>');
     }
     echo('<h3>DURING:</h3>');
-    $result = call_REST_API('PUT', 'http://localhost/basalt/test/basalt_runner.php/json/people/people/7?child_ids=2,5,6,7,8', NULL, $drama_queen_api_key, $result_code, true);
+    $result = call_REST_API('PUT', 'http://localhost/basalt/test/basalt_runner.php/json/people/people/7?child_ids=2,5,6,7,8', NULL, $drama_queen_api_key, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<pre style="color:green">'.prettify_json($result).'</pre>');
     }
     echo('<h3>AFTER:</h3>');
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/people/7?show_details', NULL, $drama_queen_api_key, $result_code, true);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/people/7?show_details', NULL, $drama_queen_api_key, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -545,6 +545,35 @@ function basalt_test_0069($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+}
+
+// --------------------
+
+function basalt_test_define_0070() {
+    basalt_run_single_direct_test(70, 'PASS: Create a User/Login Pair With Child Objects, Names and A Picture', 'We log in as a manager, and create a new user and login pair. We give the user the \'Full Monty\'.', 'user_tests', 'aspie', '', 'CoreysGoryStory');
+}
+
+function basalt_test_0070($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+    echo('<h3>Welcome to our new user:</h3>');
+    $result = call_REST_API('POST', 'http://localhost/basalt/test/basalt_runner.php/json/people/people/?login_id=Marvin&name=Marvin&surname=Martian&given_name=Marvin&middle_name=D&nickname=Angry+Little+Fella&prefix=Mar.Tian&suffix=Esq.&tokens=6,7,8&child_ids=2,5,6,7,8', Array('filepath' => dirname(dirname(__FILE__)).'/images/Marvin.svg', 'type' => 'image/svg+xml', 'name' => 'Marvin.svg'), $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        $json_object = json_decode($result);
+        $payload = $json_object->people->people->new_user->payload;
+        $type = $json_object->people->people->new_user->payload_type;
+        $json_object->people->people->new_user->payload = '[LARGE PAYLOAD]';
+        $json_object = json_encode($json_object);
+        echo('<pre style="color:green">'.prettify_json($json_object).'</pre>');
+        echo('<div style="text-align:center;margin:1em"><img src="data:'.$type.','.$payload.'" title="Has anyone seen my Immodium Q35 Space Modulator?" alt="Marvin" style="width:256px" /></div>');
     }
 }
 ?>

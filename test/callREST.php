@@ -57,7 +57,6 @@ function call_REST_API( $method,
             
             if ($file) {
                 curl_setopt($curl, CURLOPT_SAFE_UPLOAD, true);
-                curl_setopt($curl, CURLOPT_HEADER, true);
                 curl_setopt($curl, CURLOPT_HTTPHEADER, ['Expect:', 'Content-type: multipart/form-data']);
                 $post = Array('payload'=> curl_file_create($temp_file_name, $content_type));
                 curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
@@ -68,7 +67,6 @@ function call_REST_API( $method,
             curl_setopt($curl, CURLOPT_PUT, true);
             
             if ($file) {
-                curl_setopt($curl, CURLOPT_HEADER, false);
                 curl_setopt($curl, CURLOPT_INFILE, $file);
                 curl_setopt($curl, CURLOPT_INFILESIZE, $file_size);
             }
@@ -86,12 +84,12 @@ function call_REST_API( $method,
         curl_setopt($curl, CURLOPT_USERPWD, "$api_key:$api_key");
     }
 
+    curl_setopt($curl, CURLOPT_HEADER, false);
     curl_setopt($curl, CURLOPT_URL, $url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($curl, CURLOPT_BINARYTRANSFER, true);
+    curl_setopt($curl, CURLOPT_VERBOSE, false);
     
     if (isset($display_log) && $display_log) {
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_HEADERFUNCTION, function ( $curl, $header_line ) {
             echo "<pre>".$header_line.'</pre>';
             return strlen($header_line);
