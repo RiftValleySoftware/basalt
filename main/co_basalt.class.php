@@ -345,7 +345,9 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                         $andisol_instance = new CO_Andisol($login_id, '', $password);
                     
                         if (isset($andisol_instance) && ($andisol_instance instanceof CO_Andisol) && $andisol_instance->logged_in()) {
-                            CO_Config::call_log_handler_function($andisol_instance, $_SERVER);
+                            if (method_exists('CO_Config', 'call_log_handler_function')) {
+                                CO_Config::call_log_handler_function($andisol_instance, $_SERVER);
+                            }
                             $login_item = $andisol_instance->get_login_item();
                         
                             // If we are logging in, we shortcut the process, and simply return the API key.
@@ -381,7 +383,9 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                     $andisol_instance = new CO_Andisol('', '', '', $api_key1);
                 
                     if (isset($andisol_instance) && ($andisol_instance instanceof CO_Andisol) && $andisol_instance->logged_in()) {
-                        CO_Config::call_log_handler_function($andisol_instance, $_SERVER);
+                        if (method_exists('CO_Config', 'call_log_handler_function')) {
+                            CO_Config::call_log_handler_function($andisol_instance, $_SERVER);
+                        }
                         $login_item = $andisol_instance->get_login_item();
                     
                         // We "log out" by clearing the API key.
@@ -411,7 +415,9 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                 $andisol_instance = new CO_Andisol('', '', '', $api_key1);
                 
                 if (isset($andisol_instance) && ($andisol_instance instanceof CO_Andisol)) {
-                    CO_Config::call_log_handler_function($andisol_instance, $_SERVER);
+                    if (method_exists('CO_Config', 'call_log_handler_function')) {
+                        CO_Config::call_log_handler_function($andisol_instance, $_SERVER);
+                    }
                     $this->_andisol_instance = $andisol_instance;
                 } else {
                     header('HTTP/1.1 500 Internal Server Error');
