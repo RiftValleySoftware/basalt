@@ -260,9 +260,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 }
                 
                 $read_token = isset($in_query) && is_array($in_query) && isset($in_query['read_token']) && trim($in_query['read_token']) ? trim($in_query['read_token']) : NULL;
-                if (isset($in_query['read_token'])) {
-                    unset($in_query['read_token']);
-                }
+                
                 $is_manager = isset($in_query) && is_array($in_query) && isset($in_query['is_manager']);
                 if (isset($in_query['is_manager'])) {
                     unset($in_query['is_manager']);
@@ -272,7 +270,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $settings_list = $this->_build_mod_list($in_andisol_instance, $in_http_method, $in_query);   // First, build up a list of the settings for the new user.
                 
                 // Before we start, we make sure that only valid data has been provided. These are the ONLY settings allowed when creating a user.
-                $comp_array = Array('lang', 'payload', 'surname', 'middle_name', 'given_name', 'prefix', 'suffix', 'nickname', 'child_ids');
+                $comp_array = Array('lang', 'payload', 'surname', 'middle_name', 'given_name', 'prefix', 'suffix', 'nickname', 'child_ids', 'read_token', 'write_token');
                 $keys = array_keys($settings_list);
                 
                 foreach ($keys as $key) {
@@ -357,7 +355,21 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                         $result = $login_instance->set_lang($value);
                                     }
                                 }
+                                break;
+                                    
+                            case 'read_token':
+                                $result = $user->set_read_security_id($value);
+                                break;
+                                    
+                            case 'write_token':
+                                $result = $user->set_write_security_id($value);
+                                if ($result) {
+                                    $login_instance = $user->get_login_instance();
                                 
+                                    if ($login_instance) {
+                                        $result = $login_instance->set_write_security_id($value);
+                                    }
+                                }
                                 break;
                     
                             case 'payload':
@@ -619,6 +631,30 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                     }
                                 
                                     break;
+                                    
+                                case 'read_token':
+                                    $result = $user->set_read_security_id($value);
+                                
+                                    if ($result) {
+                                        $login_instance = $user->get_login_instance();
+                                
+                                        if ($login_instance) {
+                                            $result = $login_instance->set_read_security_id($value);
+                                        }
+                                    }
+                                    break;
+                                    
+                                case 'write_token':
+                                    $result = $user->set_write_security_id($value);
+                                
+                                    if ($result) {
+                                        $login_instance = $user->get_login_instance();
+                                
+                                        if ($login_instance) {
+                                            $result = $login_instance->set_write_security_id($value);
+                                        }
+                                    }
+                                    break;
                     
                                 case 'payload':
                                     $result = $user->set_payload($value);
@@ -738,6 +774,16 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 }
             
                 unset($in_query['child_ids']);
+            }
+        
+            // Next, we see if we want to change the read security.
+            if (isset($in_query['read_token'])) {
+                $ret['read_token'] = intval($in_query['read_token']);
+            }
+        
+            // Next, we see if we want to change the write security.
+            if (isset($in_query['write_token'])) {
+                $ret['write_token'] = intval($in_query['write_token']);
             }
         
             // Next, we see if we want to change the name.
