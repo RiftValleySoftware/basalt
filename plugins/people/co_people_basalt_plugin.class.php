@@ -227,6 +227,11 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
     /***********************/
     /**
+    Handles the PUT (Modify User) implementation of the edit functionality.
+    
+    Also dispatches POST and DELETE calls.
+    
+    \returns an associative array, with the resulting data.
      */
     protected function _handle_edit_people( $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
                                             $in_http_method,        ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
@@ -237,11 +242,431 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
         $login_user = isset($in_query) && is_array($in_query) && isset($in_query['login_user']);    // Flag saying they are only looking for login people.
         
-        if (('POST' == $in_http_method) && $in_andisol_instance->manager()) {    // First, see if they want to create a new user. This one is fairly easy. We have to be a manager to create users and logins.
-            $login_id = (isset($in_query['login_id']) && trim($in_query['login_id'])) ? trim($in_query['login_id']) : NULL;
-            $login_user = $login_user || (NULL != $login_id);
+        if (('POST' == $in_http_method) && $in_andisol_instance->manager()) {
+            $ret = $this->_handle_edit_people_post($in_andisol_instance, $login_user, $in_path, $in_query);
+        } elseif (('DELETE' == $in_http_method) && $in_andisol_instance->manager()) {
+            $ret = $this->_handle_edit_people_delete($in_andisol_instance, $login_user, $in_path, $in_query);
+        } elseif (('PUT' == $in_http_method) && $in_andisol_instance->manager()) {
+            // Otherwise, we build up a userlist.
+            $user_object_list = [];
             
-            if (!$login_user || $login_id) {
+            // See if the users are being referenced by login ID.
+            if (isset($in_path) && is_array($in_path) && (1 < count($in_path) && ('login_ids' == $in_path[0]))) {    // See if they are looking for people associated with string login IDs.
+                // Now, we see if they are a list of integer IDs or strings (login string IDs).
+                $login_id_list = array_map('trim', explode(',', $in_path[1]));
+            
+                $is_numeric = array_reduce($login_id_list, function($carry, $item){ return $carry && ctype_digit($item); }, true);
+            
+                $login_id_list = $is_numeric ? array_map('intval', $login_id_list) : $login_id_list;
+            
+                foreach ($login_id_list as $login_id) {
+                    $login_instance = $is_numeric ? $in_andisol_instance->get_login_item($login_id) : $in_andisol_instance->get_login_item_by_login_string($login_id);
+                
+                    if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
+                        $id_string = $login_instance->login_id;
+                        $user = $in_andisol_instance->get_user_from_login_string($id_string);
+                        if ($user->user_can_write() && $user->has_login()) {
+                            $user_object_list[] = $user;
+                        }
+                    }
+                }
+            } elseif (isset($in_path) && is_array($in_path) && (0 < count($in_path))) { // See if they are looking for a list of individual discrete integer IDs.
+                $user_nums = strtolower($in_path[0]);
+        
+                $single_user_id = (ctype_digit($user_nums) && (1 < intval($user_nums))) ? intval($user_nums) : NULL;    // This will be set if we are looking for only one single user.
+                // The first thing that we'll do, is look for a list of user IDs. If that is the case, we split them into an array of int.
+                $user_list = explode(',', $user_nums);
+        
+                // If we do, indeed, have a list, we will force them to be ints, and cycle through them.
+                if ($single_user_id || (1 < count($user_list))) {
+                    $user_list = ($single_user_id ? [$single_user_id] : array_map('intval', $user_list));
+            
+                    foreach ($user_list as $id) {
+                        if (0 < $id) {
+                            $user = $in_andisol_instance->get_single_data_record_by_id($id);
+                            if (isset($user) && ($user instanceof CO_User_Collection)) {
+                                if (!$login_user || ($login_user && $user->has_login()) && $user->user_can_write()) {
+                                    $user_object_list[] = $user;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                $userlist = $in_andisol_instance->get_all_users();
+                if (0 < count($userlist)) {
+                    foreach ($userlist as $user) {
+                        if (isset($user) && ($user instanceof CO_User_Collection)) {
+                            if (!$login_user || ($login_user && $user->has_login()) && $user->user_can_write()) {
+                                $user_object_list[] = $user;
+                            }
+                        }
+                    }
+                }
+            }
+        
+            // At this point, we have a list of writable user objects.
+            // Now, if we are not a manager, then the only object we have the right to alter is our own.
+            if (!$in_andisol_instance->manager()) {
+                $temp = NULL;
+                foreach ($user_object_list as $user) {
+                    if ($user == $in_andisol_instance->current_user()) {
+                        $temp = $user;
+                        break;
+                    }
+                }
+                
+                $user_object_list = [];
+                
+                if (isset($temp)) {
+                    $user_object_list = [$temp];
+                }
+            }
+            
+            // At this point, we have a fully-vetted list of users for modification, or none. If none, we react badly.
+            if (0 == count($user_object_list)) {
+                header('HTTP/1.1 403 No Editable Records'); // I don't think so. Homey don't play that game.
+                exit();
+            } else {
+                $mod_list = $this->_build_mod_list($in_andisol_instance, 'PUT', $in_query);
+                $ret = [];
+                
+                foreach ($user_object_list as $user) {
+                    if ($user->user_can_write()) {    // We have to be allowed to write to this user.
+                        $user_report = Array('before' => $this->_get_long_user_description($user, $login_user));
+                        foreach ($mod_list as $key => $value) {
+                            switch ($key) {
+                                case 'child_ids':
+                                    $add = $value['add'];
+                                    $remove = $value['remove'];
+                                    $result = true;
+                                
+                                    foreach ($remove as $id) {
+                                        if ($id != $user->id()) {
+                                            $child = $in_andisol_instance->get_single_data_record_by_id($id);
+                                            if (isset($child)) {
+                                                $result = $user->deleteThisElement($child);
+                                            }
+                                    
+                                            if (!$result) {
+                                                break;
+                                            }
+                                        }
+                                    }
+                                
+                                    if ($result) {
+                                        foreach ($add as $id) {
+                                            if ($id != $user->id()) {
+                                                $child = $in_andisol_instance->get_single_data_record_by_id($id);
+                                                if (isset($child)) {
+                                                    $result = $user->appendElement($child);
+                                                }
+                                    
+                                                if (!$result) {
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    break;
+                                    
+                                case 'lang':
+                                    $result = $user->set_lang($value);
+                                
+                                    if ($result && $login_user) {
+                                        $login_instance = $user->get_login_instance();
+                                    
+                                        if ($login_instance && $login_instance->user_can_write()) {
+                                            $result = $login_instance->set_lang($value);
+                                        }
+                                    }
+                                
+                                    break;
+                                    
+                                case 'read_token':
+                                    $result = $user->set_read_security_id($value);
+                                
+                                    if ($result && $login_user) {
+                                        $login_instance = $user->get_login_instance();
+                                
+                                        if ($login_instance) {
+                                            $result = $login_instance->set_read_security_id($value);
+                                        }
+                                    }
+                                    break;
+                                    
+                                case 'write_token':
+                                    $result = $user->set_write_security_id($value);
+                                
+                                    if ($result && $login_user) {
+                                        $login_instance = $user->get_login_instance();
+                                
+                                        if ($login_instance) {
+                                            $result = $login_instance->set_write_security_id($value);
+                                        }
+                                    }
+                                    break;
+                                
+                                case 'tokens':
+                                    if ($login_user) {  // Can only do this, if the caller explicitly requested a login user.
+                                        $login_instance = $user->get_login_instance();
+                            
+                                        if ($login_instance) {
+                                            $result = $login_instance->set_ids($value);
+                                        }
+                                    } else {
+                                        header('HTTP/1.1 400 Improper Data Provided');
+                                        exit();
+                                    }
+                                    break;
+                                
+                                case 'payload':
+                                    $result = $user->set_payload($value);
+                                    break;
+                                
+                                case 'remove_payload':
+                                    $result = $user->set_payload(NULL);
+                                    break;
+                                
+                                case 'name':
+                                    $result = $user->set_name($value);
+                                    break;
+                                
+                                case 'surname':
+                                    $result = $user->set_surname($value);
+                                    break;
+                                
+                                case 'middle_name':
+                                    $result = $user->set_middle_name($value);
+                                    break;
+                                
+                                case 'given_name':
+                                    $result = $user->set_given_name($value);
+                                    break;
+                                
+                                case 'prefix':
+                                    $result = $user->set_prefix($value);
+                                    break;
+                                
+                                case 'suffix':
+                                    $result = $user->set_suffix($value);
+                                    break;
+                                
+                                case 'nickname':
+                                    $result = $user->set_nickname($value);
+                                    break;
+                                
+                                case 'login_id':
+                                    if ($in_andisol_instance->god()) {  // Only God can change login IDs.
+                                        $result = $user->set_login_id(intval($value));
+                                        if ($result) {
+                                            $result = $user->set_write_security_id(intval($value));
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                    
+                        $user_report['after'] = $this->_get_long_user_description($user, $login_user);
+                        $ret['changed_users'][] = $user_report;
+                    }
+                }
+            }
+        } else {
+            header('HTTP/1.1 400 Incorrect HTTP Request Method');   // Ah-Ah-Aaaahh! You didn't say the magic word!
+            exit();
+        }
+        
+        return $ret;
+    }
+        
+    /***********************/
+    /**
+    Handles the DELETE (Delete User) implementation of the edit functionality.
+    
+    \returns an associative array, with the resulting data.
+     */
+    protected function _handle_edit_people_delete ( $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                                    $in_login_user,         ///< REQUIRED: True, if the user is associated with a login.
+                                                    $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
+                                                    $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
+                                                ) {
+        $ret = NULL;
+        
+        if ($in_andisol_instance->manager()) {
+            // We build up a userlist.
+            $user_object_list = [];
+            
+            // See if the users are being referenced by login ID.
+            if (isset($in_path) && is_array($in_path) && (1 < count($in_path) && ('login_ids' == $in_path[0]))) {    // See if they are looking for people associated with string login IDs.
+                // Now, we see if they are a list of integer IDs or strings (login string IDs).
+                $login_id_list = array_map('trim', explode(',', $in_path[1]));
+            
+                $is_numeric = array_reduce($login_id_list, function($carry, $item){ return $carry && ctype_digit($item); }, true);
+            
+                $login_id_list = $is_numeric ? array_map('intval', $login_id_list) : $login_id_list;
+            
+                foreach ($login_id_list as $login_id) {
+                    $login_instance = $is_numeric ? $in_andisol_instance->get_login_item($login_id) : $in_andisol_instance->get_login_item_by_login_string($login_id);
+                
+                    if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
+                        $id_string = $login_instance->login_id;
+                        $user = $in_andisol_instance->get_user_from_login_string($id_string);
+                        if ($user->user_can_write() && $user->has_login()) {
+                            $user_object_list[] = $user;
+                        }
+                    }
+                }
+            } elseif (isset($in_path) && is_array($in_path) && (0 < count($in_path))) { // See if they are looking for a list of individual discrete integer IDs.
+                $user_nums = strtolower($in_path[0]);
+        
+                $single_user_id = (ctype_digit($user_nums) && (1 < intval($user_nums))) ? intval($user_nums) : NULL;    // This will be set if we are looking for only one single user.
+                // The first thing that we'll do, is look for a list of user IDs. If that is the case, we split them into an array of int.
+                $user_list = explode(',', $user_nums);
+        
+                // If we do, indeed, have a list, we will force them to be ints, and cycle through them.
+                if ($single_user_id || (1 < count($user_list))) {
+                    $user_list = ($single_user_id ? [$single_user_id] : array_map('intval', $user_list));
+            
+                    foreach ($user_list as $id) {
+                        if (0 < $id) {
+                            $user = $in_andisol_instance->get_single_data_record_by_id($id);
+                            if (isset($user) && ($user instanceof CO_User_Collection)) {
+                                if (!$in_login_user || ($in_login_user && $user->has_login()) && $user->user_can_write()) {
+                                    $user_object_list[] = $user;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                $userlist = $in_andisol_instance->get_all_users();
+                if (0 < count($userlist)) {
+                    foreach ($userlist as $user) {
+                        if (isset($user) && ($user instanceof CO_User_Collection)) {
+                            if (!$in_login_user || ($in_login_user && $user->has_login()) && $user->user_can_write()) {
+                                $user_object_list[] = $user;
+                            }
+                        }
+                    }
+                }
+            }
+        
+            // At this point, we have a list of writable user objects.
+            // Now, if we are not a manager, then the only object we have the right to alter is our own.
+            if (!$in_andisol_instance->manager()) {
+                $temp = NULL;
+                foreach ($user_object_list as $user) {
+                    if ($user == $in_andisol_instance->current_user()) {
+                        $temp = $user;
+                        break;
+                    }
+                }
+                
+                $user_object_list = [];
+                
+                if (isset($temp)) {
+                    $user_object_list = [$temp];
+                }
+            }
+            
+            // At this point, we have a fully-vetted list of users for modification, or none. If none, we react badly.
+            if (0 == count($user_object_list)) {
+                header('HTTP/1.1 403 No Editable Records'); // I don't think so. Homey don't play that game.
+                exit();
+            } else {   // DELETE is fairly straightforward
+                // We also can't delete ourselves, so we will remove any items that are us.
+                $temp = [];
+                foreach ($user_object_list as $user) {
+                    if ($user != $in_andisol_instance->current_user()) {
+                        $temp[] = $user;
+                    }
+                }
+                
+                $user_object_list = $temp;
+                
+                // We now have a list of items to delete. However, we also need to see if we have full rights to logins, if logins were also indicated.
+                if ($in_login_user) {  // We can only delete user/login pairs for which we have write permissions on both.
+                    $temp = [];
+                    foreach ($user_object_list as $user) {
+                        $login_item = $user->get_login_instance();
+                        if ($login_item->user_can_write()) {
+                            $temp[] = $user;
+                        }
+                    }
+                
+                    $user_object_list = $temp;
+                }
+                
+                // Review what we have. If nothing, throw a hissy fit.
+                if (0 == count($user_object_list)) {
+                    header('HTTP/1.1 403 No Editable Records'); // I don't think so. Homey don't play that game.
+                    exit();
+                }
+                    
+                $ret = Array ('deleted_users' => [], 'deleted_logins' => []);
+                
+                // Now, we have a full list of users that we have permission to delete.
+                foreach ($user_object_list as $user) {
+                    $user_dump = $this->_get_long_user_description($user, $in_login_user);
+                    $login_dump = NULL;
+                    
+                    $ok = true;
+                    
+                    if ($in_login_user) {
+                        $login_item = $user->get_login_instance();
+                        $login_dump = $this->_get_long_description($login_item);
+                        $ok = $login_item->delete_from_db();
+                    }
+                    
+                    if ($ok) {
+                        $ok = $user->delete_from_db();
+                    }
+                    
+                    // We return a record of the deleted IDs.
+                    if ($ok) {
+                        if (!isset($ret) || !is_array($ret)) {
+                            $ret = ['deleted_users' => []];
+                            if ($in_login_user) {
+                                $ret['deleted_logins'] = [];
+                            }
+                        }
+                        
+                        $ret['deleted_users'][] = $user_dump;
+                        
+                        if ($login_dump) {
+                            $ret['deleted_logins'][] = $login_dump;
+                        }
+                    }
+                }
+            }
+            // OK. We have successfully deleted the users (and maybe the logins, as well). We will return the dumps of the users and logins in the function return as associative arrays.
+        } else {
+            header('HTTP/1.1 400 Incorrect HTTP Request Method');   // Ah-Ah-Aaaahh! You didn't say the magic word!
+            exit();
+        }
+        
+        return $ret;
+    }
+        
+    /***********************/
+    /**
+    Handles the POST (Create User) implementation of the edit functionality.
+    
+    \returns an associative array, with the resulting data.
+     */
+    protected function _handle_edit_people_post(    $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                                    $in_login_user,         ///< REQUIRED: True, if the user is associated with a login.
+                                                    $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
+                                                    $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
+                                                ) {
+        $ret = NULL;
+        
+        if ($in_andisol_instance->manager()) {    // First, see if they want to create a new user. This one is fairly easy. We have to be a manager to create users and logins.
+            $login_id = (isset($in_query['login_id']) && trim($in_query['login_id'])) ? trim($in_query['login_id']) : NULL;
+            $in_login_user = $in_login_user || (NULL != $login_id);
+            
+            if (!$in_login_user || $login_id) {
                 $ret = ['new_user'];
                 $new_password = NULL;
                 
@@ -272,7 +697,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 }
                 
                 $user = NULL;
-                $settings_list = $this->_build_mod_list($in_andisol_instance, $in_http_method, $in_query);   // First, build up a list of the settings for the new user.
+                $settings_list = $this->_build_mod_list($in_andisol_instance, 'POST', $in_query);   // First, build up a list of the settings for the new user.
                 
                 // Before we start, we make sure that only valid data has been provided. These are the ONLY settings allowed when creating a user.
                 $comp_array = Array('lang', 'payload', 'surname', 'middle_name', 'given_name', 'prefix', 'suffix', 'nickname', 'child_ids', 'read_token', 'write_token');
@@ -285,7 +710,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     }
                 }
                 
-                if ($login_user) {  // Create a user/login pair.
+                if ($in_login_user) {  // Create a user/login pair.
                     if ($tokens) {
                         $tokens_temp = array_map('intval', explode(',', $tokens));
                         $tokens = [];
@@ -435,300 +860,8 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 exit();
             }
         } else {
-            // Otherwise, we build up a userlist.
-            $user_object_list = [];
-            
-            // See if the users are being referenced by login ID.
-            if (isset($in_path) && is_array($in_path) && (1 < count($in_path) && ('login_ids' == $in_path[0]))) {    // See if they are looking for people associated with string login IDs.
-                // Now, we see if they are a list of integer IDs or strings (login string IDs).
-                $login_id_list = array_map('trim', explode(',', $in_path[1]));
-            
-                $is_numeric = array_reduce($login_id_list, function($carry, $item){ return $carry && ctype_digit($item); }, true);
-            
-                $login_id_list = $is_numeric ? array_map('intval', $login_id_list) : $login_id_list;
-            
-                foreach ($login_id_list as $login_id) {
-                    $login_instance = $is_numeric ? $in_andisol_instance->get_login_item($login_id) : $in_andisol_instance->get_login_item_by_login_string($login_id);
-                
-                    if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
-                        $id_string = $login_instance->login_id;
-                        $user = $in_andisol_instance->get_user_from_login_string($id_string);
-                        if ($user->user_can_write() && $user->has_login()) {
-                            $user_object_list[] = $user;
-                        }
-                    }
-                }
-            } elseif (isset($in_path) && is_array($in_path) && (0 < count($in_path))) { // See if they are looking for a list of individual discrete integer IDs.
-                $user_nums = strtolower($in_path[0]);
-        
-                $single_user_id = (ctype_digit($user_nums) && (1 < intval($user_nums))) ? intval($user_nums) : NULL;    // This will be set if we are looking for only one single user.
-                // The first thing that we'll do, is look for a list of user IDs. If that is the case, we split them into an array of int.
-                $user_list = explode(',', $user_nums);
-        
-                // If we do, indeed, have a list, we will force them to be ints, and cycle through them.
-                if ($single_user_id || (1 < count($user_list))) {
-                    $user_list = ($single_user_id ? [$single_user_id] : array_map('intval', $user_list));
-            
-                    foreach ($user_list as $id) {
-                        if (0 < $id) {
-                            $user = $in_andisol_instance->get_single_data_record_by_id($id);
-                            if (isset($user) && ($user instanceof CO_User_Collection)) {
-                                if (!$login_user || ($login_user && $user->has_login()) && $user->user_can_write()) {
-                                    $user_object_list[] = $user;
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                $userlist = $in_andisol_instance->get_all_users();
-                if (0 < count($userlist)) {
-                    foreach ($userlist as $user) {
-                        if (isset($user) && ($user instanceof CO_User_Collection)) {
-                            if (!$login_user || ($login_user && $user->has_login()) && $user->user_can_write()) {
-                                $user_object_list[] = $user;
-                            }
-                        }
-                    }
-                }
-            }
-        
-            // At this point, we have a list of writable user objects.
-            // Now, if we are not a manager, then the only object we have the right to alter is our own.
-            if (!$in_andisol_instance->manager()) {
-                $temp = NULL;
-                foreach ($user_object_list as $user) {
-                    if ($user == $in_andisol_instance->current_user()) {
-                        $temp = $user;
-                        break;
-                    }
-                }
-                
-                $user_object_list = [];
-                
-                if (isset($temp)) {
-                    $user_object_list = [$temp];
-                }
-            }
-            
-            // At this point, we have a fully-vetted list of users for modification, or none. If none, we react badly.
-            if (0 == count($user_object_list)) {
-                header('HTTP/1.1 403 No Editable Records'); // I don't think so. Homey don't play that game.
-                exit();
-            } elseif (('DELETE' == $in_http_method) && $in_andisol_instance->manager()) {   // DELETE is fairly straightforward, but we have to be a manager.
-                // We also can't delete ourselves, so we will remove any items that are us.
-                $temp = [];
-                foreach ($user_object_list as $user) {
-                    if ($user != $in_andisol_instance->current_user()) {
-                        $temp[] = $user;
-                    }
-                }
-                
-                $user_object_list = $temp;
-                
-                // We now have a list of items to delete. However, we also need to see if we have full rights to logins, if logins were also indicated.
-                if ($login_user) {  // We can only delete user/login pairs for which we have write permissions on both.
-                    $temp = [];
-                    foreach ($user_object_list as $user) {
-                        $login_item = $user->get_login_instance();
-                        if ($login_item->user_can_write()) {
-                            $temp[] = $user;
-                        }
-                    }
-                
-                    $user_object_list = $temp;
-                }
-                
-                // Review what we have. If nothing, throw a hissy fit.
-                if (0 == count($user_object_list)) {
-                    header('HTTP/1.1 403 No Editable Records'); // I don't think so. Homey don't play that game.
-                    exit();
-                }
-                    
-                $ret = Array ('deleted_users' => [], 'deleted_logins' => []);
-                
-                // Now, we have a full list of users that we have permission to delete.
-                foreach ($user_object_list as $user) {
-                    $user_dump = $this->_get_long_user_description($user, $login_user);
-                    $login_dump = NULL;
-                    
-                    $ok = true;
-                    
-                    if ($login_user || $in_login_too) {
-                        $login_item = $user->get_login_instance();
-                        $login_dump = $this->_get_long_description($login_item);
-                        $ok = $login_item->delete_from_db();
-                    }
-                    
-                    if ($ok) {
-                        $ok = $user->delete_from_db();
-                    }
-                    
-                    // We return a record of the deleted IDs.
-                    if ($ok) {
-                        if (!isset($ret) || !is_array($ret)) {
-                            $ret = ['deleted_users' => []];
-                            if ($login_user) {
-                                $ret['deleted_logins'] = [];
-                            }
-                        }
-                        
-                        $ret['deleted_users'][] = $user_dump;
-                        
-                        if ($login_dump) {
-                            $ret['deleted_logins'][] = $login_dump;
-                        }
-                    }
-                }
-                // OK. We have successfully deleted the users (and maybe the logins, as well). We will return the dumps of the users and logins in the function return as associative arrays.
-            } elseif ('PUT' == $in_http_method) {   // We want to modify existing users.
-                $mod_list = $this->_build_mod_list($in_andisol_instance, $in_http_method, $in_query);
-                $ret = [];
-                
-                foreach ($user_object_list as $user) {
-                    if ($user->user_can_write()) {    // We have to be allowed to write to this user.
-                        $user_report = Array('before' => $this->_get_long_user_description($user, $login_user));
-                        foreach ($mod_list as $key => $value) {
-                            switch ($key) {
-                                case 'child_ids':
-                                    $add = $value['add'];
-                                    $remove = $value['remove'];
-                                    $result = true;
-                                
-                                    foreach ($remove as $id) {
-                                        if ($id != $user->id()) {
-                                            $child = $in_andisol_instance->get_single_data_record_by_id($id);
-                                            if (isset($child)) {
-                                                $result = $user->deleteThisElement($child);
-                                            }
-                                    
-                                            if (!$result) {
-                                                break;
-                                            }
-                                        }
-                                    }
-                                
-                                    if ($result) {
-                                        foreach ($add as $id) {
-                                            if ($id != $user->id()) {
-                                                $child = $in_andisol_instance->get_single_data_record_by_id($id);
-                                                if (isset($child)) {
-                                                    $result = $user->appendElement($child);
-                                                }
-                                    
-                                                if (!$result) {
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    break;
-                                    
-                                case 'lang':
-                                    $result = $user->set_lang($value);
-                                
-                                    if ($result && $login_user) {
-                                        $login_instance = $user->get_login_instance();
-                                    
-                                        if ($login_instance && $login_instance->user_can_write()) {
-                                            $result = $login_instance->set_lang($value);
-                                        }
-                                    }
-                                
-                                    break;
-                                    
-                                case 'read_token':
-                                    $result = $user->set_read_security_id($value);
-                                
-                                    if ($result && $login_user) {
-                                        $login_instance = $user->get_login_instance();
-                                
-                                        if ($login_instance) {
-                                            $result = $login_instance->set_read_security_id($value);
-                                        }
-                                    }
-                                    break;
-                                    
-                                case 'write_token':
-                                    $result = $user->set_write_security_id($value);
-                                
-                                    if ($result && $login_user) {
-                                        $login_instance = $user->get_login_instance();
-                                
-                                        if ($login_instance) {
-                                            $result = $login_instance->set_write_security_id($value);
-                                        }
-                                    }
-                                    break;
-                                
-                                case 'tokens':
-                                    if ($login_user) {  // Can only do this, if the caller explicitly requested a login user.
-                                        $login_instance = $user->get_login_instance();
-                            
-                                        if ($login_instance) {
-                                            $result = $login_instance->set_ids($value);
-                                        }
-                                    } else {
-                                        header('HTTP/1.1 400 Improper Data Provided');
-                                        exit();
-                                    }
-                                    break;
-                                
-                                case 'payload':
-                                    $result = $user->set_payload($value);
-                                    break;
-                                
-                                case 'remove_payload':
-                                    $result = $user->set_payload(NULL);
-                                    break;
-                                
-                                case 'name':
-                                    $result = $user->set_name($value);
-                                    break;
-                                
-                                case 'surname':
-                                    $result = $user->set_surname($value);
-                                    break;
-                                
-                                case 'middle_name':
-                                    $result = $user->set_middle_name($value);
-                                    break;
-                                
-                                case 'given_name':
-                                    $result = $user->set_given_name($value);
-                                    break;
-                                
-                                case 'prefix':
-                                    $result = $user->set_prefix($value);
-                                    break;
-                                
-                                case 'suffix':
-                                    $result = $user->set_suffix($value);
-                                    break;
-                                
-                                case 'nickname':
-                                    $result = $user->set_nickname($value);
-                                    break;
-                                
-                                case 'login_id':
-                                    if ($in_andisol_instance->god()) {  // Only God can change login IDs.
-                                        $result = $user->set_login_id(intval($value));
-                                        if ($result) {
-                                            $result = $user->set_write_security_id(intval($value));
-                                        }
-                                    }
-                                    break;
-                            }
-                        }
-                    
-                        $user_report['after'] = $this->_get_long_user_description($user, $login_user);
-                        $ret['changed_users'][] = $user_report;
-                    }
-                }
-            } else {
-                header('HTTP/1.1 400 Incorrect HTTP Request Method');   // Ah-Ah-Aaaahh! You didn't say the magic word!
-                exit();
-            }
+            header('HTTP/1.1 400 Incorrect HTTP Request Method');   // Ah-Ah-Aaaahh! You didn't say the magic word!
+            exit();
         }
         
         return $ret;
@@ -736,6 +869,9 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             
     /***********************/
     /**
+    This builds a list of the requested parameters for the edit operation.
+    
+    \returns an associative array, with the requested commands, parsed, and ready for use.
      */
     protected function _build_mod_list( $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
                                         $in_http_method,        ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
