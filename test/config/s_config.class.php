@@ -130,6 +130,10 @@ function global_scope_basalt_low_level_logging_function($id, $in_sql, $in_params
         $indent .= "\t";
     }
     
+    if (!isset($in_params) || !$in_params || !is_array($in_params)) {
+        $in_params = [];
+    }
+    
     $log_entry = $id_entry.' "SQL:'.$in_sql.'" "PARAMS:\''.implode('\',\'', $in_params).'\'" "BACKTRACE:'."\n$bt_trace".'"'."\n";
     $log_file = fopen(dirname(dirname(__FILE__)).'/log/test.log', 'a');
     fwrite($log_file, $log_entry."\n");
