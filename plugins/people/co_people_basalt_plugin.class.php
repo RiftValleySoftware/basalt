@@ -240,11 +240,12 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
         $login_user = isset($in_query) && is_array($in_query) && isset($in_query['login_user']);    // Flag saying they are only looking for login people.
         
+        // You need to be a manager for all of these. If you are not a manager, then you simply get an "incorrect method" response, as opposed to a "forbidden" response.
         if (('POST' == $in_http_method) && $in_andisol_instance->manager()) {
             $ret = $this->_handle_edit_people_post($in_andisol_instance, $login_user, $in_path, $in_query);
         } elseif (('DELETE' == $in_http_method) && $in_andisol_instance->manager()) {
             $ret = $this->_handle_edit_people_delete($in_andisol_instance, $login_user, $in_path, $in_query);
-        } elseif (('PUT' == $in_http_method) && $in_andisol_instance->manager()) {
+        } elseif ('PUT' == $in_http_method) {   // Of course, there's always an exception. People can edit their own users.;
             $ret = $this->_handle_edit_people_put($in_andisol_instance, $login_user, $in_path, $in_query);
         } else {
             header('HTTP/1.1 400 Incorrect HTTP Request Method');   // Ah-Ah-Aaaahh! You didn't say the magic word!
@@ -331,8 +332,11 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         // Now, if we are not a manager, then the only object we have the right to alter is our own.
         if (!$in_andisol_instance->manager()) {
             $temp = NULL;
+            
+            $current_user = $in_andisol_instance->current_user();
+            
             foreach ($user_object_list as $user) {
-                if ($user == $in_andisol_instance->current_user()) {
+                if ($user == $current_user) {
                     $temp = $user;
                     break;
                 }
@@ -344,7 +348,8 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $user_object_list = [$temp];
             }
         }
-        
+
+
         // At this point, we have a fully-vetted list of users for modification, or none. If none, we react badly.
         if (0 == count($user_object_list)) {
             header('HTTP/1.1 403 No Editable Records'); // I don't think so. Homey don't play that game.
@@ -615,7 +620,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $user_object_list = $temp;
             }
             
-            // Review what we have. If nothing, throw a hissy fit.
+            // See what we have left. If nothing, throw a hissy fit.
             if (0 == count($user_object_list)) {
                 header('HTTP/1.1 403 No Editable Records'); // I don't think so. Homey don't play that game.
                 exit();
@@ -1007,7 +1012,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             if (isset($in_query['login_id']) && (('POST' == $in_http_method) || $in_andisol_instance->god())) {  // Only God can change login IDs (unless we are creating a new user).
                 $ret['login_id'] = abs(intval(trim($in_query['login_id'])));
             }
-        
+            
             // Next, we see if we want to change/set the "owner" object asociated with this. You can remove an associated owner object by passing in NULL or 0, here.
             if (isset($in_query['owner_id'])) {
                 $ret['owner_id'] = abs(intval(trim($in_query['owner_id'])));
