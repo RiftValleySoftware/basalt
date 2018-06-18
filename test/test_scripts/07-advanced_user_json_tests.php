@@ -659,17 +659,26 @@ function basalt_test_0072($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>First, we create a new user and login pair:</h3>');
     $new_image = Array('filepath' => dirname(dirname(__FILE__)).'/images/lena.jpg', 'type' => 'image/jpeg', 'name' => 'lena.jpg');
-    $result = call_REST_API('POST', 'http://localhost/basalt/test/basalt_runner.php/json/people/people/?login_id=Lenna&name=Lenna&surname=Söderberg&given_name=Lena&middle_name=Whoah+Nellie!&nickname=Lenna+Sjööblom&prefix=Ms.&suffix=Scanner+Test+Model&tokens=3,4,5&child_ids=2,3', $new_image, $api_result, $result_code);
+    $result = call_REST_API('POST', 'http://localhost/basalt/test/basalt_runner.php/json/people/people/?login_id=Lenna&lang=sv&name=Lenna&surname=Söderberg&given_name=Lena&middle_name=Whoah+Nellie!&nickname=Lenna+Sjööblom&prefix=Ms.&suffix=Scanner+Test+Model&tokens=3,4,5&child_ids=2,3', $new_image, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $json_object = json_decode($result);
         $payload = $json_object->people->people->new_user->payload;
+        $new_login_id = $json_object->people->people->new_user->associated_login->login_id;
+        $new_password = $json_object->people->people->new_user->associated_login->password;
         $type = $json_object->people->people->new_user->payload_type;
         $json_object->people->people->new_user->payload = '[LARGE PAYLOAD]';
         $json_object = json_encode($json_object);
         echo('<pre style="color:green">'.prettify_json($json_object).'</pre>');
         echo('<div style="text-align:center;margin:1em"><img src="data:'.$type.','.$payload.'" title="Lenna" alt="Lenna" style="width:256px;border-radius:2em;border:none" /></div>');
+    }
+    echo('<h3>At this point, we have a new login. Let\'s first login with that ID:</h3>');
+    $lenas_api_key = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$new_login_id.'&password='.$new_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($lenas_api_key, true)).'</code></h3>');
     }
 }
 ?>

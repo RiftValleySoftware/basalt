@@ -869,6 +869,11 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $ret['owner_id'] = abs(intval(trim($in_query['owner_id'])));
             }
         
+            // Next, look for the language.
+            if (isset($in_query['lang'])) {
+                $ret['lang'] = trim(strval($in_query['lang']));
+            }
+        
             // Next, we see if we the user is supplying a payload to be stored, or removing the existing one.
             if (isset($in_query['remove_payload'])) { // If they did not specify a payload, maybe they want one removed?
                 $ret['remove_payload'] = true;
