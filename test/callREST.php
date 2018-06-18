@@ -67,6 +67,8 @@ function call_REST_API( $method,
             curl_setopt($curl, CURLOPT_PUT, true);
             
             if ($file) {
+                curl_setopt($curl, CURLOPT_SAFE_UPLOAD, true);
+                curl_setopt($curl, CURLOPT_HTTPHEADER, ['Expect:']);
                 curl_setopt($curl, CURLOPT_INFILE, $file);
                 curl_setopt($curl, CURLOPT_INFILESIZE, $file_size);
             }
