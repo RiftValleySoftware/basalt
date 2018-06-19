@@ -15,7 +15,7 @@ defined( 'LGV_BASALT_CATCHER' ) or die ( 'Cannot Execute Directly' );	// Makes s
 
 /****************************************************************************************************************************/
 /**
-This is a plugin that returns information about people and logins.
+This is a REST plugin that accesses and manages information about users and logins.
  */
 class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     /***********************/
@@ -170,12 +170,12 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     public function plugin_name() {
         return 'people';
     }
-        
+
     /***********************/
     /**
     This handles logins.
     
-    \returns an array, with the resulting people.
+    \returns an array, with the resulting logins.
      */
     protected function _handle_logins(  $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
                                         $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
@@ -224,7 +224,67 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
         return $ret;
     }
+
+    /***********************/
+    /**
+    This handles the edit (POST, PUT and DELETE) functions for logins.
+    
+    \returns an array, with the results.
+     */
+    protected function _handle_edit_logins( $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                            $in_http_method,        ///< REQUIRED: 'POST', 'PUT' or 'DELETE'
+                                            $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
+                                            $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
+                                        ) {
+        $ret = NULL;
         
+        if ('POST' == $in_http_method) {
+            $ret = $this->_handle_edit_logins_post($in_andisol_instance, $in_path, $in_query);
+        } elseif ('DELETE' == $in_http_method) {
+            $ret = $this->_handle_edit_logins_delete($in_andisol_instance, $in_path, $in_query);
+        } elseif ('PUT' == $in_http_method) {   // Of course, there's always an exception. People can edit their own users.;
+            $ret = $this->_handle_edit_logins_put($in_andisol_instance, $in_path, $in_query);
+        }
+        
+        return $ret;
+    }
+
+    /***********************/
+    /**
+    This handles the create (POST) function for logins.
+    
+    \returns an array, with the results.
+     */
+    protected function _handle_edit_logins_post(    $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                                    $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
+                                                    $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
+                                                ) {
+    }
+
+    /***********************/
+    /**
+    This handles the delete (DELETE) function for logins.
+    
+    \returns an array, with the results.
+     */
+    protected function _handle_edit_logins_delete(  $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                                    $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
+                                                    $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
+                                                ) {
+    }
+        
+    /***********************/
+    /**
+    This handles the edit (PUT) function for logins.
+    
+    \returns an array, with the results.
+     */
+    protected function _handle_edit_logins_put( $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                                $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
+                                                $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
+                                            ) {
+    }
+
     /***********************/
     /**
     Dispatches edit functions.
@@ -232,7 +292,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     \returns an associative array, with the resulting data.
      */
     protected function _handle_edit_people( $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
-                                            $in_http_method,        ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
+                                            $in_http_method,        ///< REQUIRED: 'POST', 'PUT' or 'DELETE'
                                             $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
                                             $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                         ) {
@@ -240,12 +300,12 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
         $login_user = isset($in_query) && is_array($in_query) && isset($in_query['login_user']);    // Flag saying they are only looking for login people.
         
-        // You need to be a manager for all of these. If you are not a manager, then you simply get an "incorrect method" response, as opposed to a "forbidden" response.
+        // You need to be a manager for most of these. If you are not a manager, then you simply get an "incorrect method" response, as opposed to a "forbidden" response.
         if (('POST' == $in_http_method) && $in_andisol_instance->manager()) {
             $ret = $this->_handle_edit_people_post($in_andisol_instance, $login_user, $in_path, $in_query);
         } elseif (('DELETE' == $in_http_method) && $in_andisol_instance->manager()) {
             $ret = $this->_handle_edit_people_delete($in_andisol_instance, $login_user, $in_path, $in_query);
-        } elseif ('PUT' == $in_http_method) {   // Of course, there's always an exception. People can edit their own users.;
+        } elseif ('PUT' == $in_http_method) {   // Of course, there's always an exception. People can edit their own users.
             $ret = $this->_handle_edit_people_put($in_andisol_instance, $login_user, $in_path, $in_query);
         } else {
             header('HTTP/1.1 400 Incorrect HTTP Request Method');   // Ah-Ah-Aaaahh! You didn't say the magic word!
@@ -387,14 +447,33 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                             $child = $in_andisol_instance->get_single_data_record_by_id($id);
                                             if (isset($child)) {
                                                 $result = $user->appendElement($child);
-                                            }
                                 
-                                            if (!$result) {
-                                                break;
+                                                if (!$result) {
+                                                    break;
+                                                }
                                             }
                                         }
                                     }
                                 }
+                                break;
+                                
+                            case 'password':
+                                if ($in_login_user) {
+                                    $login_instance = $user->get_login_instance();
+                                    
+                                    // Only the user, themselves, or a manager with edit rights on the login, can change the password.
+                                    if ($login_instance) {
+                                        if (($in_andisol_instance->manager() && $login_instance->user_can_write()) || ($login_instance->id() == $in_andisol_instance->current_login->id())) {
+                                        } else {
+                                            header('HTTP/1.1 403 Forbidden');
+                                            exit();
+                                        }
+                                    } else {
+                                        header('HTTP/1.1 400 No Login Item');
+                                        exit();
+                                    }
+                                }
+                            
                                 break;
                                 
                             case 'lang':
@@ -491,7 +570,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                             
                             // This is a rare and special occasion. The login change may fail, as it's possible to assign a login that already exists.
                             case 'login_string':
-                                if ($in_andisol_instance->god()) {  // Only God can change login IDs.
+                                if ($in_andisol_instance->god()) {  // Only God can change login strings.
                                     $login_instance = $user->get_login_instance();
                         
                                     if ($login_instance) {
@@ -501,7 +580,13 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                         
                                         if ($result) {
                                             $result = $login_instance->clear_api_key(); // Doing this invalidates any current logins.
+                                        } else {
+                                            header('HTTP/1.1 400 Cannot Set New Login');
+                                            exit();
                                         }
+                                    } else {
+                                        header('HTTP/1.1 400 No Login Item');
+                                        exit();
                                     }
                                 }
                                 break;
@@ -1185,7 +1270,8 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     case 'logins':
                         if ('GET' == $in_http_method) {
                             $ret['logins'] = $this->_handle_logins($in_andisol_instance, $in_path, $in_query);
-                        } elseif ($in_andisol_instance->logged_in()) {  // Must be logged in to be non-GET.
+                        } elseif ($in_andisol_instance->manager()) {  // Must be logged in to be non-GET.
+                            $ret['people'] = $this->_handle_edit_logins($in_andisol_instance, $in_http_method, $in_path, $in_query);
                         } else {
                             header('HTTP/1.1 400 Incorrect HTTP Request Method');
                             exit();
