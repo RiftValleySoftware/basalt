@@ -312,8 +312,43 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                                     $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                                 ) {
         $ret = [];
+
+        $is_manager = isset($in_query) && is_array($in_query) && isset($in_query['is_manager']);
+        if (isset($in_query['is_manager'])) {
+            unset($in_query['is_manager']);
+        }
+        
+        $login_string = (isset($in_query['login_string']) && trim($in_query['login_string'])) ? trim($in_query['login_string']) : NULL;
         
         $params = $this->_build_login_mod_list($in_andisol_instance, $in_query);
+        if ($login_string) {    // Minimum is a login string.
+            $cobra_instance = $in_andisol_instance->get_cobra_instance();
+            
+            if (isset($cobra_instance) && ($cobra_instance instanceof CO_Cobra)) {
+                $new_login = NULL;
+                
+                $password = isset($params['password']) ? $params['password'] : NULL;
+                
+                if (!$password || (strlen($password) < CO_Config::$min_pw_len)) {
+                    $password = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*~_-=+;:,.!?"), 0, CO_Config::$min_pw_len);
+                }
+                
+                $tokens = isset($params['tokens']) ? $params['tokens'] : NULL;
+                
+                if ($is_manager) {
+                    $new_login = $cobra_instance->create_new_manager_login($login_string, $password, $tokens);
+                } else {
+                    $new_login = $cobra_instance->create_new_standard_login($login_string, $password, $tokens);
+                }
+                
+                $ret = Array('new_login' => $this->_get_long_description($new_login, true));
+                $ret['new_login']['password'] = $password;
+            } else {
+                header('HTTP/1.1 403 Forbidden');
+                exit();
+            }
+        } else {
+        }
         
         return $ret;
     }
@@ -383,11 +418,12 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     \returns an associative array, with the requested commands, parsed, and ready for use.
      */
     protected function _build_login_mod_list(   $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
-                                                &$in_query = NULL       ///< OPTIONAL: The query parameters, as an associative array, passed by reference. If left empty, this method is worthless.
+                                                $in_query = NULL        ///< OPTIONAL: The query parameters, as an associative array, passed by reference. If left empty, this method is worthless.
                                                 ) {
         $ret = [];   // We will build up an associative array of changes we want to make.
         
         if (isset($in_query) && is_array($in_query) && count($in_query)) {
+
             if (isset($in_query['tokens'])) {
                 $tokens_temp = array_map('intval', explode(',', $in_query['tokens']));
                 $tokens = [];
@@ -407,7 +443,12 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 
                 $ret['tokens'] = $tokens;
             }
-        
+            
+            // Next, we see if we want to change the password.
+            if (isset($in_query['password']) && (strlen(trim($in_query['password'])) >= CO_Config::$min_pw_len)) {
+                $ret['password'] = intval($in_query['password']);
+            }
+            
             // Next, we see if we want to change the read security.
             if (isset($in_query['read_token'])) {
                 $ret['read_token'] = intval($in_query['read_token']);
@@ -421,11 +462,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             // Next, we see if we want to change the name.
             if (isset($in_query['name'])) {
                 $ret['name'] = trim(strval($in_query['name']));
-            }
-        
-            // Next, we see if we want to change/set the login object asociated with this. You can remove an associated login object by passing in NULL or 0, here.
-            if (isset($in_query['login_string']) && $in_andisol_instance->god()) {  // Only God can change login strings (unless we are creating a new user).
-                $ret['login_string'] = trim($in_query['login_string']);
             }
         
             // Next, look for the language.
@@ -616,6 +652,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                     // Only the user, themselves, or a manager with edit rights on the login, can change the password.
                                     if ($login_instance) {
                                         if (($in_andisol_instance->manager() && $login_instance->user_can_write()) || ($login_instance->id() == $in_andisol_instance->current_login->id())) {
+                                            $login_instance->set_password_from_cleartext($value);
                                         } else {
                                             header('HTTP/1.1 403 Forbidden');
                                             exit();
@@ -947,6 +984,10 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 unset($in_query['password']);
             }
             
+            if (!$password || (strlen($password) < CO_Config::$min_pw_len)) {
+                $password = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*~_-=+;:,.!?"), 0, CO_Config::$min_pw_len);
+            }
+            
             $name = isset($in_query) && is_array($in_query) && isset($in_query['name']) && trim($in_query['name']) ? trim($in_query['name']) : NULL;
             if (isset($in_query['name'])) {
                 unset($in_query['name']);
@@ -1212,6 +1253,11 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 }
                 
                 $ret['tokens'] = $tokens;
+            }
+        
+            // Next, we see if we want to change the password.
+            if (isset($in_query['password']) && (strlen(trim($in_query['password'])) >= CO_Config::$min_pw_len)) {
+                $ret['password'] = intval($in_query['password']);
             }
         
             // Next, we see if we want to change the read security.

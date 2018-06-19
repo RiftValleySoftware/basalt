@@ -20,7 +20,7 @@ basalt_run_tests(89, 'JSON LOGIN TESTS', '');
 // -------------------------- DEFINITIONS AND TESTS -----------------------------------
 
 function basalt_test_define_0089() {
-    basalt_run_single_direct_test(89, 'PASS: Delete Logins and Users', 'We log in with a manager, and try deleting some logins and associated users.', 'login_tests');
+//     basalt_run_single_direct_test(89, 'PASS: Delete Logins and Users', 'We log in with a manager, and try deleting some logins and associated users.', 'login_tests');
 }
 
 function basalt_test_0089($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -116,7 +116,7 @@ function basalt_test_0089($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // --------------------
 
 function basalt_test_define_0090() {
-    basalt_run_single_direct_test(90, 'PASS: Delete Just A Login', 'In this test, we log in with \'bob\' (if you remember, can edit the login; but not the user), and verify with \'king-cobra.\'', 'login_tests');
+//     basalt_run_single_direct_test(90, 'PASS: Delete Just A Login', 'In this test, we log in with \'bob\' (if you remember, can edit the login; but not the user), and verify with \'king-cobra.\'', 'login_tests');
 }
 
 function basalt_test_0090($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -167,6 +167,31 @@ function basalt_test_0090($in_login = NULL, $in_hashed_password = NULL, $in_pass
 
     echo('<h4>Now, let\'s see what we have. We should have a user, but no associated login:</h4>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/people/3?show_details&login_user', NULL, $king_cobra_api_key, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+}
+
+// --------------------
+
+function basalt_test_define_0091() {
+    basalt_run_single_direct_test(91, 'PASS: Create A Login', 'In this test, we log in with \'king-cobra,\' and createa a standalone login.', 'login_tests');
+}
+
+function basalt_test_0091($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    echo('<h4>Log in \'king-cobra\':</h4>');
+    $king_cobra_api_key = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=king-cobra&password=CoreysGoryStory', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($king_cobra_api_key, true)).'</code></h3>');
+    }
+    
+    echo('<h4>We will create the simplest login possible, with just a login string ID:</h4>');
+    $result = call_REST_API('POST', 'http://localhost/basalt/test/basalt_runner.php/json/people/logins/?login_string=NewLogin', NULL, $king_cobra_api_key, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
