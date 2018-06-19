@@ -137,7 +137,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
         if ($in_with_login_info) {
             $login_instance = $in_user_object->get_login_instance();
-        
             if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
                 if ($login_instance->id() == $in_user_object->get_access_object()->get_login_id()) {
                     $ret['current_login'] = true;
@@ -236,14 +235,67 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                             $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
                                             $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                         ) {
-        $ret = NULL;
+        $ret = [];
         
-        if ('POST' == $in_http_method) {
-            $ret = $this->_handle_edit_logins_post($in_andisol_instance, $in_path, $in_query);
-        } elseif ('DELETE' == $in_http_method) {
-            $ret = $this->_handle_edit_logins_delete($in_andisol_instance, $in_path, $in_query);
-        } elseif ('PUT' == $in_http_method) {   // Of course, there's always an exception. People can edit their own users.;
-            $ret = $this->_handle_edit_logins_put($in_andisol_instance, $in_path, $in_query);
+        $logins_to_edit = [];
+        
+        $also_delete_user = false;
+        
+        if (isset($in_query) && is_array($in_query) && count($in_query) && isset($in_query['delete_user'])) {
+            $also_delete_user = true;
+        }
+        
+        // See if they want the list of logins for people with logins, or particular people
+        if (isset($in_path) && is_array($in_path) && (0 < count($in_path))) {
+            // Now, we see if they are a list of integer IDs or strings (login string IDs).
+            $login_id_list = array_map('trim', explode(',', $in_path[0]));
+            
+            $is_numeric = array_reduce($login_id_list, function($carry, $item){ return $carry && ctype_digit($item); }, true);
+            
+            $login_id_list = $is_numeric ? array_map('intval', $login_id_list) : $login_id_list;
+            
+            foreach ($login_id_list as $id) {
+                if (($is_numeric && (0 < $id)) || !$is_numeric) {
+                    $login_instance = $is_numeric ? $in_andisol_instance->get_login_item($id) : $in_andisol_instance->get_login_item_by_login_string($id);
+                    if (isset($login_instance) && ($login_instance instanceof CO_Security_Login) && $login_instance->user_can_write()) {
+                        if (('DELETE' == $in_http_method) && $also_delete_user) {   // If we also want to delete the user, then we need to have write permission on the user, as well.
+                            $user_instance = $login_instance->get_user_object();
+                            if ($user_instance->user_can_write()) {
+                                $logins_to_edit[] = $login_instance;
+                            }
+                        } else {
+                            $logins_to_edit[] = $login_instance;
+                        }
+                    }
+                }
+            }
+        } else {    // They want the list of all of them.
+            $login_id_list = $in_andisol_instance->get_all_login_users();
+            $login_id_list = $in_andisol_instance->get_cobra_instance()->get_all_logins();
+            if (0 < count($login_id_list)) {
+                foreach ($login_id_list as $login_instance) {
+                    if (isset($login_instance) && ($login_instance instanceof CO_Security_Login) && $login_instance->user_can_write()) {
+                        if (('DELETE' == $in_http_method) && $also_delete_user) {   // If we also want to delete the user, then we need to have write permission on the user, as well.
+                            $user_instance = $login_instance->get_user_object();
+                            if ($user_instance->user_can_write()) {
+                                $logins_to_edit[] = $login_instance;
+                            }
+                        } else {
+                            $logins_to_edit[] = $login_instance;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (isset($logins_to_edit) && is_array($logins_to_edit) && count($logins_to_edit)) {
+            if ('POST' == $in_http_method) {
+                $ret = $this->_handle_edit_logins_post($in_andisol_instance, $logins_to_edit, $in_query);
+            } elseif ('DELETE' == $in_http_method) {
+                $ret = $this->_handle_edit_logins_delete($in_andisol_instance, $logins_to_edit, $in_query, $also_delete_user);
+            } elseif ('PUT' == $in_http_method) {   // Of course, there's always an exception. People can edit their own users.;
+                $ret = $this->_handle_edit_logins_put($in_andisol_instance, $logins_to_edit, $in_query);
+            }
         }
         
         return $ret;
@@ -256,9 +308,14 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     \returns an array, with the results.
      */
     protected function _handle_edit_logins_post(    $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
-                                                    $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
+                                                    $in_logins_to_edit,     ///< REQUIRED: An array of login objects to be affected.
                                                     $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                                 ) {
+        $ret = [];
+        
+        $params = $this->_build_login_mod_list($in_andisol_instance, $in_query);
+        
+        return $ret;
     }
 
     /***********************/
@@ -268,9 +325,38 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     \returns an array, with the results.
      */
     protected function _handle_edit_logins_delete(  $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
-                                                    $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
-                                                    $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
+                                                    $in_logins_to_edit,     ///< REQUIRED: An array of login objects to be affected.
+                                                    $in_query = [],         ///< OPTIONAL: The query parameters, as an associative array.
+                                                    $in_also_delete_user    ///< OPTIONAL: If true, then we also want the user to be deleted. Default is false.
                                                 ) {
+        $ret = [];
+        
+        $ret = Array ('deleted_logins' => []);
+        
+        if ($in_also_delete_user) {
+            $ret['deleted_users'] = [];
+        }
+        
+        foreach ($in_logins_to_edit as $login_object) {
+            if ($in_also_delete_user) {
+                $user_object = $login_object->get_user_object();
+                if ($user_object->user_can_write()) {
+                    $ret['deleted_users'][] = $this->_get_long_user_description($user_object);
+                    if (!$user_object->delete_from_db()) {
+                        header('HTTP/1.1 400 Unable to Delete User');
+                        exit();
+                    }
+                }
+            }
+            
+            $ret['deleted_logins'][] = $this->_get_long_description($login_object);
+            if (!$login_object->delete_from_db()) {
+                header('HTTP/1.1 400 Unable to Delete Login');
+                exit();
+            }
+        }
+        
+        return $ret;
     }
         
     /***********************/
@@ -280,9 +366,75 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     \returns an array, with the results.
      */
     protected function _handle_edit_logins_put( $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
-                                                $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
+                                                $in_logins_to_edit,     ///< REQUIRED: An array of login objects to be affected.
                                                 $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
-                                            ) {
+                                                ) {
+        $ret = [];
+        
+        $params = $this->_build_login_mod_list($in_andisol_instance, $in_query);
+        
+        return $ret;
+    }
+            
+    /***********************/
+    /**
+    This builds a list of the requested parameters for the login edit operation.
+    
+    \returns an associative array, with the requested commands, parsed, and ready for use.
+     */
+    protected function _build_login_mod_list(   $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                                &$in_query = NULL       ///< OPTIONAL: The query parameters, as an associative array, passed by reference. If left empty, this method is worthless.
+                                                ) {
+        $ret = [];   // We will build up an associative array of changes we want to make.
+        
+        if (isset($in_query) && is_array($in_query) && count($in_query)) {
+            if (isset($in_query['tokens'])) {
+                $tokens_temp = array_map('intval', explode(',', $in_query['tokens']));
+                $tokens = [];
+            
+                if ($in_andisol_instance->god()) {  // God is on the TSA Pre-Check list.
+                    $tokens = $tokens_temp;
+                } else {    // Otherwise, we need to make sure that we have only tokens that we own.
+                    // BADGER deals with this, but we trust no one.
+                    $my_tokens = array_map('intval', $in_andisol_instance->get_login_item()->ids());
+                    $tokens_temp = array_intersect($my_tokens, $tokens_temp);
+                    foreach ($tokens_temp as $token) {
+                        if ((1 < $token) && ($token != $in_andisol_instance->get_login_item()->id())) {
+                            $tokens[] = $token;
+                        }
+                    }
+                }
+                
+                $ret['tokens'] = $tokens;
+            }
+        
+            // Next, we see if we want to change the read security.
+            if (isset($in_query['read_token'])) {
+                $ret['read_token'] = intval($in_query['read_token']);
+            }
+        
+            // Next, we see if we want to change the write security.
+            if (isset($in_query['write_token'])) {
+                $ret['write_token'] = intval($in_query['write_token']);
+            }
+        
+            // Next, we see if we want to change the name.
+            if (isset($in_query['name'])) {
+                $ret['name'] = trim(strval($in_query['name']));
+            }
+        
+            // Next, we see if we want to change/set the login object asociated with this. You can remove an associated login object by passing in NULL or 0, here.
+            if (isset($in_query['login_string']) && $in_andisol_instance->god()) {  // Only God can change login strings (unless we are creating a new user).
+                $ret['login_string'] = trim($in_query['login_string']);
+            }
+        
+            // Next, look for the language.
+            if (isset($in_query['lang'])) {
+                $ret['lang'] = trim(strval($in_query['lang']));
+            }
+        }
+        
+        return $ret;
     }
 
     /***********************/
@@ -415,7 +567,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             header('HTTP/1.1 403 No Editable Records'); // I don't think so. Homey don't play that game.
             exit();
         } else {
-            $mod_list = $this->_build_mod_list($in_andisol_instance, 'PUT', $in_query);
+            $mod_list = $this->_build_user_mod_list($in_andisol_instance, 'PUT', $in_query);
             $ret = [];
             
             foreach ($user_object_list as $user) {
@@ -813,7 +965,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             }
             
             $user = NULL;
-            $settings_list = $this->_build_mod_list($in_andisol_instance, 'POST', $in_query);   // First, build up a list of the settings for the new user.
+            $settings_list = $this->_build_user_mod_list($in_andisol_instance, 'POST', $in_query);   // First, build up a list of the settings for the new user.
             
             // Before we start, we make sure that only valid data has been provided. These are the ONLY settings allowed when creating a user.
             $comp_array = Array('lang', 'payload', 'surname', 'middle_name', 'given_name', 'prefix', 'suffix', 'nickname', 'child_ids', 'read_token', 'write_token');
@@ -981,14 +1133,14 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             
     /***********************/
     /**
-    This builds a list of the requested parameters for the edit operation.
+    This builds a list of the requested parameters for the user edit operation.
     
     \returns an associative array, with the requested commands, parsed, and ready for use.
      */
-    protected function _build_mod_list( $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
-                                        $in_http_method,        ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
-                                        &$in_query = NULL       ///< OPTIONAL: The query parameters, as an associative array, passed by reference. If left empty, this method is worthless.
-                                        ) {
+    protected function _build_user_mod_list(    $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                                $in_http_method,        ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
+                                                &$in_query = NULL       ///< OPTIONAL: The query parameters, as an associative array, passed by reference. If left empty, this method is worthless.
+                                                ) {
         // <rubs hands/> Now, let's get to work...
         // First, build up a list of the items that we want to change.
     
@@ -1150,7 +1302,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
     /***********************/
     /**
-    This handles logins.
+    This handles users.
     
     \returns an array, with the resulting people.
      */
