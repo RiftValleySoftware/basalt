@@ -78,7 +78,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         $this->_request_type = strtoupper(trim($_SERVER['REQUEST_METHOD']));
         
         // Look to see if we are doing a login. In that case, we only grab a couple of things.
-        if ((1 < count($paths)) || isset($paths[0]) && (('login' == $paths[0]) || ('logout' == $paths[0]))) { // We need at least the response and plugin types. Login and Logout get special handling.
+        if ((1 < count($paths)) || (isset($paths[0]) && (('login' == $paths[0]) || ('logout' == $paths[0])))) { // We need at least the response and plugin types. Login and Logout get special handling.
             $response_type = strtolower(trim($paths[0]));
             
             if ('login' == $response_type) {
@@ -391,7 +391,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                         // We "log out" by clearing the API key.
                         if (isset($login_item) && ($login_item instanceof CO_Security_Login)) {
                             if ($login_item->clear_api_key()) {
-                                header('HTTP/1.1 205 Lougout Successful');
+                                header('HTTP/1.1 205 Logout Successful');
                             } else {    // This will probably never happen, but belt and suspenders...
                                 header('HTTP/1.1 200 Logout Unneccessary');
                             }

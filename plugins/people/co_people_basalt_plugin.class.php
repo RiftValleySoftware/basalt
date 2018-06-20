@@ -182,10 +182,18 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                     ) {
         $ret = [];
         $show_details = isset($in_query) && is_array($in_query) && isset($in_query['show_details']);    // Flag that applies only for lists, forcing all people to be shown in detail.
+        $my_info = isset($in_path) && is_array($in_path) && (0 < count($in_path) && ('my_info' == $in_path[0]));
         
-        // See if they want the list of logins for people with logins, or particular people
-        if (isset($in_path) && is_array($in_path) && (0 < count($in_path))) {
-        
+        if (isset($my_info) && $my_info) {  // If we are just asking after our own info, then we just send that back.
+            $login = $in_andisol_instance->current_login();
+            if ($login instanceof CO_Security_Login) {
+                $ret['my_info'] = $this->_get_long_description($login);
+            } else {
+                header('HTTP/1.1 400 No Login Available');
+                exit();
+            }
+        } elseif (isset($in_path) && is_array($in_path) && (0 < count($in_path))) {
+            // See if they want the list of logins for people with logins, or particular people
             // Now, we see if they are a list of integer IDs or strings (login string IDs).
             $login_id_list = array_map('trim', explode(',', $in_path[0]));
             
@@ -245,9 +253,8 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $also_delete_user = true;
         }
         
-        // See if they want the list of logins for people with logins, or particular people
         if (isset($in_path) && is_array($in_path) && (0 < count($in_path))) {
-            // Now, we see if they are a list of integer IDs or strings (login string IDs).
+            // We see if they are a list of integer IDs or strings (login string IDs).
             $login_id_list = array_map('trim', explode(',', $in_path[0]));
             
             $is_numeric = array_reduce($login_id_list, function($carry, $item){ return $carry && ctype_digit($item); }, true);
@@ -312,7 +319,12 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                                     $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                                 ) {
         $ret = [];
-
+        
+        $lang = NULL;
+        $name = NULL;
+        $read_token = NULL;
+        $write_token = NULL;
+        
         $is_manager = isset($in_query) && is_array($in_query) && isset($in_query['is_manager']);
         if (isset($in_query['is_manager'])) {
             unset($in_query['is_manager']);
@@ -321,7 +333,30 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         $login_string = (isset($in_query['login_string']) && trim($in_query['login_string'])) ? trim($in_query['login_string']) : NULL;
         
         $params = $this->_build_login_mod_list($in_andisol_instance, $in_query);
+        
+        if (isset($params['lang']) && trim($params['lang'])) {
+            $lang = trim($params['lang']);
+        }
+        
+        if (isset($params['name']) && trim($params['name'])) {
+            $name = trim($params['name']);
+        }
+        
+        if (isset($params['read_token']) && $params['read_token']) {
+            $read_token = intval($params['read_token']);
+        }
+        
+        if (!$read_token) {
+            $read_token = 1;
+        }
+        
+        if (isset($params['write_token']) && $params['write_token']) {
+            $write_token = intval($params['write_token']);
+        }
+        
         if ($login_string) {    // Minimum is a login string.
+            $result = true;
+            
             $cobra_instance = $in_andisol_instance->get_cobra_instance();
             
             if (isset($cobra_instance) && ($cobra_instance instanceof CO_Cobra)) {
@@ -339,6 +374,29 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     $new_login = $cobra_instance->create_new_manager_login($login_string, $password, $tokens);
                 } else {
                     $new_login = $cobra_instance->create_new_standard_login($login_string, $password, $tokens);
+                }
+                
+                if ($lang) {
+                    $result = $new_login->set_lang($lang);
+                }
+            
+                if ($result && $name) {
+                    $result = $new_login->set_name($name);
+                } elseif ($result) {
+                    $result = $new_login->set_name($login_string);
+                }
+            
+                if ($result && $read_token) {
+                    $result = $new_login->set_read_security_id($read_token);
+                }
+            
+                if ($result && $write_token) {
+                    $result = $new_login->set_write_security_id($write_token);
+                }
+            
+                if (!$result) {
+                    header('HTTP/1.1 400 Error Creating Login');
+                    exit();
                 }
                 
                 $ret = Array('new_login' => $this->_get_long_description($new_login, true));
@@ -405,8 +463,106 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                                 $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                                 ) {
         $ret = [];
+        $login_string = (isset($in_query['login_string']) && trim($in_query['login_string'])) ? trim($in_query['login_string']) : NULL;
         
         $params = $this->_build_login_mod_list($in_andisol_instance, $in_query);
+        
+        $lang = NULL;
+        $name = NULL;
+        $password = NULL;
+        $read_token = NULL;
+        $write_token = NULL;
+        $tokens = NULL;
+        if (isset($params['lang']) && trim($params['lang'])) {
+            $lang = trim($params['lang']);
+        }
+        
+        if (isset($params['name']) && trim($params['name'])) {
+            $name = trim($params['name']);
+        }
+        
+        if (isset($params['password']) && trim($params['password'])) {
+            $password = trim($params['password']);
+        }
+        
+        if (isset($params['read_token']) && $params['read_token']) {
+            $read_token = intval($params['read_token']);
+        }
+        
+        if (isset($params['write_token']) && $params['write_token']) {
+            $write_token = intval($params['write_token']);
+        }
+        
+        if (isset($params['tokens']) && is_array($params['tokens']) && count($params['tokens'])) {
+            $tokens = array_filter(array_map('intval', $params['tokens']), function($i){ return 1 < $i;});
+        }
+        
+        $result = true;
+        
+        foreach ($in_logins_to_edit as $login_instance) {
+            $login_report = Array('before' => $this->_get_long_description($login_instance));
+            $login_changed = false;
+            
+            if ($lang) {
+                $result = $login_instance->set_lang($lang);
+                if ($result) {
+                    $login_changed = true;
+                }
+            }
+            
+            if ($result && $name) {
+                $result = $login_instance->set_name($name);
+                if ($result) {
+                    $login_changed = true;
+                }
+            }
+            
+            if (($result && $password) && ($in_andisol_instance->manager() || ($login_instance == $in_andisol_instance->get_login_item()))) {
+                $result = $login_instance->set_password_from_cleartext($password);
+                if ($result) {
+                    $result = $login_instance->clear_api_key(); // Doing this invalidates any current logins.
+                    if ($result) {
+                        $changed_password = $password;
+                        $login_changed = true;
+                    }
+                }
+            }
+            
+            if ($result && $read_token) {
+                $result = $login_instance->set_read_security_id($read_token);
+                if ($result) {
+                    $login_changed = true;
+                }
+            }
+            
+            if ($result && $write_token) {
+                $result = $login_instance->set_write_security_id($write_token);
+                if ($result) {
+                    $login_changed = true;
+                }
+            }
+            
+            if ($result && $tokens && $login_instance->user_can_edit_ids()) {
+                $result = $login_instance->set_ids($tokens);
+                if ($result) {
+                    $login_changed = true;
+                }
+            }
+            
+            if (!$result) {
+                header('HTTP/1.1 400 Error Modifying Login');
+                exit();
+            }
+            
+            if ($login_changed) {
+                $login_report['after'] = $this->_get_long_description($login_instance);
+                if ($changed_password) {
+                    $login_report['after']['new_password'] = $changed_password;
+                }
+        
+                $ret['changed_logins'][] = $login_report;
+            }
+        }
         
         return $ret;
     }
@@ -446,7 +602,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             
             // Next, we see if we want to change the password.
             if (isset($in_query['password']) && (strlen(trim($in_query['password'])) >= CO_Config::$min_pw_len)) {
-                $ret['password'] = intval($in_query['password']);
+                $ret['password'] = trim($in_query['password']);
             }
             
             // Next, we see if we want to change the read security.
@@ -607,6 +763,8 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $ret = [];
             
             foreach ($user_object_list as $user) {
+                $changed_password = NULL;
+                $user_changed = false;
                 if ($user->user_can_write()) {    // We have to be allowed to write to this user.
                     $user_report = Array('before' => $this->_get_long_user_description($user, $in_login_user));
                     foreach ($mod_list as $key => $value) {
@@ -621,6 +779,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                         $child = $in_andisol_instance->get_single_data_record_by_id($id);
                                         if (isset($child)) {
                                             $result = $user->deleteThisElement($child);
+                                            $user_changed = true;
                                         }
                                 
                                         if (!$result) {
@@ -635,7 +794,8 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                             $child = $in_andisol_instance->get_single_data_record_by_id($id);
                                             if (isset($child)) {
                                                 $result = $user->appendElement($child);
-                                
+                                                $user_changed = true;
+                                                
                                                 if (!$result) {
                                                     break;
                                                 }
@@ -651,8 +811,15 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                     
                                     // Only the user, themselves, or a manager with edit rights on the login, can change the password.
                                     if ($login_instance) {
-                                        if (($in_andisol_instance->manager() && $login_instance->user_can_write()) || ($login_instance->id() == $in_andisol_instance->current_login->id())) {
-                                            $login_instance->set_password_from_cleartext($value);
+                                        if (($in_andisol_instance->manager() || ($login_instance == $in_andisol_instance->current_login()) && $login_instance->user_can_write())) {
+                                            $result = $login_instance->set_password_from_cleartext($value);
+                                            if ($result) {
+                                                $result = $login_instance->clear_api_key(); // Doing this invalidates any current logins.
+                                                if ($result) {
+                                                    $changed_password = $value;
+                                                    $user_changed = true;
+                                                }
+                                            }
                                         } else {
                                             header('HTTP/1.1 403 Forbidden');
                                             exit();
@@ -673,6 +840,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                 
                                     if ($login_instance && $login_instance->user_can_write()) {
                                         $result = $login_instance->set_lang($value);
+                                        $user_changed = true;
                                     }
                                 }
                             
@@ -686,6 +854,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                             
                                     if ($login_instance) {
                                         $result = $login_instance->set_read_security_id($value);
+                                        $user_changed = true;
                                     }
                                 }
                                 break;
@@ -698,6 +867,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                             
                                     if ($login_instance) {
                                         $result = $login_instance->set_write_security_id($value);
+                                        $user_changed = true;
                                     }
                                 }
                                 break;
@@ -708,6 +878,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         
                                     if ($login_instance) {
                                         $result = $login_instance->set_ids($value);
+                                        $user_changed = true;
                                     }
                                 } else {
                                     header('HTTP/1.1 400 Improper Data Provided');
@@ -717,43 +888,53 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                             
                             case 'payload':
                                 $result = $user->set_payload($value);
+                                $user_changed = true;
                                 break;
                             
                             case 'remove_payload':
                                 $result = $user->set_payload(NULL);
+                                $user_changed = true;
                                 break;
                             
                             case 'name':
                                 $result = $user->set_name($value);
+                                $user_changed = true;
                                 break;
                             
                             case 'surname':
                                 $result = $user->set_surname($value);
+                                $user_changed = true;
                                 break;
                             
                             case 'middle_name':
                                 $result = $user->set_middle_name($value);
+                                $user_changed = true;
                                 break;
                             
                             case 'given_name':
                                 $result = $user->set_given_name($value);
+                                $user_changed = true;
                                 break;
                             
                             case 'prefix':
                                 $result = $user->set_prefix($value);
+                                $user_changed = true;
                                 break;
                             
                             case 'suffix':
                                 $result = $user->set_suffix($value);
+                                $user_changed = true;
                                 break;
                             
                             case 'nickname':
                                 $result = $user->set_nickname($value);
+                                $user_changed = true;
                                 break;
                             
                             case 'login_id':
                                 if ($in_andisol_instance->god()) {  // Only God can change login IDs.
                                     $result = $user->set_login_id($value);
+                                    $user_changed = true;
                                 }
                                 break;
                             
@@ -769,6 +950,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                         
                                         if ($result) {
                                             $result = $login_instance->clear_api_key(); // Doing this invalidates any current logins.
+                                            $user_changed = true;
                                         } else {
                                             header('HTTP/1.1 400 Cannot Set New Login');
                                             exit();
@@ -780,10 +962,16 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                 }
                                 break;
                         }
+                    
+                        if ($user_changed) {
+                            $user_report['after'] = $this->_get_long_user_description($user, $in_login_user);
+                            if ($changed_password) {
+                                $user_report['after']['associated_login']['new_password'] = $changed_password;
+                            }
+                    
+                            $ret['changed_users'][] = $user_report;
+                        }
                     }
-                
-                    $user_report['after'] = $this->_get_long_user_description($user, $in_login_user);
-                    $ret['changed_users'][] = $user_report;
                 }
             }
         }
@@ -1014,7 +1202,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             
             foreach ($keys as $key) {
                 if (!in_array($key, $comp_array)) {
-                    header('HTTP/1.1 400 Improper Data Provided');
+                    header('HTTP/1.1 400 1 Improper Data Provided');
                     exit();
                 }
             }
@@ -1257,7 +1445,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
             // Next, we see if we want to change the password.
             if (isset($in_query['password']) && (strlen(trim($in_query['password'])) >= CO_Config::$min_pw_len)) {
-                $ret['password'] = intval($in_query['password']);
+                $ret['password'] = trim($in_query['password']);
             }
         
             // Next, we see if we want to change the read security.
@@ -1359,8 +1547,17 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         $ret = [];
         $login_user = isset($in_query) && is_array($in_query) && isset($in_query['login_user']);    // Flag saying they are only looking for login people.
         $show_details = isset($in_query) && is_array($in_query) && isset($in_query['show_details']);    // Flag that indicates that all people be shown in detail.
+        $my_info = isset($in_path) && is_array($in_path) && (0 < count($in_path) && ('my_info' == $in_path[0]));
         
-        if (isset($in_path) && is_array($in_path) && (1 < count($in_path) && ('login_ids' == $in_path[0]))) {    // See if they are looking for people associated with string login IDs.
+        if (isset($my_info) && $my_info) {  // If we are just asking after our own info, then we just send that back.
+            $user = $in_andisol_instance->current_user();
+            if ($user instanceof CO_User_Collection) {
+                $ret['my_info'] = $this->_get_long_user_description($user, $login_user);
+            } else {
+                header('HTTP/1.1 400 No Logged-In User');
+                exit();
+            }
+        } elseif (isset($in_path) && is_array($in_path) && (1 < count($in_path) && ('login_ids' == $in_path[0]))) {    // See if they are looking for people associated with string login IDs.
             // Now, we see if they are a list of integer IDs or strings (login string IDs).
             $login_id_list = array_map('trim', explode(',', $in_path[1]));
             
@@ -1468,11 +1665,8 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     case 'logins':
                         if ('GET' == $in_http_method) {
                             $ret['logins'] = $this->_handle_logins($in_andisol_instance, $in_path, $in_query);
-                        } elseif ($in_andisol_instance->manager()) {  // Must be logged in to be non-GET.
-                            $ret['people'] = $this->_handle_edit_logins($in_andisol_instance, $in_http_method, $in_path, $in_query);
                         } else {
-                            header('HTTP/1.1 400 Incorrect HTTP Request Method');
-                            exit();
+                            $ret['people'] = $this->_handle_edit_logins($in_andisol_instance, $in_http_method, $in_path, $in_query);
                         }
                         break;
                 }

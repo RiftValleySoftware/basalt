@@ -112,11 +112,11 @@ abstract class A_CO_Basalt_Plugin {
         $read_item = intval($in_object->read_security_id);
         $write_item = intval($in_object->write_security_id);
         
-        if (in_array($read_item, $my_ids)) {
+        if ((2 > $read_item) || in_array($read_item, $my_ids)) {
             $ret['read_token'] = $read_item;
         }
         
-        if (in_array($write_item, $my_ids)) {
+        if ((2 > $read_item) || in_array($write_item, $my_ids)) {
             $ret['write_token'] = $write_item;
         }
         
