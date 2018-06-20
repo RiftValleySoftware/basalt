@@ -253,7 +253,11 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $also_delete_user = true;
         }
         
-        if (isset($in_path) && is_array($in_path) && (0 < count($in_path))) {
+        $my_info = isset($in_path) && is_array($in_path) && (0 < count($in_path) && ('my_info' == $in_path[0]));
+        
+        if (isset($my_info) && $my_info) {  // If we are just asking after our own info, then we just use our own login.
+            $logins_to_edit = [$in_andisol_instance->current_login()];
+        } elseif (isset($in_path) && is_array($in_path) && (0 < count($in_path))) {
             // We see if they are a list of integer IDs or strings (login string IDs).
             $login_id_list = array_map('trim', explode(',', $in_path[0]));
             
@@ -323,7 +327,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         $lang = NULL;
         $name = NULL;
         $read_token = NULL;
-        $write_token = NULL;
         
         $is_manager = isset($in_query) && is_array($in_query) && isset($in_query['is_manager']);
         if (isset($in_query['is_manager'])) {
@@ -350,10 +353,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $read_token = 1;
         }
         
-        if (isset($params['write_token']) && $params['write_token']) {
-            $write_token = intval($params['write_token']);
-        }
-        
         if ($login_string) {    // Minimum is a login string.
             $result = true;
             
@@ -376,31 +375,29 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     $new_login = $cobra_instance->create_new_standard_login($login_string, $password, $tokens);
                 }
                 
-                if ($lang) {
-                    $result = $new_login->set_lang($lang);
-                }
+                if ($new_login instanceof CO_Security_Login) {
+                    if ($lang) {
+                        $result = $new_login->set_lang($lang);
+                    }
             
-                if ($result && $name) {
-                    $result = $new_login->set_name($name);
-                } elseif ($result) {
-                    $result = $new_login->set_name($login_string);
-                }
+                    if ($result && $name) {
+                        $result = $new_login->set_name($name);
+                    } elseif ($result) {
+                        $result = $new_login->set_name($login_string);
+                    }
             
-                if ($result && $read_token) {
-                    $result = $new_login->set_read_security_id($read_token);
-                }
+                    if ($result && $read_token) {
+                        $result = $new_login->set_read_security_id($read_token);
+                    }
             
-                if ($result && $write_token) {
-                    $result = $new_login->set_write_security_id($write_token);
-                }
-            
-                if (!$result) {
-                    header('HTTP/1.1 400 Error Creating Login');
-                    exit();
-                }
+                    if (!$result) {
+                        header('HTTP/1.1 400 Error Creating Login');
+                        exit();
+                    }
                 
-                $ret = Array('new_login' => $this->_get_long_description($new_login, true));
-                $ret['new_login']['password'] = $password;
+                    $ret = Array('new_login' => $this->_get_long_description($new_login));
+                    $ret['new_login']['password'] = $password;
+                }
             } else {
                 header('HTTP/1.1 403 Forbidden');
                 exit();
@@ -674,11 +671,13 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                                 ) {
         $ret = NULL;
         
-        // Otherwise, we build up a userlist.
         $user_object_list = [];
         
-        // See if the users are being referenced by login ID.
-        if (isset($in_path) && is_array($in_path) && (1 < count($in_path) && isset($in_path[0]) && ('login_ids' == $in_path[0]))) {    // See if they are looking for people associated with string login IDs.
+        $my_info = isset($in_path) && is_array($in_path) && (0 < count($in_path) && ('my_info' == $in_path[0]));
+        
+        if (isset($my_info) && $my_info) {  // If we are just asking after our own info, then we just use our own user.
+            $user_object_list = [$in_andisol_instance->current_user()];
+        } elseif (isset($in_path) && is_array($in_path) && (1 < count($in_path) && isset($in_path[0]) && ('login_ids' == $in_path[0]))) {    // See if they are looking for people associated with string login IDs.
             // Now, we see if they are a list of integer IDs or strings (login string IDs).
             $login_id_list = array_map('trim', explode(',', $in_path[1]));
         
@@ -995,8 +994,9 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         // We build up a userlist.
         $user_object_list = [];
         
-        // See if the users are being referenced by login ID.
-        if (isset($in_path) && is_array($in_path) && (1 < count($in_path) && ('login_ids' == $in_path[0]))) {    // See if they are looking for people associated with string login IDs.
+        if (isset($my_info) && $my_info) {  // If we are just asking after our own info, then we just use our own user.
+            $user_object_list = [$in_andisol_instance->current_user()];
+        } elseif (isset($in_path) && is_array($in_path) && (1 < count($in_path) && ('login_ids' == $in_path[0]))) {    // See if they are looking for people associated with string login IDs.
             // Now, we see if they are a list of integer IDs or strings (login string IDs).
             $login_id_list = array_map('trim', explode(',', $in_path[1]));
         
@@ -1666,7 +1666,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         if ('GET' == $in_http_method) {
                             $ret['logins'] = $this->_handle_logins($in_andisol_instance, $in_path, $in_query);
                         } else {
-                            $ret['people'] = $this->_handle_edit_logins($in_andisol_instance, $in_http_method, $in_path, $in_query);
+                            $ret['logins'] = $this->_handle_edit_logins($in_andisol_instance, $in_http_method, $in_path, $in_query);
                         }
                         break;
                 }
