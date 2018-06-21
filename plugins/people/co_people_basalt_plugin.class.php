@@ -428,20 +428,25 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         }
         
         foreach ($in_logins_to_edit as $login_object) {
-            if ($in_also_delete_user) {
-                $user_object = $login_object->get_user_object();
-                if ($user_object->user_can_write()) {
-                    $ret['deleted_users'][] = $this->_get_long_user_description($user_object);
-                    if (!$user_object->delete_from_db()) {
-                        header('HTTP/1.1 400 Unable to Delete User');
-                        exit();
+            if ($login_object->id() != CO_Config::god_mode_id()) {
+                if ($in_also_delete_user) {
+                    $user_object = $login_object->get_user_object();
+                    if ($user_object->user_can_write()) {
+                        $ret['deleted_users'][] = $this->_get_long_user_description($user_object);
+                        if (!$user_object->delete_from_db()) {
+                            header('HTTP/1.1 400 Unable to Delete User');
+                            exit();
+                        }
                     }
                 }
-            }
-            
-            $ret['deleted_logins'][] = $this->_get_long_description($login_object);
-            if (!$login_object->delete_from_db()) {
-                header('HTTP/1.1 400 Unable to Delete Login');
+                
+                $ret['deleted_logins'][] = $this->_get_long_description($login_object);
+                if (!$login_object->delete_from_db()) {
+                    header('HTTP/1.1 400 Unable to Delete Login');
+                    exit();
+                }
+            } else {
+                header('HTTP/1.1 400 Cannot Delete Main Admin Login');
                 exit();
             }
         }
@@ -499,6 +504,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         foreach ($in_logins_to_edit as $login_instance) {
             $login_report = Array('before' => $this->_get_long_description($login_instance));
             $login_changed = false;
+            $changed_password = NULL;
             
             if ($lang) {
                 $result = $login_instance->set_lang($lang);
@@ -676,7 +682,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         $my_info = isset($in_path) && is_array($in_path) && (0 < count($in_path) && ('my_info' == $in_path[0]));
         
         if (isset($my_info) && $my_info) {  // If we are just asking after our own info, then we just use our own user.
-            $user_object_list = [$in_andisol_instance->current_user()];
+            $user_object_list[] = $in_andisol_instance->current_user();
         } elseif (isset($in_path) && is_array($in_path) && (1 < count($in_path) && isset($in_path[0]) && ('login_ids' == $in_path[0]))) {    // See if they are looking for people associated with string login IDs.
             // Now, we see if they are a list of integer IDs or strings (login string IDs).
             $login_id_list = array_map('trim', explode(',', $in_path[1]));
@@ -961,15 +967,15 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                 }
                                 break;
                         }
+                    }
                     
-                        if ($user_changed) {
-                            $user_report['after'] = $this->_get_long_user_description($user, $in_login_user);
-                            if ($changed_password) {
-                                $user_report['after']['associated_login']['new_password'] = $changed_password;
-                            }
-                    
-                            $ret['changed_users'][] = $user_report;
+                    if ($user_changed) {
+                        $user_report['after'] = $this->_get_long_user_description($user, $in_login_user);
+                        if ($changed_password) {
+                            $user_report['after']['associated_login']['new_password'] = $changed_password;
                         }
+                
+                        $ret['changed_users'][] = $user_report;
                     }
                 }
             }
