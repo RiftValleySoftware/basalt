@@ -31,4 +31,5 @@ INSERT INTO co_data_nodes (access_class, last_access, read_security_id, write_se
 ('CO_User_Collection', '1970-01-02 00:00:00', 4, 2, 'Basic User Item (krait)', NULL, NULL, NULL, NULL, '6', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 ('CO_User_Collection', '1970-01-02 00:00:00', 1, 7, 'Manager User Item (asp)', NULL, NULL, NULL, NULL, '7', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 ('CO_User_Collection', '1970-01-02 00:00:00', 1, 2, 'God User Item', NULL, NULL, NULL, NULL, '2', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-('CO_User_Collection', '1970-01-02 00:00:00', 1, 1, 'Unaffiliated User Item', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+('CO_User_Collection', '1970-01-02 00:00:00', 1, 1, 'Unaffiliated User Item', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+('CO_User_Collection', '1970-01-02 00:00:00', 3, 9, 'Manager User Item (aspie)', NULL, NULL, NULL, NULL, '9', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
