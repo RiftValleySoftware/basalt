@@ -507,4 +507,45 @@ function basalt_test_0096($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($king_cobra_api_key, true)).'</code></h3>');
     }
 }
+
+// --------------------
+
+function basalt_test_define_0097() {
+    basalt_run_single_direct_test(97, 'FAIL: Test Dual Login Protection', 'In this test, we log in with \'king-cobra,\' then immediately try to log in again. That should fail, then we logout, and try again, which should succeed.', 'login_tests');
+}
+
+function basalt_test_0097($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    echo('<h4>Log in \'king-cobra\':</h4>');
+    $king_cobra_api_key = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=king-cobra&password=CoreysGoryStory', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($king_cobra_api_key, true)).'</code></h3>');
+    }
+    
+    echo('<h4>Log in \'king-cobra\' Again:</h4>');
+    $new_api_key = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=king-cobra&password=CoreysGoryStory', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($king_cobra_api_key, true)).'</code></h3>');
+    }
+    
+    echo('<h4>Log out \'king-cobra\':</h4>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $king_cobra_api_key, $result_code);
+    if (isset($result_code) && $result_code && (205 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Logout</code></h3>');
+    }
+    
+    echo('<h4>Log in \'king-cobra\' Again (Should work, this time):</h4>');
+    $king_cobra_api_key = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=king-cobra&password=CoreysGoryStory', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($king_cobra_api_key, true)).'</code></h3>');
+    }
+}
 ?>
