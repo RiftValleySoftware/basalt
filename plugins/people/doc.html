@@ -1,26 +1,176 @@
 <h1 class="rest_api_doc-h1">People REST API Plugin</h1>
 <h2 class="rest_api_doc-h2">Basic Access and Control of User and Login Data on the BAOBAB Server</h2>
 <div class=" class="rest_api_doc-main-content">
-<header class="uri_structure-header">
-<h3 class="rest_api_doc-h3">BASIC URI STRUCTURE</h3>
-<h4 class="rest_api_doc-h3">Plugin Name</h4>
-<p class="main_doc-p">The plugin name is "<code><span class="uri_plugin-span">people</span></code>", all lowercase:</p>
-<div class="uri_display-div">
-    <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_plugin-span">/people</span></code>
-</div>
-<p class="main_doc-p">You access the plugin functionality by placing the plugin name immediately following the server name in the REST URI.</p>
-<h4 class="rest_api_doc-h3">Main Resource Directories</h4>
-<p class="main_doc-p">There are two possible main resource directories.</p>
-<p class="main_doc-p">People:</p>
-<div class="uri_display-div">
-    <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory-span">/people</span></code>
-</div>
-<p class="main_doc-p">and Logins:</p>
-<div class="uri_display-div">
-    <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory-span">/logins</span></code>
-</div>
-<p class="main_doc-p">The 'people' directory is for general data database records that contain information, such as surnames, personal data, addresses, photographs and other information.</p>
-<p class="main_doc-p">The 'logins' directory is for security database records that pertain ONLY to the act of logging into the BAOBAB server. You cannot log into the BAOBAB server unless you have a login record.</p>
-<p class="main_doc-p">In most cases, each login also has an associated 'people' record, but it is possible to have 'people' records with no login, and 'login' records with no associated 'people' record.</p>
-</header>
+    <header class="uri_structure-header">
+        <h3 class="rest_api_doc-h3">BASIC URI STRUCTURE</h3>
+        <h4 class="rest_api_doc-h3">Plugin Name</h4>
+        <p class="main_doc-p">The plugin name is "<code><span class="uri_plugin-span">people</span></code>", all lowercase:</p>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin-span">/people</span></code>
+        </div>
+        <p class="main_doc-p">You access the plugin functionality by placing the plugin name immediately following the server name in the REST URI.</p>
+        <h4 class="rest_api_doc-h3">Main Resource Directories</h4>
+        <p class="main_doc-p">There are two possible main resource directories.</p>
+        <p class="main_doc-p">People:</p>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory-span">/people</span></code>
+        </div>
+        <p class="main_doc-p">and Logins:</p>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory-span">/logins</span></code>
+        </div>
+        <p class="main_doc-p">The 'people' directory is for general data database records that contain information, such as surnames, personal data, addresses, photographs and other information.</p>
+        <p class="main_doc-p">The 'logins' directory is for security database records that pertain ONLY to the act of logging into the BAOBAB server. You cannot log into the BAOBAB server unless you have a login record.</p>
+        <p class="main_doc-p">In most cases, each login also has an associated 'people' record, but it is possible to have 'people' records with no login, and 'login' records with no associated 'people' record.</p>
+        <p class="main_doc-p">This plugin is the only way to directly access logins (security database items).</p>
+    </header>
+    <div class="uri_commands-div">
+        <h3 class="rest_api_doc-h3">DIRECTORIES</h3>
+        <p class="main_doc-p">The resources available to the user are determined by the login permissions of the user, and the directories and query arguments passed in.</p>
+        <h4 class="rest_api_doc-h4">Basic Directories</h4>
+        <p class="main_doc-p">If you are logged in as a manager or server administrator, then you will have the ability to use POST, PUT and DELETE for most resources. If you are logged in as a regular user, then these methods will only work on your own user and login.</p>
+        <p class="main_doc-p">In all cases, only resources that your logged-in user is cleared to view or modify are made available.</p>
+        <h5 class="rest_api_doc-h5">User and Login Directories</h5>
+        <p class="main_doc-p">You can access users and logins via their numeric (database) IDs, or their string (login) IDs. In the case of string logins, only users that have associated logins can be accessed.</p>
+        <h5 class="rest_api_doc-h5">Open Query (No IDs Specified)</h5>
+        <p class="main_doc-p">If you call either of the main directories with no subdirectories, then it is assumed that you wish to view/modify all visible users or logins:</p>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory-span">/people</span></code>
+            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory-span">/logins</span></code>
+        </div>
+        <p class="main_doc-p">If you wish to view/modify specific user or logins, then you can specify them via one or more of their database integer IDs, as a CSV list:</p>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory_lite-span">/people</span><span class="uri_subdirectory-span"><em>/n</em>,<em>n</em>...</span></code>
+            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory_lite-span">/logins</span><span class="uri_subdirectory-span"><em>/n</em>,<em>n</em>...</span></code>
+        </div>
+        <p class="main_doc-p">Remember that logins usually have different IDs from their associated users.</p>
+        <p class="main_doc-p">You can also specify resources using login (string) IDs (Note that the subdirectory "login_ids" is appended to the "people/people" directory):</p>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory_lite-span">/people</span><span class="uri_subdirectory-span"><em>/login_ids/LoginID1</em>,<em>LoginID2</em>...</span></code>
+            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory_lite-span">/logins</span><span class="uri_subdirectory-span"><em>/LoginID1</em>,<em>LoginID2</em>...</span></code>
+        </div>
+        <p class="main_doc-p">There is a special directory that you can use to access your own login resources:</p>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory_lite-span">/people</span><span class="uri_subdirectory-span">/my_info</span></code>
+            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory_lite-span">/logins</span><span class="uri_subdirectory-span">/my_info</span></code>
+        </div>
+        <p class="main_doc-p">Specifying 'my_info' will result in only one record being returned (your own user or login).</p>
+    </div>
+    <div class="query_arguments-div">
+        <h3 class="rest_api_doc-h3">QUERY ARGUMENTS</h3>
+        <h4 class="rest_api_doc-h4">Resource Selection Arguments</h4>
+        <p class="main_doc-p">These arguments apply to GET, PUT and DELETE.</p>
+        <h5 class="rest_api_doc-h5">show_details</h5>
+        <p class="main_doc-p">If you apply this to GET commands, the returned resources will be in 'expanded' format, with a great deal of information. This will not apply to the "<code>my_info</code>" subdirectory, which is already returned in 'expanded' format.</p>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory_lite-span">/people</span><span class="uri_subdirectory_lite-span">/&lt;SUBDIRECTORY&gt;</span><span class="uri_subdirectory-span">?show_details</span></code>
+            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/logins</span><span class="uri_directory_lite-span">/people</span><span class="uri_subdirectory_lite-span">/&lt;SUBDIRECTORY&gt;</span><span class="uri_subdirectory-span">?show_details</span></code>
+        </div>
+        <p class="main_doc-p">These will result in responses similar to these (Note that the order of the response data follows the requests):</p>
+        <h4 class="rest_api_doc-h4">JSON:</h4>
+        <p class="main_doc-p">These URIs are from the local testing code, and will be different for real-world implementations. They are for purposes of example only.:</p>
+        <p><code>http://example.com/json/people/people/login_ids/4,2</code></p>
+        <p><code>http://example.com/json/people/people/login_ids/asp,norm</code></p>
+        <pre>
+        {
+          "people": {
+            "people": [
+              {
+                "id": 4,
+                "name": "Manager User Item (asp)",
+                "lang": "en",
+              },
+              {
+                "id": 2,
+                "name": "Simple User Item (norm)",
+                "lang": "en",
+              }
+            ]
+          }
+        }
+        </pre>
+        <p><code>http://example.com/json/people/people/login_ids/4,2?show_details</code></p>
+        <p><code>http://example.com/json/people/people/login_ids/asp,norm?show_details</code></p>
+        <pre>
+        {
+          "people": {
+            "people": [
+              {
+                "id": 4,
+                "name": "Manager User Item (asp)",
+                "lang": "en",
+                "read_token": 1,
+                "write_token": 7,
+                "last_access": "1970-01-02 00:00:00",
+                "writeable": true,
+                "associated_login_id": 7
+              },
+              {
+                "id": 2,
+                "name": "Simple User Item (norm)",
+                "lang": "en",
+                "read_token": 1,
+                "write_token": 3,
+                "last_access": "1970-01-02 00:00:00",
+                "writeable": true,
+                "associated_login_id": 3
+              }
+            ]
+          }
+        }
+        </pre>
+        <h4 class="rest_api_doc-h4">XML:</h4>
+        <p><code>http://example.com/xml/people/people/login_ids/4,2</code></p>
+        <p><code>http://example.com/xml/people/people/login_ids/asp,norm</code></p>
+        <pre>
+        &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+        &lt;people xmlns="http://example.com"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://example.com http://example.com/xsd/people"&gt;
+          &lt;people&gt;
+            &lt;value sequence_index="0"&gt;
+              &lt;id&gt;4&lt;/id&gt;
+              &lt;name&gt;Manager User Item (asp)&lt;/name&gt;
+              &lt;lang&gt;en&lt;/lang&gt;
+            &lt;/value&gt;
+            &lt;value sequence_index="1"&gt;
+              &lt;id&gt;2&lt;/id&gt;
+              &lt;name&gt;Simple User Item (norm)&lt;/name&gt;
+              &lt;lang&gt;en&lt;/lang&gt;
+            &lt;/value&gt;
+          &lt;/people&gt;
+        &lt;/people&gt;
+        </pre>
+        <p><code>http://example.com/xml/people/people/login_ids/4,2?show_details</code></p>
+        <p><code>http://example.com/xml/people/people/login_ids/asp,norm?show_details</code></p>
+        <pre>
+        &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+        &lt;people xmlns="http://example.com"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://example.com http://example.com/xsd/people"&gt;
+          &lt;people&gt;
+            &lt;value sequence_index="0"&gt;
+              &lt;id&gt;4&lt;/id&gt;
+              &lt;name&gt;Manager User Item (asp)&lt;/name&gt;
+              &lt;lang&gt;en&lt;/lang&gt;
+              &lt;read_token&gt;1&lt;/read_token&gt;
+              &lt;write_token&gt;7&lt;/write_token&gt;
+              &lt;last_access&gt;1970-01-02 00:00:00&lt;/last_access&gt;
+              &lt;writeable&gt;1&lt;/writeable&gt;
+              &lt;associated_login_id&gt;7&lt;/associated_login_id&gt;
+            &lt;/value&gt;
+            &lt;value sequence_index="1"&gt;
+              &lt;id&gt;2&lt;/id&gt;
+              &lt;name&gt;Simple User Item (norm)&lt;/name&gt;
+              &lt;lang&gt;en&lt;/lang&gt;
+              &lt;read_token&gt;1&lt;/read_token&gt;
+              &lt;write_token&gt;3&lt;/write_token&gt;
+              &lt;last_access&gt;1970-01-02 00:00:00&lt;/last_access&gt;
+              &lt;writeable&gt;1&lt;/writeable&gt;
+              &lt;associated_login_id&gt;3&lt;/associated_login_id&gt;
+            &lt;/value&gt;
+          &lt;/people&gt;
+        &lt;/people&gt;
+        </pre>
+    </div>
 </div>
