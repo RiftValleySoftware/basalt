@@ -341,6 +341,14 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                         $login_id = $this->_vars['login_id'];
                         $password = $this->_vars['password'];
                         
+                        // See if we have our validator in place.
+                        if (method_exists('CO_Config', 'call_login_validator_function')) {
+                            if (!CO_Config::call_login_validator_function($login_id, $password, $_SERVER)) {
+                                header('HTTP/1.1 403 Unauthorized Login');
+                                exit();
+                            }
+                        }
+                        
                         // We do a simple login. This will also generate an API key, which is the only response to this command.
                         $andisol_instance = new CO_Andisol($login_id, '', $password);
                     
@@ -366,7 +374,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                             header('HTTP/1.1 403 Unauthorized Login');
                         }
                     } else {
-                        header('HTTP/1.1 403 Unauthorized Login');
+                        header('HTTP/1.1 401 SSL Connection Required');
                     }
                 } else {
                     header('HTTP/1.1 401 SSL Connection Required');

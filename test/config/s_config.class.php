@@ -27,6 +27,21 @@ class CO_Config {
     
     static private $_god_mode_id = 2;               ///< God Login Security DB ID. This is private, so it can't be programmatically changed.
     static private $_god_mode_password = 'BWU-HA-HAAAA-HA!'; ///< Plaintext password for the God Mode ID login. This overrides anything in the ID row.
+    static private $_login_validation_callback = 'global_scope_basalt_login_validation_function';
+                                                    /**<    This is a special callback for validating REST logins (BASALT). For most functions in the global scope, this will simply be the function name,
+                                                            or as an array (with element 0 being the object, itself, and element 1 being the name of the function).
+                                                            If this will be an object method, then it should be an array, with element 0 as the object, and element 1 a string, containing the function name.
+                                                            The function signature will be:
+                                                                function login_validation_callback (    $in_login_id,  ///< REQUIRED: The login ID provided.
+                                                                                                        $in_password,   ///< REQUIRED: The password (in cleartext), provided.
+                                                                                                        $in_server_vars ///< REQUIRED: The $_SERVER array, at the time of the call.
+                                                                                                    );
+                                                            The function will return a boolean, true, if the login is allowed to proceed normally, and false, if the login is to be aborted.
+                                                            If false is returned, the REST login will terminate with a 403 Forbidden response.
+                                                            It should be noted that there may be security, legal, ethical and resource ramifications for logging.
+                                                            It is up to the implementor to ensure compliance with all constraints.
+                                                    */
+    
     /// These are special callbacks for logging. Read carefully. The first logs the bottom of the stack, the second, the top.
     static private $_low_level_log_handler_function = 'global_scope_basalt_low_level_logging_function';
                                                      /**<   WARNING: DANGER WILL ROBINSON DANGER
@@ -67,7 +82,7 @@ class CO_Config {
     static $god_session_timeout_in_seconds  = 1;    ///< API key session timeout for the "God Mode" login, in seconds (integer value). Default is 10 minutes.
     static $require_ssl_for_authentication = false; ///< If false (default is true), then the HTTP authentication can be sent over non-TLS (Should only be false for testing).
     static $require_ssl_for_all = false;            ///< If true (default is false), then all interactions should be SSL (If true, then $require_ssl_for_authentication is ignored).
-    static $api_key_includes_ip_address = true;    ///< If true (default is false), then the API key will include the user's IP address in the generation.
+    static $api_key_includes_ip_address = true;     ///< If true (default is false), then the API key will include the user's IP address in the generation.
     
     static $data_db_name = 'littlegr_badger_data';
     static $data_db_host = 'localhost';
@@ -102,6 +117,14 @@ class CO_Config {
     static function extension_dir() {
         return dirname(dirname(dirname(dirname(__FILE__)))).'/rvp_plugins';
     }
+}
+
+function global_scope_basalt_login_validation_function($in_login_id, $in_password, $in_server_vars) {
+    if (preg_match('|TEST\-SCRAG\-BASALT\-LOGIN|', $_SERVER['QUERY_STRING'])) {
+        return false;
+    }
+    
+    return true;
 }
 
 function global_scope_basalt_logging_function($in_andisol_instance, $in_server_vars) {

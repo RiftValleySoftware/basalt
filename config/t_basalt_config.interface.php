@@ -23,6 +23,36 @@ trait tCO_Basalt_Config {
     use tCO_Config; // These are the built-in config methods.
     /***********************/
     /**
+    This is a special callback for validating REST logins (BASALT). For most functions in the global scope, this will simply be the function name,
+    or as an array (with element 0 being the object, itself, and element 1 being the name of the function).
+    If this will be an object method, then it should be an array, with element 0 as the object, and element 1 a string, containing the function name.
+    The function signature will be:
+        function login_validation_callback (    $in_login_id,  ///< REQUIRED: The login ID provided.
+                                                $in_password,   ///< REQUIRED: The password (in cleartext), provided.
+                                                $in_server_vars ///< REQUIRED: The $_SERVER array, at the time of the call.
+                                            );
+    The function will return a boolean, true, if the login is allowed to proceed normally, and false, if the login is to be aborted.
+    If false is returned, the REST login will terminate with a 403 Forbidden response.
+    It should be noted that there may be security, legal, ethical and resource ramifications for logging.
+    It is up to the implementor to ensure compliance with all constraints.
+    */
+    static function call_login_validator_function(  $in_login_id,   ///< REQUIRED: The login ID provided.
+                                                    $in_password,   ///< REQUIRED: The password (in cleartext), provided.
+                                                    $in_server_vars ///< REQUIRED: The $_SERVER array, at the time of the call.
+                                                ) {
+        $login_validator = self::$_login_validation_callback;
+        
+        if (isset($login_validator) && is_array($login_validator) && (1 < count($login_validator)) && is_object($login_validator[0]) && method_exists($login_validator[0], $login_validator[1])) {
+            return $login_validator[0]->$login_validator[1]($in_login_id, $in_password, $in_server_vars);
+        } elseif (isset($log_handler) && function_exists($log_handler)) {
+            return $login_validator($in_login_id, $in_password, $in_server_vars);
+        }
+        
+        return true;
+    }
+    
+    /***********************/
+    /**
     This is a special "callback caller" for logging REST calls (BASALT). The callback must be defined in the CO_Config::$_log_handler_function static variable,
     either as a function (global scope), or as an array (with element 0 being the object, itself, and element 1 being the name of the function).
     For most functions in the global scope, this will simply be the function name.
