@@ -2,6 +2,10 @@ body {
     font-family: Arial, San-Serif;
 }
 
+code {
+    font-family: DejaVu Sans Mono, Menlo, Lucida, Monaco, Lucida Console, monospace;
+}
+
 div.rest_api_doc_div {
     margin: 1em;
     padding: 0.5em;

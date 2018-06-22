@@ -15,7 +15,7 @@
 
 require_once(dirname(dirname(__FILE__)).'/run_basalt_tests.php');
 
-basalt_run_tests(17, 'BASIC XML PEOPLE GET TESTS', 'In which our intrepid hero does some basic REST Logins, and asks for information about people in XML.');
+basalt_run_tests(17, 'BASIC XML PEOPLE GET TESTS', 'In which our intrepid hero does some basic REST Logins, and asks for information about people in JSON.');
 
 // -------------------------- DEFINITIONS AND TESTS -----------------------------------
 
@@ -79,13 +79,21 @@ function basalt_test_define_0019() {
 
 function basalt_test_0019($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
-    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code, true);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
     }
+    echo('<h4>What users can we see?</h4>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+    echo('<h4>See if we can see any currently logged-in users</h4>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people?logged_in', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -122,6 +130,13 @@ function basalt_test_0020($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>With login:</h3>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people/my_info?login_user', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+    echo('<h4>See if we can see any currently logged-in users</h4>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people?logged_in', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -166,6 +181,13 @@ function basalt_test_0021($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>Get another one discrete ID:</h3>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/logins/7', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+    echo('<h4>See if we can see any currently logged-in users</h4>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/logins?logged_in', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -263,6 +285,31 @@ function basalt_test_0024($in_login = NULL, $in_hashed_password = NULL, $in_pass
     } else {
         echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
     }
+    echo('<h4>Log in a few users to test the list of logins.</h4>');
+    $ignored_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=norm&password=CoreysGoryStory', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($ignored_result, true)).'</code></h3>');
+    }
+    $ignored_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=bob&password=CoreysGoryStory', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($ignored_result, true)).'</code></h3>');
+    }
+    $ignored_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=krait&password=CoreysGoryStory', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($ignored_result, true)).'</code></h3>');
+    }
+    $ignored_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=asp&password=CoreysGoryStory', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($ignored_result, true)).'</code></h3>');
+    }
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
@@ -300,6 +347,20 @@ function basalt_test_0024($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
     }
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people/5', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+    echo('<h4>See if we can see any currently logged-in users (as users)</h4>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people?logged_in', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+    echo('<h4>See if we can see any currently logged-in users (as logins)</h4>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/logins?logged_in', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
