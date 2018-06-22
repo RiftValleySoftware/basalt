@@ -11,7 +11,7 @@
 
     Little Green Viper Software Development: https://littlegreenviper.com
 */
-require_once(dirname(__FILE__).'/callREST.php');
+require_once(dirname(dirname(__FILE__)).'/callREST.php');
 
 if (!class_exists('CO_Config')) {
     $config_file_path = dirname(__FILE__).'/config/s_config.class.php';

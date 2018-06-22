@@ -1,0 +1,80 @@
+body {
+    font-family: Arial, San-Serif;
+}
+
+div.rest_api_doc_div {
+    margin: 1em;
+    padding: 0.5em;
+    border: 1px dashed #555;
+    border-radius: 0.5em;
+}
+
+div.rest_api_doc_div-baseline {
+    background-color:#ffefef;
+}
+
+div.rest_api_doc_div-people {
+    background-color:#ffffef;
+}
+
+div.rest_api_doc_div-places {
+    background-color:#efefff;
+}
+
+div.rest_api_doc_div-things {
+    background-color:#efffef;
+}
+
+h1.rest_api_doc-h1,
+h2.rest_api_doc-h2,
+div.rest_api_doc_div h3,
+div.rest_api_doc_div h4 {
+    margin:0;
+    margin-bottom: 0.5em;
+    text-align:center;
+}
+
+p.main_doc-p code {
+    font-size: large;
+    color: #800;
+}
+
+div.uri_display-div {
+    padding: 1em;
+    text-align:center;
+}
+
+code.uri-code {
+    font-size: xx-large;
+    font-weight:bold;
+    display:table;
+    margin:auto;
+}
+
+span.uri_protocol_lite-span {
+    color:#999;
+}
+
+span.uri_server_lite-span {
+    color:#7c7;
+}
+
+span.uri_plugin-span {
+    color: #800;
+}
+
+span.uri_plugin_lite-span {
+    color: #e99;
+}
+
+span.uri_directory-span {
+    color: #009;
+}
+
+header.uri_structure-header {
+    margin:2em;
+    padding: 0.5em;
+    border: 1px dashed #900;
+    border-radius: 0.25em;
+}
+

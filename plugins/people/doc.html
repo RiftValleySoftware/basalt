@@ -1,0 +1,26 @@
+<h1 class="rest_api_doc-h1">People REST API Plugin</h1>
+<h2 class="rest_api_doc-h2">Basic Access and Control of User and Login Data on the BAOBAB Server</h2>
+<div class=" class="rest_api_doc-main-content">
+<header class="uri_structure-header">
+<h3 class="rest_api_doc-h3">BASIC URI STRUCTURE</h3>
+<h4 class="rest_api_doc-h3">Plugin Name</h4>
+<p class="main_doc-p">The plugin name is "<code><span class="uri_plugin-span">people</span></code>", all lowercase:</p>
+<div class="uri_display-div">
+    <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_plugin-span">/people</span></code>
+</div>
+<p class="main_doc-p">You access the plugin functionality by placing the plugin name immediately following the server name in the REST URI.</p>
+<h4 class="rest_api_doc-h3">Main Resource Directories</h4>
+<p class="main_doc-p">There are two possible main resource directories.</p>
+<p class="main_doc-p">People:</p>
+<div class="uri_display-div">
+    <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory-span">/people</span></code>
+</div>
+<p class="main_doc-p">and Logins:</p>
+<div class="uri_display-div">
+    <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory-span">/logins</span></code>
+</div>
+<p class="main_doc-p">The 'people' directory is for general data database records that contain information, such as surnames, personal data, addresses, photographs and other information.</p>
+<p class="main_doc-p">The 'logins' directory is for security database records that pertain ONLY to the act of logging into the BAOBAB server. You cannot log into the BAOBAB server unless you have a login record.</p>
+<p class="main_doc-p">In most cases, each login also has an associated 'people' record, but it is possible to have 'people' records with no login, and 'login' records with no associated 'people' record.</p>
+</header>
+</div>

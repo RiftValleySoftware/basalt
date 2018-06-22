@@ -11,14 +11,23 @@
 
     Little Green Viper Software Development: https://littlegreenviper.com
 */
-function call_REST_API( $method,
-                        $url,
-                        $data_file = NULL,
-                        $api_key = NULL,
-                        &$httpCode = NULL,
-                        $display_log = false
-                        ) {
+/// If __DISPLAY_BASICS__ is set to true, then the call_REST_API function will display the basic URI and API key as echos.
+define ('__DISPLAY_BASICS__', true);
 
+function call_REST_API( $method,                /**< REQUIRED:  This is the method to call. It should be one of:
+                                                                - 'GET'     This is considered the default, but should be provided anyway, in order to ensure that the intent is clear.
+                                                                - 'POST'    This means that the resource needs to be created.
+                                                                - 'PUT'     This means that the resource is to be modified.
+                                                                - 'DELETE'  This means that the resource is to be deleted.
+                                                */
+                        $url,                   ///< REQIRED:   This is the base URL for the call. It should include the entire URI, including query arguments.
+                        $data_file = NULL,      ///< OPTIONAL:  Default is NULL. This is a POSIX pathname to a file to be uploaded to the server, along with the URL. It will be sent "as is," so things like Base64 encoding should already be done.
+                        $api_key = NULL,        ///< OPTIONAL:  Default is NULL. This is an API key from the BAOBAB server. It needs to be provided for any operation that requires user authentication.
+                        &$httpCode = NULL,      ///< OPTIONAL:  Default is NULL. If provided, this has a reference to an integer data item that will be set to any HTTP response code.
+                        $display_log = false    ///< OPTIONAL:  Default is false. If true, then the function will echo detailed debug information.
+                        ) {
+    
+    $method = strtoupper(trim($method));
     $file = NULL;
     $content_type = NULL;
     $file_size = 0;
@@ -43,12 +52,14 @@ function call_REST_API( $method,
         $file = fopen($temp_file_name, 'rb');
     }
         
-    if (isset($api_key) && $api_key) {
+    if (isset($api_key) && $api_key && ($display_log || __DISPLAY_BASICS__)) {
         echo('<p style="vertical-align:middle;font-style:italic">API KEY: <big><code>'.$api_key.'</code></big></p>');
     }
     
-    echo('<p style="vertical-align:middle;font-style:italic">'.$method.' URI: <big><code>'.$url.'</code></big></p>');
-    
+    if ($display_log || __DISPLAY_BASICS__) {
+        echo('<p style="vertical-align:middle;font-style:italic">'.$method.' URI: <big><code>'.$url.'</code></big></p>');
+    }
+
     $curl = curl_init();
     
     switch ($method) {
@@ -78,8 +89,6 @@ function call_REST_API( $method,
             
         case "DELETE":
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
-            
-        default:
     }
 
     // Authentication
