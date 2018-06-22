@@ -69,7 +69,8 @@
         <p class="main_doc-p">These will result in responses similar to these (Note that the order of the response data follows the requests):</p>
         <h4 class="rest_api_doc-h4">JSON:</h4>
         <p class="main_doc-p">These URIs are from the local testing code, and will be different for real-world implementations. They are for purposes of example only.:</p>
-        <p><code>http://example.com/json/people/people/login_ids/4,2</code></p>
+        <h5 class="rest_api_doc-h5">Without "show-details":</h5>
+        <p><code>http://example.com/json/people/people/4,2</code></p>
         <p><code>http://example.com/json/people/people/login_ids/asp,norm</code></p>
         <pre>
         {
@@ -89,7 +90,8 @@
           }
         }
         </pre>
-        <p><code>http://example.com/json/people/people/login_ids/4,2?show_details</code></p>
+        <h5 class="rest_api_doc-h5">With "show-details":</h5>
+        <p><code>http://example.com/json/people/people/4,2?show_details</code></p>
         <p><code>http://example.com/json/people/people/login_ids/asp,norm?show_details</code></p>
         <pre>
         {
@@ -119,8 +121,67 @@
           }
         }
         </pre>
+        <p class="main_doc-p">Here, we apply it to the "logins" directory. Note that "bob" does not have an associated user:</p>
+        <h5 class="rest_api_doc-h5">Without "show-details":</h5>
+        <p><code>http://example.com/json/people/logins/3,4</code></p>
+        <p><code>http://example.com/json/people/logins/norm,bob</code></p>
+        <pre>
+        {
+          "people": {
+            "logins": [
+              {
+                "id": 3,
+                "name": "Low-Level 1",
+                "lang": "en",
+                "login_id": "norm"
+              },
+              {
+                "id": 4,
+                "name": "Low-Level 2",
+                "lang": "en",
+                "login_id": "bob"
+              }
+            ]
+          }
+        }
+        </pre>
+        <h5 class="rest_api_doc-h5">With "show-details":</h5>
+        <p><code>http://example.com/json/people/logins/3,4?show-details</code></p>
+        <p><code>http://example.com/json/people/logins/norm,bob?show-details</code></p>
+        <pre>
+        {
+          "people": {
+            "logins": [
+              {
+                "id": 3,
+                "name": "Low-Level 1",
+                "lang": "en",
+                "login_id": "norm",
+                "last_access": "1970-01-02 00:00:00",
+                "writeable": true,
+                "user_object_id": 2,
+                "security_tokens": [
+                  3
+                ]
+              },
+              {
+                "id": 4,
+                "name": "Low-Level 2",
+                "lang": "en",
+                "login_id": "bob",
+                "last_access": "1970-01-02 00:00:00",
+                "writeable": true,
+                "security_tokens": [
+                  4
+                ]
+              }
+            ]
+          }
+        }
+        </pre>
         <h4 class="rest_api_doc-h4">XML:</h4>
-        <p><code>http://example.com/xml/people/people/login_ids/4,2</code></p>
+        <h5 class="rest_api_doc-h5">Without "show-details":</h5>
+        <p><code>http://example.com/xml/people/people/4,2</code></p>
         <p><code>http://example.com/xml/people/people/login_ids/asp,norm</code></p>
         <pre>
         &lt;?xml version="1.0" encoding="UTF-8"?&gt;
@@ -141,7 +202,8 @@
           &lt;/people&gt;
         &lt;/people&gt;
         </pre>
-        <p><code>http://example.com/xml/people/people/login_ids/4,2?show_details</code></p>
+        <h5 class="rest_api_doc-h5">With "show-details":</h5>
+        <p><code>http://example.com/xml/people/people/4,2?show_details</code></p>
         <p><code>http://example.com/xml/people/people/login_ids/asp,norm?show_details</code></p>
         <pre>
         &lt;?xml version="1.0" encoding="UTF-8"?&gt;
@@ -169,6 +231,147 @@
               &lt;writeable&gt;1&lt;/writeable&gt;
               &lt;associated_login_id&gt;3&lt;/associated_login_id&gt;
             &lt;/value&gt;
+          &lt;/people&gt;
+        &lt;/people&gt;
+        </pre>
+        <h5 class="rest_api_doc-h5">Without "show-details":</h5>
+        <p><code>http://example.com/xml/people/logins/3,4</code></p>
+        <p><code>http://example.com/xml/people/logins/norm,bob</code></p>
+        <pre>
+        &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+        &lt;people xmlns="http://localhost/basalt/test/basalt_runner.php"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://localhost/basalt/test/basalt_runner.php http://localhost/basalt/test/basalt_runner.php/xsd/people"&gt;
+          &lt;logins&gt;
+            &lt;value sequence_index="0"&gt;
+              &lt;id&gt;3&lt;/id&gt;
+              &lt;name&gt;Low-Level 1&lt;/name&gt;
+              &lt;lang&gt;en&lt;/lang&gt;
+              &lt;login_id&gt;norm&lt;/login_id&gt;
+            &lt;/value&gt;
+            &lt;value sequence_index="1"&gt;
+              &lt;id&gt;4&lt;/id&gt;
+              &lt;name&gt;Low-Level 2&lt;/name&gt;
+              &lt;lang&gt;en&lt;/lang&gt;
+              &lt;login_id&gt;bob&lt;/login_id&gt;
+          &lt;/logins&gt;
+        &lt;/people&gt;
+        </pre>
+        <h5 class="rest_api_doc-h5">With "show-details":</h5>
+        <p><code>http://example.com/xml/people/logins/3,4?show-details</code></p>
+        <p><code>http://example.com/xml/people/logins/norm,bob?show-details</code></p>
+        <pre>
+        &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+        &lt;people xmlns="http://localhost/basalt/test/basalt_runner.php"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://localhost/basalt/test/basalt_runner.php http://localhost/basalt/test/basalt_runner.php/xsd/people"&gt;
+          &lt;logins&gt;
+            &lt;value sequence_index="0"&gt;
+              &lt;id&gt;3&lt;/id&gt;
+              &lt;name&gt;Low-Level 1&lt;/name&gt;
+              &lt;lang&gt;en&lt;/lang&gt;
+              &lt;login_id&gt;norm&lt;/login_id&gt;
+              &lt;last_access&gt;1970-01-02 00:00:00&lt;/last_access&gt;
+              &lt;writeable&gt;1&lt;/writeable&gt;
+              &lt;user_object_id&gt;2&lt;/user_object_id&gt;
+              &lt;security_tokens&gt;
+                &lt;value sequence_index="0"&gt;3&lt;/value&gt;
+              &lt;/security_tokens&gt;
+            &lt;/value&gt;
+            &lt;value sequence_index="1"&gt;
+              &lt;id&gt;4&lt;/id&gt;
+              &lt;name&gt;Low-Level 2&lt;/name&gt;
+              &lt;lang&gt;en&lt;/lang&gt;
+              &lt;login_id&gt;bob&lt;/login_id&gt;
+              &lt;last_access&gt;1970-01-02 00:00:00&lt;/last_access&gt;
+              &lt;writeable&gt;1&lt;/writeable&gt;
+              &lt;security_tokens&gt;
+                &lt;value sequence_index="0"&gt;4&lt;/value&gt;
+              &lt;/security_tokens&gt;
+            &lt;/value&gt;
+          &lt;/logins&gt;
+        &lt;/people&gt;
+        </pre>
+        <h5 class="rest_api_doc-h5">login_user</h5>
+        <p class="main_doc-p">If "login_user" is applied to the URI, then the response will be the "expanded" (show_details) version, and it will include a detailed description of the associated login user. Users without associated login users will not be displayed.</p>
+        <p class="main_doc-p">This query parameter is only valid for the "people" directory. It is not necessary for the "logins" directory.</p>
+        <p class="main_doc-p">Here is an example from "my_info":</p>
+        <h4 class="rest_api_doc-h4">JSON:</h4>
+        <p><code>http://example.com/json/people/people/my_info?login_user</code></p>
+        <pre>
+        {
+          "people": {
+            "people": {
+              "my_info": {
+                "id": 4,
+                "name": "Manager User Item (asp)",
+                "lang": "en",
+                "read_token": 1,
+                "write_token": 7,
+                "last_access": "1970-01-02 00:00:00",
+                "writeable": true,
+                "current_login": true,
+                "associated_login": {
+                  "id": 7,
+                  "name": "Boss COBRA Manager (asp)",
+                  "lang": "en",
+                  "login_id": "asp",
+                  "read_token": 7,
+                  "write_token": 7,
+                  "last_access": "2018-06-22 18:28:23",
+                  "writeable": true,
+                  "current_login": true,
+                  "user_object_id": 4,
+                  "security_tokens": [
+                    7,
+                    3,
+                    4,
+                    5
+                  ],
+                  "current_api_key": true
+                }
+              }
+            }
+          }
+        }
+        </pre>
+        <h4 class="rest_api_doc-h4">XML:</h4>
+        <p><code>http://example.com/xml/people/people/my_info?login_user</code></p>
+        <pre>
+        &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+        &lt;people xmlns="http://localhost/basalt/test/basalt_runner.php"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://localhost/basalt/test/basalt_runner.php http://localhost/basalt/test/basalt_runner.php/xsd/people"&gt;
+          &lt;people&gt;
+            &lt;my_info&gt;
+              &lt;id&gt;4&lt;/id&gt;
+              &lt;name&gt;Manager User Item (asp)&lt;/name&gt;
+              &lt;lang&gt;en&lt;/lang&gt;
+              &lt;read_token&gt;1&lt;/read_token&gt;
+              &lt;write_token&gt;7&lt;/write_token&gt;
+              &lt;last_access&gt;1970-01-02 00:00:00&lt;/last_access&gt;
+              &lt;writeable&gt;1&lt;/writeable&gt;
+              &lt;current_login&gt;1&lt;/current_login&gt;
+              &lt;associated_login&gt;
+                &lt;id&gt;7&lt;/id&gt;
+                &lt;name&gt;Boss COBRA Manager (asp)&lt;/name&gt;
+                &lt;lang&gt;en&lt;/lang&gt;
+                &lt;login_id&gt;asp&lt;/login_id&gt;
+                &lt;read_token&gt;7&lt;/read_token&gt;
+                &lt;write_token&gt;7&lt;/write_token&gt;
+                &lt;last_access&gt;2018-06-22 18:28:34&lt;/last_access&gt;
+                &lt;writeable&gt;1&lt;/writeable&gt;
+                &lt;current_login&gt;1&lt;/current_login&gt;
+                &lt;user_object_id&gt;4&lt;/user_object_id&gt;
+                &lt;security_tokens&gt;
+                  &lt;value sequence_index="0"&gt;7&lt;/value&gt;
+                  &lt;value sequence_index="1"&gt;3&lt;/value&gt;
+                  &lt;value sequence_index="2"&gt;4&lt;/value&gt;
+                  &lt;value sequence_index="3"&gt;5&lt;/value&gt;
+                &lt;/security_tokens&gt;
+                &lt;current_api_key&gt;1&lt;/current_api_key&gt;
+              &lt;/associated_login&gt;
+            &lt;/my_info&gt;
           &lt;/people&gt;
         &lt;/people&gt;
         </pre>

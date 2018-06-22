@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>People</title>
+        <title>BAOBAB REST Documentation</title>
         <link rel="stylesheet" type="text/css" href="main/apidoc.css">
     </head>
     <body><?php
