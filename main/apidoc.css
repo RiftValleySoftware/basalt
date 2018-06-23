@@ -4,7 +4,22 @@ body {
 
 code,
 pre {
+padding: 0.25em;
     font-family: Menlo, Lucida, Lucida Console, Monaco, DejaVu Sans Mono, monospace;
+    overflow: auto;
+}
+
+pre.code-dump-json {
+    background-color: #ffc;
+}
+
+pre.code-dump-xml {
+    background-color: #cff;
+}
+
+code {
+    font-size: large;
+    color:#900;
 }
 
 div.rest_api_doc_div {
@@ -15,19 +30,19 @@ div.rest_api_doc_div {
 }
 
 div.rest_api_doc_div-baseline {
-    background-color:#ffefef;
+    background-color:#fee;
 }
 
 div.rest_api_doc_div-people {
-    background-color:#ffffef;
+    background-color:#ffef;
 }
 
 div.rest_api_doc_div-places {
-    background-color:#efefff;
+    background-color:#eff;
 }
 
 div.rest_api_doc_div-things {
-    background-color:#efffef;
+    background-color:#efe;
 }
 
 h1.rest_api_doc-h1,
@@ -45,9 +60,21 @@ p.main_doc-p code {
     color: #800;
 }
 
-div.uri_display-div {
+div.uri_display-div,
+div.wrap-toc-div {
     padding: 1em;
     text-align:center;
+}
+
+ul.toc-ul {
+    margin:auto;
+    display:table;
+    text-align:left;
+    list-style-type: none;
+}
+
+ul.toc-ul li {
+    list-style-type: none;
 }
 
 code.uri-code {
@@ -95,7 +122,8 @@ span.uri_subdirectory_lite-span {
 
 header.uri_structure-header,
 div.uri_commands-div,
-div.query_arguments-div {
+div.query_arguments-div,
+div.post_arguments-div {
     margin:1em;
     padding: 0.5em;
     border: 1px dashed;

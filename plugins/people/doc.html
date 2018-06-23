@@ -1,7 +1,36 @@
 <h1 class="rest_api_doc-h1">People REST API Plugin</h1>
+<div class="wrap-toc-div">
+    <ul class="toc-ul">
+        <li><a href="#01-people-structure">BASIC URI STRUCTURE</a></li>
+        <li><a href="#02-people-directories">DIRECTORIES</a><ul class="toc-ul">
+            <li><a href="#02-people-directories-open">Open Query (No IDs Specified)</a></li>
+            <li><a href="#02-people-directories-people">people</a></li>
+            <li><a href="#02-people-directories-logins">logins</a></li>
+        </ul></li>
+        <li><a href="#03-people-query">QUERY ARGUMENTS</a><ul class="toc-ul">
+            <li><a href="#03-people-query-show-details">show_details</a><ul class="toc-ul">
+                <li><a href="#03-people-query-show-details-json">JSON</a></li>
+                <li><a href="#03-people-query-show_details-xml">XML</a></li>
+            </ul></li>
+            <li><a href="#03-people-query-login-user">login_user</a><ul class="toc-ul">
+                <li><a href="#03-people-query-login-user-json">JSON</a></li>
+                <li><a href="#03-people-query-login-user-xml">XML</a></li>
+            </ul></li>
+        </ul></li>
+        <li><a href="#04-people-post">POST</a><ul class="toc-ul">
+            <li><a href="#04-people-post-queries">Query Arguments</a><ul class="toc-ul">
+                <li><a href="#04-people-post-queries-login-user">login_user</a></li>
+                <li><a href="#04-people-post-queries-login-id">login_id</a></li>
+                <li><a href="#04-people-post-queries-password">password</a></li>
+                <li><a href="#04-people-post-queries-name">name</a></li>
+                <li><a href="#04-people-post-queries-is_manager">is_manager</a></li>
+            </ul></li>
+        </ul></li>
+    </ul>
+</div>
 <h2 class="rest_api_doc-h2">Basic Access and Control of User and Login Data on the BAOBAB Server</h2>
 <div class=" class="rest_api_doc-main-content">
-    <header class="uri_structure-header">
+    <header class="uri_structure-header" id="01-people-structure">
         <h3 class="rest_api_doc-h3">BASIC URI STRUCTURE</h3>
         <h4 class="rest_api_doc-h3">Plugin Name</h4>
         <p class="main_doc-p">The plugin name is "<code><span class="uri_plugin-span">people</span></code>", all lowercase:</p>
@@ -24,7 +53,7 @@
         <p class="main_doc-p">In most cases, each login also has an associated 'people' record, but it is possible to have 'people' records with no login, and 'login' records with no associated 'people' record.</p>
         <p class="main_doc-p">This plugin is the only way to directly access logins (security database items).</p>
     </header>
-    <div class="uri_commands-div">
+    <div class="uri_commands-div" id="02-people-directories">
         <h3 class="rest_api_doc-h3">DIRECTORIES</h3>
         <p class="main_doc-p">The resources available to the user are determined by the login permissions of the user, and the directories and query arguments passed in.</p>
         <h4 class="rest_api_doc-h4">Basic Directories</h4>
@@ -32,20 +61,20 @@
         <p class="main_doc-p">In all cases, only resources that your logged-in user is cleared to view or modify are made available.</p>
         <h5 class="rest_api_doc-h5">User and Login Directories</h5>
         <p class="main_doc-p">You can access users and logins via their numeric (database) IDs, or their string (login) IDs. In the case of string logins, only users that have associated logins can be accessed.</p>
-        <h5 class="rest_api_doc-h5">Open Query (No IDs Specified)</h5>
+        <h5 class="rest_api_doc-h5" id="02-people-directories-open">Open Query (No IDs Specified)</h5>
         <p class="main_doc-p">If you call either of the main directories with no subdirectories, then it is assumed that you wish to view/modify all visible users or logins:</p>
         <div class="uri_display-div">
             <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory-span">/people</span></code>
             <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory-span">/logins</span></code>
         </div>
         <p class="main_doc-p">If you wish to view/modify specific user or logins, then you can specify them via one or more of their database integer IDs, as a CSV list:</p>
-        <div class="uri_display-div">
+        <div class="uri_display-div" id="02-people-directories-people">
             <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory_lite-span">/people</span><span class="uri_subdirectory-span"><em>/n</em>,<em>n</em>...</span></code>
             <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory_lite-span">/logins</span><span class="uri_subdirectory-span"><em>/n</em>,<em>n</em>...</span></code>
         </div>
         <p class="main_doc-p">Remember that logins usually have different IDs from their associated users.</p>
         <p class="main_doc-p">You can also specify resources using login (string) IDs (Note that the subdirectory "login_ids" is appended to the "people/people" directory):</p>
-        <div class="uri_display-div">
+        <div class="uri_display-div" id="02-people-directories-logins">
             <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory_lite-span">/people</span><span class="uri_subdirectory-span"><em>/login_ids/LoginID1</em>,<em>LoginID2</em>...</span></code>
             <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory_lite-span">/logins</span><span class="uri_subdirectory-span"><em>/LoginID1</em>,<em>LoginID2</em>...</span></code>
         </div>
@@ -56,23 +85,23 @@
         </div>
         <p class="main_doc-p">Specifying 'my_info' will result in only one record being returned (your own user or login).</p>
     </div>
-    <div class="query_arguments-div">
+    <div class="query_arguments-div" id="03-people-query">
         <h3 class="rest_api_doc-h3">QUERY ARGUMENTS</h3>
         <h4 class="rest_api_doc-h4">Resource Selection Arguments</h4>
         <p class="main_doc-p">These arguments apply to GET, PUT and DELETE.</p>
-        <h5 class="rest_api_doc-h5">show_details</h5>
+        <h5 class="rest_api_doc-h5" id="03-people-query-show-details">show_details</h5>
         <p class="main_doc-p">If you apply this to GET commands, the returned resources will be in 'expanded' format, with a great deal of information. This will not apply to the "<code>my_info</code>" subdirectory, which is already returned in 'expanded' format.</p>
         <div class="uri_display-div">
             <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory_lite-span">/people</span><span class="uri_subdirectory_lite-span">/&lt;SUBDIRECTORY&gt;</span><span class="uri_subdirectory-span">?show_details</span></code>
             <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/logins</span><span class="uri_directory_lite-span">/people</span><span class="uri_subdirectory_lite-span">/&lt;SUBDIRECTORY&gt;</span><span class="uri_subdirectory-span">?show_details</span></code>
         </div>
         <p class="main_doc-p">These will result in responses similar to these (Note that the order of the response data follows the requests):</p>
-        <h4 class="rest_api_doc-h4">JSON:</h4>
+        <h4 class="rest_api_doc-h4" id="03-people-query-show-details-json">JSON:</h4>
         <p class="main_doc-p">These URIs are from the local testing code, and will be different for real-world implementations. They are for purposes of example only.:</p>
-        <h5 class="rest_api_doc-h5">Without "show-details":</h5>
+        <h5 class="rest_api_doc-h5">Without "show_details":</h5>
         <p><code>http://example.com/json/people/people/4,2</code></p>
         <p><code>http://example.com/json/people/people/login_ids/asp,norm</code></p>
-        <pre>
+        <pre class="code-dump-json">
         {
           "people": {
             "people": [
@@ -90,10 +119,10 @@
           }
         }
         </pre>
-        <h5 class="rest_api_doc-h5">With "show-details":</h5>
+        <h5 class="rest_api_doc-h5">With "show_details":</h5>
         <p><code>http://example.com/json/people/people/4,2?show_details</code></p>
         <p><code>http://example.com/json/people/people/login_ids/asp,norm?show_details</code></p>
-        <pre>
+        <pre class="code-dump-json">
         {
           "people": {
             "people": [
@@ -122,10 +151,10 @@
         }
         </pre>
         <p class="main_doc-p">Here, we apply it to the "logins" directory. Note that "bob" does not have an associated user:</p>
-        <h5 class="rest_api_doc-h5">Without "show-details":</h5>
+        <h5 class="rest_api_doc-h5">Without "show_details":</h5>
         <p><code>http://example.com/json/people/logins/3,4</code></p>
         <p><code>http://example.com/json/people/logins/norm,bob</code></p>
-        <pre>
+        <pre class="code-dump-json">
         {
           "people": {
             "logins": [
@@ -145,10 +174,10 @@
           }
         }
         </pre>
-        <h5 class="rest_api_doc-h5">With "show-details":</h5>
-        <p><code>http://example.com/json/people/logins/3,4?show-details</code></p>
-        <p><code>http://example.com/json/people/logins/norm,bob?show-details</code></p>
-        <pre>
+        <h5 class="rest_api_doc-h5">With "show_details":</h5>
+        <p><code>http://example.com/json/people/logins/3,4?show_details</code></p>
+        <p><code>http://example.com/json/people/logins/norm,bob?show_details</code></p>
+        <pre class="code-dump-json">
         {
           "people": {
             "logins": [
@@ -179,11 +208,11 @@
           }
         }
         </pre>
-        <h4 class="rest_api_doc-h4">XML:</h4>
-        <h5 class="rest_api_doc-h5">Without "show-details":</h5>
+        <h4 class="rest_api_doc-h4" id="03-people-query-show-details-xml">XML:</h4>
+        <h5 class="rest_api_doc-h5">Without "show_details":</h5>
         <p><code>http://example.com/xml/people/people/4,2</code></p>
         <p><code>http://example.com/xml/people/people/login_ids/asp,norm</code></p>
-        <pre>
+        <pre class="code-dump-xml">
         &lt;?xml version="1.0" encoding="UTF-8"?&gt;
         &lt;people xmlns="http://example.com"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -202,10 +231,10 @@
           &lt;/people&gt;
         &lt;/people&gt;
         </pre>
-        <h5 class="rest_api_doc-h5">With "show-details":</h5>
+        <h5 class="rest_api_doc-h5">With "show_details":</h5>
         <p><code>http://example.com/xml/people/people/4,2?show_details</code></p>
         <p><code>http://example.com/xml/people/people/login_ids/asp,norm?show_details</code></p>
-        <pre>
+        <pre class="code-dump-xml">
         &lt;?xml version="1.0" encoding="UTF-8"?&gt;
         &lt;people xmlns="http://example.com"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -234,10 +263,10 @@
           &lt;/people&gt;
         &lt;/people&gt;
         </pre>
-        <h5 class="rest_api_doc-h5">Without "show-details":</h5>
+        <h5 class="rest_api_doc-h5">Without "show_details":</h5>
         <p><code>http://example.com/xml/people/logins/3,4</code></p>
         <p><code>http://example.com/xml/people/logins/norm,bob</code></p>
-        <pre>
+        <pre class="code-dump-xml">
         &lt;?xml version="1.0" encoding="UTF-8"?&gt;
         &lt;people xmlns="http://localhost/basalt/test/basalt_runner.php"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -257,10 +286,10 @@
           &lt;/logins&gt;
         &lt;/people&gt;
         </pre>
-        <h5 class="rest_api_doc-h5">With "show-details":</h5>
-        <p><code>http://example.com/xml/people/logins/3,4?show-details</code></p>
-        <p><code>http://example.com/xml/people/logins/norm,bob?show-details</code></p>
-        <pre>
+        <h5 class="rest_api_doc-h5">With "show_details":</h5>
+        <p><code>http://example.com/xml/people/logins/3,4?show_details</code></p>
+        <p><code>http://example.com/xml/people/logins/norm,bob?show_details</code></p>
+        <pre class="code-dump-xml">
         &lt;?xml version="1.0" encoding="UTF-8"?&gt;
         &lt;people xmlns="http://localhost/basalt/test/basalt_runner.php"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -292,13 +321,39 @@
           &lt;/logins&gt;
         &lt;/people&gt;
         </pre>
-        <h5 class="rest_api_doc-h5">login_user</h5>
+        <h5 class="rest_api_doc-h5" id="03-people-query-login-user">login_user</h5>
         <p class="main_doc-p">If "login_user" is applied to the URI, then the response will be the "expanded" (show_details) version, and it will include a detailed description of the associated login user. Users without associated login users will not be displayed.</p>
         <p class="main_doc-p">This query parameter is only valid for the "people" directory. It is not necessary for the "logins" directory.</p>
-        <p class="main_doc-p">Here is an example from "my_info":</p>
-        <h4 class="rest_api_doc-h4">JSON:</h4>
+        <p class="main_doc-p">If you specify the "login_user" query parameter in a "people" subdirectoy POST call, then the plugin will .</p>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory_lite-span">/people</span><span class="uri_subdirectory_lite-span">/&lt;SUBDIRECTORY&gt;</span><span class="uri_subdirectory-span">?login_user</span></code>
+        </div>
+        <p class="main_doc-p">Here is an example from "my_info" (which, by definition, will always have an associated login):</p>
+        <h4 class="rest_api_doc-h4" id="03-people-query-login-user-json">JSON:</h4>
+        <h5 class="rest_api_doc-h5">Without "login_user":</h5>
+        <p><code>http://example.com/json/people/people/my_info</code></p>
+        <pre class="code-dump-json">
+        {
+          "people": {
+            "people": {
+              "my_info": {
+                "id": 4,
+                "name": "Manager User Item (asp)",
+                "lang": "en",
+                "read_token": 1,
+                "write_token": 7,
+                "last_access": "1970-01-02 00:00:00",
+                "writeable": true,
+                "current_login": true,
+                "associated_login_id": 7
+              }
+            }
+          }
+        }
+        </pre>
+        <h5 class="rest_api_doc-h5">With "login_user":</h5>
         <p><code>http://example.com/json/people/people/my_info?login_user</code></p>
-        <pre>
+        <pre class="code-dump-json">
         {
           "people": {
             "people": {
@@ -335,9 +390,32 @@
           }
         }
         </pre>
-        <h4 class="rest_api_doc-h4">XML:</h4>
+        <h4 class="rest_api_doc-h4" id="03-people-query-login-user-xml">XML:</h4>
+        <h5 class="rest_api_doc-h5">Without "login_user":</h5>
+        <p><code>http://example.com/xml/people/people/my_info</code></p>
+        <pre class="code-dump-xml">
+        &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+        &lt;people xmlns="http://localhost/basalt/test/basalt_runner.php"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://localhost/basalt/test/basalt_runner.php http://localhost/basalt/test/basalt_runner.php/xsd/people"&gt;
+          &lt;people&gt;
+            &lt;my_info&gt;
+              &lt;id&gt;4&lt;/id&gt;
+              &lt;name&gt;Manager User Item (asp)&lt;/name&gt;
+              &lt;lang&gt;en&lt;/lang&gt;
+              &lt;read_token&gt;1&lt;/read_token&gt;
+              &lt;write_token&gt;7&lt;/write_token&gt;
+              &lt;last_access&gt;1970-01-02 00:00:00&lt;/last_access&gt;
+              &lt;writeable&gt;1&lt;/writeable&gt;
+              &lt;current_login&gt;1&lt;/current_login&gt;
+              &lt;associated_login_id&gt;7&lt;/associated_login_id&gt;
+            &lt;/my_info&gt;
+          &lt;/people&gt;
+        &lt;/people&gt;
+        </pre>
+        <h5 class="rest_api_doc-h5">With "login_user":</h5>
         <p><code>http://example.com/xml/people/people/my_info?login_user</code></p>
-        <pre>
+        <pre class="code-dump-xml">
         &lt;?xml version="1.0" encoding="UTF-8"?&gt;
         &lt;people xmlns="http://localhost/basalt/test/basalt_runner.php"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -375,5 +453,24 @@
           &lt;/people&gt;
         &lt;/people&gt;
         </pre>
+    </div>
+    <div class="post_arguments-div" id="04-people-post">
+        <h3 class="rest_api_doc-h3">POST</h3>
+        <p class="main_doc-p">In this plugin, POST does only one thing: It creates new users and logins; one at a time (or a matched pair at once). In order to POST, your login ID must be a "manager" ID.</p>
+        <p class="main_doc-p"><strong>NOTE:</strong> Specifying just the <a href="#02-people-directories-people">people subdirectory</a>, or just the <a href="#02-people-directories-logins">logins subdirectory</a> will cause just that resource to be created, with no matching second resource (a simple user record, with no login, or a simple login, with no user).</p>
+        <p class="main_doc-p"><strong>NOTE:</strong> Standalone users (only "people") have no ability to log into the BAOBAB server. Standalone logins, however, can log into the BAOBAB server.</p>
+        <h4 class="rest_api_doc-h4" id="04-people-post-queries">Query Arguments</h4>
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-login-user">login_user</h5>
+        <p class="main_doc-p">If the <a href="#02-people-directories-people">people subdirectory</a> is specified, then you can assign the <a href="#03-people-query-login-user">login_user</a> query parameter. Doing this will cause the new user to be accompanied by a login ID, as well as a user. This parameter is ignored if you are specifying the <a href="#02-people-directories-logins">logins subdirectory</a>.</p>
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-login-id">login_id</h5>
+        <p class="main_doc-p">If you are specifying a new login (specifying the <a href="#02-people-directories-logins">logins subdirectory</a>), or you are also attaching the <a href="#03-people-query-login-user">login_user</a> query parameter, you are required to provide a "login_id" parameter with the POST command. This should be a string, and will be the login ID of the new user.</p>
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-password">password</h5>
+        <p class="main_doc-p">If you are specifying a new login (specifying the <a href="#02-people-directories-logins">logins subdirectory</a>), or you are also attaching the <a href="#03-people-query-login-user">login_user</a> query parameter, you have the option of providing your own password in the "password" query parameter. This should be a string, and should be the minimum length (or greater) required by the BAOBAB installation. Leaving this out, or providing too short of a password, will result in a random password being generated (and returned in the request response).</p>
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-name">name</h5>
+        <p class="main_doc-p">You can optionally specify a name parameter. This is a string, and is put in the "object_name" record column in the new user/login. If you are specifying a new login (specifying the <a href="#02-people-directories-logins">logins subdirectory</a>), or you are also attaching the <a href="#03-people-query-login-user">login_user</a> query parameter, this will be applied to BOTH the user and the login.</p>
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-name">tokens</h5>
+        <p class="main_doc-p">If you are specifying a new login (specifying the <a href="#02-people-directories-logins">logins subdirectory</a>), or you are also attaching the <a href="#03-people-query-login-user">login_user</a> query parameter, you have the option of providing a CSV (<strong>C</strong>omma-<strong>S</strong>eparated <strong>V</strong>alues) list of integers, which will be security tokens for the new login. These tokens MUST be ones that your manager ID has available. You cannot assign any tokens that your own ID does not have.</p>
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-is_manager">is_manager</h5>
+        <p class="main_doc-p">If you are specifying a new login (specifying the <a href="#02-people-directories-logins">logins subdirectory</a>), or you are also attaching the <a href="#03-people-query-login-user">login_user</a> query parameter, you have the option of specifying the "is_manager" query parameter. If this is specified, then the resulting login will be a "manager" login, with the ability to create other logins. Remember that this login will be restricted to whatever tokens you provide, as its own "pool" of tokens.</p>
     </div>
 </div>
