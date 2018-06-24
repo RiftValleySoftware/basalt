@@ -1,0 +1,50 @@
+<h1 class="rest_api_doc-h1">BAOBAB REST API </h1>
+<h2 class="rest_api_doc-h2">Basic Access and Control of the BAOBAB Server</h2>
+<div class=" class="rest_api_doc-main-content">
+    <header class="uri_structure-header main_overview_header">
+        <h3 class="rest_api_doc-h3" id="main_overview_header-overview">OVERVIEW</h3>
+        <p class="main_doc-p">The BAOBAB REST API is a fairly basic, but powerful facility to access and affect the data on a Great Rift Valley Platform BAOBAB server. It is a fairly granular interface, designed to be generic.</p>
+        <p class="main_doc-p">Security and flexibility are the main axes for the BAOBAB server. BAOBAB was created to be a low-level service; so commands and interactions are generally kept simple and generic. The REST API is designed to be coupled with SDKs on the client end that interpret and aggregate BAOBAB REST interactions into a more powerful and dense form.</p>
+        <p class="main_doc-p">As a result of this, BAOBAB REST commands may seem "over-simple." This is deliberate.</p>
+        <h3 class="rest_api_doc-h3" id="main_overview_header-methods">HTTP REST METHODS</h3>
+        <p class="main_doc-p">REST interactions use <a href="http://www.restapitutorial.com/lessons/httpmethods.html">GET, POST, PUT, and DELETE</a> methods for connection and control. GET is the method used to extract data or log into the system, and the other methods are used to affect the data.</p>
+        <h3 class="rest_api_doc-h3" id="main_overview_header-plugins">REST PLUGINS</h3>
+        <p class="main_doc-p">The BAOBAB Server REST facility is implemented by a modular system that we call "plugins." These are code, written to implement a particular set of interactions with the server. The built-in plugins are <a href="#main_div-baseline">baseline</a>, <a href="#main_div-people">people</a>, <a href="#main_div-places">places</a> and <a href="#main_div-things">things</a>. These will be covered individally in greater detail below.</p>
+        <h3 class="rest_api_doc-h3" id="main_overview_header-uri-structure">BASIC URI STRUCTURE</h3>
+        <p class="main_doc-p">BAOBAB REST URIs consist of six fundamental parts:</p>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol-span">http[s]://</span><span class="uri_server-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type-span">/[json|xml|xsd]</span><span class="uri_plugin-span">/&lt;PLUGIN NAME&gt;</span><span class="uri_subdirectory-span">/&lt;SUBDIRECTORY&gt;</span><span class="uri_query-span">?&lt;QUERY PARAMETERS&gt;</span></code>
+        </div>
+        <p class="main_doc-p">As these are standard URIs, all characters must be "URI-friendly." For example, spaces must be indicated by the use of plus signs ("<code class="uri_query-span">+</code>"), or URI-encoded space characters ("<code class="uri_query-span">%20</code>").</p>
+        <h4 class="rest_api_doc-h4"><span class="uri_protocol-span">URI PROTOCOL PREDICATE</span></h4>
+        <p class="main_doc-p">This will allways be either "<code class="uri_protocol-span">http://</code>" or "<code class="uri_protocol-span">https://</code>". BAOBAB can be configured to require TLS/SSL (https) for all interactions, none, or login-only. It is highly recommended that it never be configured for http-only (non-TLS) in a production environment.</p>
+        <h4 class="rest_api_doc-h4"><span class="uri_server-span">SERVER NAME</span></h4>
+        <p class="main_doc-p">This is the domain name and path to the entrypoint of the BAOBAB server. An example might be "<code class="uri_server-span">example.com/baobab-server-entry/entrypoint.php</code>".</p>
+        <h4 class="rest_api_doc-h4"><span class="uri_response_type-span">RESPONSE TYPE</span></h4>
+        <p class="main_doc-p">This is the expected data response type. The choices are: <code class="uri_response_type-span"><a href="https://json.org">json</a></code>, <code class="uri_response_type-span"><a href="https://en.wikipedia.org/wiki/XML">xml</a></code> and <code class="uri_response_type-span"><a href="https://en.wikipedia.org/wiki/XML_Schema_(W3C)">xsd</a></code> (all lowercase).</p>
+        <p class="main_doc-p">JSON and XML will be used for most interactions. XSD (XML Schema) is a special case. If you require this as a response type, then anything in the URI beyond the plugin name is ignored, and you will only get a comprehensive XML Schema document from the server. This schema will cover all possible responses from the plugin.</p>
+        <p class="main_doc-p">There are a couple of "plugin-less" commands: "<code class="uri_plugin-span">login</code>" and "<code class="uri_plugin-span">logout</code>". If these are specified, then only plain text will be returned.</p>
+        <h4 class="rest_api_doc-h4"><span class="uri_plugin-span">PLUGIN NAME</span></h4>
+        <p class="main_doc-p">This is the "top-level" directory for the plugin that is to handle the REST interaction.</p>
+        <h4 class="rest_api_doc-h4"><span class="uri_subdirectory-span">SUBDIRECTORY</span></h4>
+        <p class="main_doc-p">This is one or more directories that specify the resource location, within the plugin, that will be the target of the REST query. All subdirectories are to be delimited by forward-slash ("<code class="uri_subdirectory-span">/</code>") characters.</p>
+        <h4 class="rest_api_doc-h4"><span class="uri_query-span">QUERY PARAMETERS</span></h4>
+        <p class="main_doc-p">These are parameters that are applied to the resource interaction. These will always be prefaced with a question mark ("<code class="uri_query-span">?</code>"), and delimited by ampersands ("<code class="uri_query-span">&amp;</code>"). They may or may not require an equals sign (depending on whether or not a value is being transmitted, like "<code class="uri_query-span">name=Marvin+The+Martian</code>"). Specifying just the name of a query parameter will assume that it is Boolean, and that the value is <code class="uri_query-span">true</code> (or <code class="uri_query-span">1</code>).</p>
+        <h3 class="rest_api_doc-h3" id="main_overview_header-authentication">AUTHENTICATION</h3>
+        <p class="main_doc-p">Like most REST implementations, BAOBAB relies on the assignment of temporary API keys to authenticate HTTP transactions. These keys are time-limited, random strings that are returned as a simple text response to a successful "<code class="uri_plugin-span">login</code>" command. The server can be configured to associate these with an IP address (if the key is presented from an IP address other than the one that originally logged in, the connection is refused), and/or refuse a connection while a connection is active (the API key was assigned, and has not yet timed out).</p>
+        <h4 class="rest_api_doc-h4" id="main_overview_header-authentication-obtain-key">Obtaining a BAOBAB API Key</h4>
+        <p class="main_doc-p">In order to obtain a key, you must login to the server, using the "<code class="uri_plugin-span">login</code>" command, like so:</p>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol-span">https://</span><span class="uri_server-span">example.com/entrypoint.php</span><span class="uri_plugin-span">/login</span><span class="uri_query-span">?login_id=me@example.com&amp;password=qwertyuiop</span></code>
+        </div>
+        <p class="main_doc-p">Note that there is no response type or subdirectory. You only have "<code class="uri_plugin-span">login</code>," followed immediately by a login ID and cleartext password as query parameters (not directories). These credentials are supplied by the BAOBAB server administrator.</p>
+        <p class="main_doc-p">Upon successful login, the response will be a random 64-character string, returned as a simple HTTP text response. This is the API key. It will not be sent again, and cannot be retrieved. If it is lost, then you may need to wait until the login has expired, in order to try again (depending on how the server is set up).</p>
+        <p class="main_doc-p">You cannot specify any operation other than "<code class="uri_plugin-span">login</code>" with your login credentials. All subsequent interactions require the API key.</p>
+        <h4 class="rest_api_doc-h4" id="main_overview_header-authentication-using-key">Using the BAOBAB API Key</h4>
+        <p class="main_doc-p">Once you have obtained the API Key, you must present it in <a href="https://en.wikipedia.org/wiki/Basic_access_authentication#Client_side">the standard HTTP Authentication (Authorization) Header</a>. The key must be placed in <strong>BOTH</strong> the login ID and password portions of the header, like so (Sample is PHP code for <a href="http://php.net/manual/en/book.curl.php">a cURL</a> call):</p>
+        <pre>    // $api_key contains the string returned from the "login" call.
+    curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+    curl_setopt($curl, CURLOPT_USERPWD, "$api_key:$api_key");</pre>
+        <p class="main_doc-p">This needs to be done for every interaction that requires a login. Failing to provide it will not terminate the interaction (unless it is doing something that specifically requires a login), but will likely limit the capabilities of the call. Providing an invalid key (or, possibly, using a different source IP address from that used to obtain the key) will result in a <code>403 Forbidden</code> response.</p>
+    </header>
+</div>

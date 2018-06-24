@@ -3,10 +3,14 @@
     <head>
         <meta charset="utf-8" />
         <title>BAOBAB REST Documentation</title>
-        <link rel="stylesheet" type="text/css" href="main/apidoc.css">
+        <style type="text/css">
+        <?php
+            include_once(dirname(__FILE__).'/main/apidoc.css');
+        ?>
+        </style>
     </head>
     <body><?php
-            $doc_array = ['baseline' => dirname(__FILE__).'/main/doc.html'];
+            $doc_array = ['a' => dirname(__FILE__).'/doc.html', 'baseline' => dirname(__FILE__).'/main/doc.html'];
             $dir = new DirectoryIterator(dirname(__FILE__).'/plugins');
             foreach ($dir as $fileinfo) {
                 if (!$fileinfo->isDot() && $fileinfo->isDir()) {
@@ -18,7 +22,7 @@
             
             foreach ($doc_array as $id => $file_path) {
                 if (file_exists($file_path)) {
-                    echo('<div class="rest_api_doc_div rest_api_doc_div-'.htmlspecialchars($id).'" id="div-'.htmlspecialchars($id).'">');
+                    echo('<div class="rest_api_doc_div rest_api_doc_div-'.htmlspecialchars($id).'-dark" id="main_div-'.htmlspecialchars($id).'">');
                         include_once($file_path);
                     echo('</div>');
                 }

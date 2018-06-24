@@ -1,36 +1,38 @@
 <h1 class="rest_api_doc-h1">People REST API Plugin</h1>
-<div class="wrap-toc-div">
-    <ul class="toc-ul">
-        <li><a href="#01-people-structure">BASIC URI STRUCTURE</a></li>
-        <li><a href="#02-people-directories">DIRECTORIES</a><ul class="toc-ul">
-            <li><a href="#02-people-directories-open">Open Query (No IDs Specified)</a></li>
-            <li><a href="#02-people-directories-people">people</a></li>
-            <li><a href="#02-people-directories-logins">logins</a></li>
-        </ul></li>
-        <li><a href="#03-people-query">QUERY ARGUMENTS</a><ul class="toc-ul">
-            <li><a href="#03-people-query-show-details">show_details</a><ul class="toc-ul">
-                <li><a href="#03-people-query-show-details-json">JSON</a></li>
-                <li><a href="#03-people-query-show_details-xml">XML</a></li>
-            </ul></li>
-            <li><a href="#03-people-query-login-user">login_user</a><ul class="toc-ul">
-                <li><a href="#03-people-query-login-user-json">JSON</a></li>
-                <li><a href="#03-people-query-login-user-xml">XML</a></li>
-            </ul></li>
-        </ul></li>
-        <li><a href="#04-people-post">POST</a><ul class="toc-ul">
-            <li><a href="#04-people-post-queries">Query Arguments</a><ul class="toc-ul">
-                <li><a href="#04-people-post-queries-login-user">login_user</a></li>
-                <li><a href="#04-people-post-queries-login-id">login_id</a></li>
-                <li><a href="#04-people-post-queries-password">password</a></li>
-                <li><a href="#04-people-post-queries-name">name</a></li>
-                <li><a href="#04-people-post-queries-is_manager">is_manager</a></li>
-            </ul></li>
-        </ul></li>
-    </ul>
-</div>
 <h2 class="rest_api_doc-h2">Basic Access and Control of User and Login Data on the BAOBAB Server</h2>
+<header class="doc_toc-header rest_api_doc_div-people" id="00-people-toc">
+    <div class="wrap-toc-div">
+        <ul class="toc-ul">
+            <li><a href="#01-people-structure">BASIC URI STRUCTURE</a></li>
+            <li><a href="#02-people-directories">DIRECTORIES</a><ul class="toc-ul">
+                <li><a href="#02-people-directories-open">Open Query (No IDs Specified)</a></li>
+                <li><a href="#02-people-directories-people">people</a></li>
+                <li><a href="#02-people-directories-logins">logins</a></li>
+            </ul></li>
+            <li><a href="#03-people-query">QUERY ARGUMENTS</a><ul class="toc-ul">
+                <li><a href="#03-people-query-show-details">show_details</a><ul class="toc-ul">
+                    <li><a href="#03-people-query-show-details-json">JSON</a></li>
+                    <li><a href="#03-people-query-show_details-xml">XML</a></li>
+                </ul></li>
+                <li><a href="#03-people-query-login-user">login_user</a><ul class="toc-ul">
+                    <li><a href="#03-people-query-login-user-json">JSON</a></li>
+                    <li><a href="#03-people-query-login-user-xml">XML</a></li>
+                </ul></li>
+            </ul></li>
+            <li><a href="#04-people-post">POST</a><ul class="toc-ul">
+                <li><a href="#04-people-post-queries">Query Arguments</a><ul class="toc-ul">
+                    <li><a href="#04-people-post-queries-login-user">login_user</a></li>
+                    <li><a href="#04-people-post-queries-login-id">login_id</a></li>
+                    <li><a href="#04-people-post-queries-password">password</a></li>
+                    <li><a href="#04-people-post-queries-name">name</a></li>
+                    <li><a href="#04-people-post-queries-is_manager">is_manager</a></li>
+                </ul></li>
+            </ul></li>
+        </ul>
+    </div>
+</header>
 <div class=" class="rest_api_doc-main-content">
-    <header class="uri_structure-header" id="01-people-structure">
+    <header class="uri_structure-header rest_api_doc_div-people" id="01-people-structure">
         <h3 class="rest_api_doc-h3">BASIC URI STRUCTURE</h3>
         <h4 class="rest_api_doc-h3">Plugin Name</h4>
         <p class="main_doc-p">The plugin name is "<code><span class="uri_plugin-span">people</span></code>", all lowercase:</p>
@@ -53,7 +55,7 @@
         <p class="main_doc-p">In most cases, each login also has an associated 'people' record, but it is possible to have 'people' records with no login, and 'login' records with no associated 'people' record.</p>
         <p class="main_doc-p">This plugin is the only way to directly access logins (security database items).</p>
     </header>
-    <div class="uri_commands-div" id="02-people-directories">
+    <div class="uri_commands-div rest_api_doc_div-people" id="02-people-directories">
         <h3 class="rest_api_doc-h3">DIRECTORIES</h3>
         <p class="main_doc-p">The resources available to the user are determined by the login permissions of the user, and the directories and query arguments passed in.</p>
         <h4 class="rest_api_doc-h4">Basic Directories</h4>
@@ -85,15 +87,15 @@
         </div>
         <p class="main_doc-p">Specifying 'my_info' will result in only one record being returned (your own user or login).</p>
     </div>
-    <div class="query_arguments-div" id="03-people-query">
+    <div class="query_arguments-div rest_api_doc_div-people" id="03-people-query">
         <h3 class="rest_api_doc-h3">QUERY ARGUMENTS</h3>
         <h4 class="rest_api_doc-h4">Resource Selection Arguments</h4>
         <p class="main_doc-p">These arguments apply to GET, PUT and DELETE.</p>
         <h5 class="rest_api_doc-h5" id="03-people-query-show-details">show_details</h5>
         <p class="main_doc-p">If you apply this to GET commands, the returned resources will be in 'expanded' format, with a great deal of information. This will not apply to the "<code>my_info</code>" subdirectory, which is already returned in 'expanded' format.</p>
         <div class="uri_display-div">
-            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory_lite-span">/people</span><span class="uri_subdirectory_lite-span">/&lt;SUBDIRECTORY&gt;</span><span class="uri_subdirectory-span">?show_details</span></code>
-            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/logins</span><span class="uri_directory_lite-span">/people</span><span class="uri_subdirectory_lite-span">/&lt;SUBDIRECTORY&gt;</span><span class="uri_subdirectory-span">?show_details</span></code>
+            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory_lite-span">/people</span><span class="uri_subdirectory_lite-span">/&lt;SUBDIRECTORY&gt;</span><span class="uri_query-span">?show_details</span></code>
+            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/logins</span><span class="uri_directory_lite-span">/people</span><span class="uri_subdirectory_lite-span">/&lt;SUBDIRECTORY&gt;</span><span class="uri_query-span">?show_details</span></code>
         </div>
         <p class="main_doc-p">These will result in responses similar to these (Note that the order of the response data follows the requests):</p>
         <h4 class="rest_api_doc-h4" id="03-people-query-show-details-json">JSON:</h4>
@@ -326,7 +328,7 @@
         <p class="main_doc-p">This query parameter is only valid for the "people" directory. It is not necessary for the "logins" directory.</p>
         <p class="main_doc-p">If you specify the "login_user" query parameter in a "people" subdirectoy POST call, then the plugin will .</p>
         <div class="uri_display-div">
-            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory_lite-span">/people</span><span class="uri_subdirectory_lite-span">/&lt;SUBDIRECTORY&gt;</span><span class="uri_subdirectory-span">?login_user</span></code>
+            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory_lite-span">/people</span><span class="uri_subdirectory_lite-span">/&lt;SUBDIRECTORY&gt;</span><span class="uri_query-span">?login_user</span></code>
         </div>
         <p class="main_doc-p">Here is an example from "my_info" (which, by definition, will always have an associated login):</p>
         <h4 class="rest_api_doc-h4" id="03-people-query-login-user-json">JSON:</h4>
@@ -454,7 +456,7 @@
         &lt;/people&gt;
         </pre>
     </div>
-    <div class="post_arguments-div" id="04-people-post">
+    <div class="post_arguments-div rest_api_doc_div-people" id="04-people-post">
         <h3 class="rest_api_doc-h3">POST</h3>
         <p class="main_doc-p">In this plugin, POST does only one thing: It creates new users and logins; one at a time (or a matched pair at once). In order to POST, your login ID must be a "manager" ID.</p>
         <p class="main_doc-p"><strong>NOTE:</strong> Specifying just the <a href="#02-people-directories-people">people subdirectory</a>, or just the <a href="#02-people-directories-logins">logins subdirectory</a> will cause just that resource to be created, with no matching second resource (a simple user record, with no login, or a simple login, with no user).</p>

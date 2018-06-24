@@ -257,6 +257,9 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         
             switch ($this->_response_type) {
                 case 'xsd':
+                    $header .= 'Content-Type: text/xml';
+                    break;
+
                 case 'xml':
                     $header .= 'Content-Type: text/xml';
                     break;
