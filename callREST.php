@@ -16,7 +16,7 @@ define ('__DISPLAY_BASICS__', true);
 
 /****************************************************************************************************************************/
 /**
-This is the function that is used by the BASALT testing facility to make REST calls to the Greate Rift Valley BAOBAB server.
+This is the function that is used by the BASALT testing facility to make REST calls to the Greater Rift Valley BAOBAB server.
 
 It is provided as an example of making REST calls to BAOBAB, and to provide guidance for programmers creating their own REST clients.
 
@@ -29,7 +29,7 @@ function call_REST_API( $method,                /**< REQUIRED:  This is the meth
                                                                 - 'DELETE'  This means that the resource is to be deleted.
                                                 */
                         $url,                   ///< REQIRED:   This is the base URL for the call. It should include the entire URI, including query arguments.
-                        $data_file = NULL,      ///< OPTIONAL:  Default is NULL. This is a POSIX pathname to a file to be uploaded to the server, along with the URL. It will be sent "as is," so things like Base64 encoding should already be done.
+                        $data_file = NULL,      ///< OPTIONAL:  Default is NULL. This is a POSIX pathname to a file to be uploaded to the server, along with the URL. This will be Base64-encoded, so it is not necessary for it to be already encoded.
                         $api_key = NULL,        ///< OPTIONAL:  Default is NULL. This is an API key from the BAOBAB server. It needs to be provided for any operation that requires user authentication.
                         &$httpCode = NULL,      ///< OPTIONAL:  Default is NULL. If provided, this has a reference to an integer data item that will be set to any HTTP response code.
                         $display_log = false    ///< OPTIONAL:  Default is false. If true, then the function will echo detailed debug information.
