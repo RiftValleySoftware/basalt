@@ -14,6 +14,14 @@
 /// If __DISPLAY_BASICS__ is set to true, then the call_REST_API function will display the basic URI and API key as echos.
 define ('__DISPLAY_BASICS__', true);
 
+/****************************************************************************************************************************/
+/**
+This is the function that is used by the BASALT testing facility to make REST calls to the Greate Rift Valley BAOBAB server.
+
+It is provided as an example of making REST calls to BAOBAB, and to provide guidance for programmers creating their own REST clients.
+
+\returns the resulting transfer from the server, as a string of bytes.
+ */
 function call_REST_API( $method,                /**< REQUIRED:  This is the method to call. It should be one of:
                                                                 - 'GET'     This is considered the default, but should be provided anyway, in order to ensure that the intent is clear.
                                                                 - 'POST'    This means that the resource needs to be created.
@@ -27,12 +35,15 @@ function call_REST_API( $method,                /**< REQUIRED:  This is the meth
                         $display_log = false    ///< OPTIONAL:  Default is false. If true, then the function will echo detailed debug information.
                         ) {
     
-    $method = strtoupper(trim($method));
-    $file = NULL;
-    $content_type = NULL;
-    $file_size = 0;
-    $temp_file_name = NULL;
+    $method = strtoupper(trim($method));    // Make sure the method is always uppercase.
     
+    // Initialize function local variables.
+    $file = NULL;               // This will be a file handle, for uploads.
+    $content_type = NULL;       // This is used to signal the content-type for uploaded files.
+    $file_size = 0;             // This is the size, in bytes, of uploaded files.
+    $temp_file_name = NULL;     // This is a temporary file that is used to hold files before they sent to the server.
+    
+    // If a file is provided by the caller, we read it into a temporary location, and Base64-encode it.
     if ($data_file) {
         $file_location = $data_file['filepath'];
         $file_type = $data_file['type'];
@@ -51,7 +62,8 @@ function call_REST_API( $method,                /**< REQUIRED:  This is the meth
         $file_size = filesize($temp_file_name);
         $file = fopen($temp_file_name, 'rb');
     }
-        
+    
+    // These are report displays. To enable these, set the __DISPLAY_BASICS__ constant.
     if (isset($api_key) && $api_key && ($display_log || __DISPLAY_BASICS__)) {
         echo('<p style="vertical-align:middle;font-style:italic">API KEY: <big><code>'.$api_key.'</code></big></p>');
     }
@@ -60,12 +72,17 @@ function call_REST_API( $method,                /**< REQUIRED:  This is the meth
         echo('<p style="vertical-align:middle;font-style:italic">'.$method.' URI: <big><code>'.$url.'</code></big></p>');
     }
 
-    $curl = curl_init();
-    
+    $curl = curl_init();                    // Initialize the cURL handle.
+    curl_setopt($curl, CURLOPT_URL, $url);  // This is the URL we are calling.
+        
+    // Different methods require different ways of dealing with any file that has been passed in.
+    // The file is ignored for GET and DELETE.
+    // We ask the server not to send us EXPECT (HTTP 100) calls for POST and PUT.
     switch ($method) {
         case "POST":
             curl_setopt($curl, CURLOPT_POST, true);
             
+            // POST sends the file as a standard multipart/form-data item.
             if ($file) {
                 curl_setopt($curl, CURLOPT_SAFE_UPLOAD, true);
                 curl_setopt($curl, CURLOPT_HTTPHEADER, ['Expect:', 'Content-type: multipart/form-data']);
@@ -80,6 +97,7 @@ function call_REST_API( $method,                /**< REQUIRED:  This is the meth
             curl_setopt($curl, CURLOPT_HTTPHEADER, ['Expect:']);
             curl_setopt($curl, CURLOPT_PUT, true);
             
+            // PUT requires a direct inline file transfer.
             if ($file) {
                 curl_setopt($curl, CURLOPT_SAFE_UPLOAD, true);
                 curl_setopt($curl, CURLOPT_INFILE, $file);
@@ -91,17 +109,17 @@ function call_REST_API( $method,                /**< REQUIRED:  This is the meth
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
     }
 
-    // Authentication
+    // Authentication. We provide the API key here.
     if (isset($api_key)) {
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($curl, CURLOPT_USERPWD, "$api_key:$api_key");
     }
 
-    curl_setopt($curl, CURLOPT_HEADER, false);
-    curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($curl, CURLOPT_VERBOSE, false);
+    curl_setopt($curl, CURLOPT_HEADER, false);          // Do not return any headers, please.
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);   // Please return to sender as a function response.
+    curl_setopt($curl, CURLOPT_VERBOSE, false);         // Let's keep this thing simple.
     
+    // This is if we want to see a display log (echoed directly).
     if (isset($display_log) && $display_log) {
         curl_setopt($curl, CURLOPT_HEADERFUNCTION, function ( $curl, $header_line ) {
             echo "<pre>".$header_line.'</pre>';
@@ -116,23 +134,27 @@ function call_REST_API( $method,                /**< REQUIRED:  This is the meth
         }
     }
     
-    $result = curl_exec($curl);
-
+    $result = curl_exec($curl); // Do it to it.
+    
+    // See if everything went as planned. If not, report an error.
     if ($result === false) {
         $info = curl_getinfo($curl);
         $result = 'error occured during curl. Info: '.var_export($info);
     }
     
+    // If they want a report, we send it.
     if (isset($httpCode)) {
         $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
     }
 
-    curl_close($curl);
+    curl_close($curl);  // Bye, now.
     
+    // If we had a file open for transfer, we close it now.
     if ($file) {
         fclose($file);
     }
     
+    // More reportage.
     if (isset($display_log) && $display_log) {
         if (isset($data_file)) {
             echo('<div>ADDITIONAL DATA:<pre>'.htmlspecialchars(print_r($data_file, true)).'</pre></div>');
