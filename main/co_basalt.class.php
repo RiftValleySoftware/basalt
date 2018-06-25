@@ -300,11 +300,46 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
     
     \returns the HTTP response intermediate state, as an associative array.
      */
-    protected function _process_baseline_command(   $in_command,    ///< REQUIRED: The command to execute.
-                                                    $in_query = []  ///< OPTIONAL: The query parameters, as an associative array.
+    protected function _process_token_command(  $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases (ignored).
+                                                $in_http_method,        ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
+                                                $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings. For the baseline, this should be exactly one element.
+                                                $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                                 ) {
-        $ret = Array('plugins' => CO_Config::plugin_names());
-        array_unshift($ret['plugins'], $this->plugin_name());
+        $ret = NULL;
+        
+        if ($in_andisol_instance->logged_in()) {    // We also have to be logged in to have any access to tokens.
+            if (!isset($in_path) || !is_array($in_path) || !count($in_path)) {   // Do we just want a list of our tokens?
+                $ret = ['tokens' => $in_andisol_instance->current_login()->ids()];
+            } else {
+            }
+        } else {
+            header('HTTP/1.1 403 Unauthorized Command');
+            exit();
+        }
+        return $ret;
+    }
+    
+    /***********************/
+    /**
+    This runs our baseline command.
+    
+    \returns the HTTP response intermediate state, as an associative array.
+     */
+    protected function _process_baseline_command(   $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases (ignored).
+                                                    $in_http_method,        ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
+                                                    $in_command,            ///< REQUIRED: The command to execute.
+                                                    $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings. For the baseline, this should be exactly one element.
+                                                    $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
+                                                ) {
+        $ret = NULL;
+        
+        // No command simply means list the plugins.
+        if (!isset($in_command) || !$in_command) {
+            $ret = Array('plugins' => CO_Config::plugin_names());
+            array_unshift($ret['plugins'], $this->plugin_name());
+        } elseif ('tokens' == $in_command) {   // If we are viewing or editing the tokens, then we deal with that here.
+            $ret = $this->_process_token_command($in_andisol_instance, $in_http_method, $in_path, $in_query);
+        }
         
         return $ret;
     }
@@ -493,8 +528,8 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         $ret = NULL;
         
         if (is_array($in_path) && (1 >= count($in_path))) {
-            $command = isset($in_path[0]) ? strtolower(trim($in_path[0])) : [];
-            $ret = $this->_process_baseline_command($command, $in_query);
+            $command = isset($in_path[0]) ? strtolower(trim(array_shift($in_path))) : [];
+            $ret = $this->_process_baseline_command($in_andisol_instance, $in_http_method, $command, $in_path, $in_query);
         } else {
             header('HTTP/1.1 400 Improper Baseline Command');
             exit();

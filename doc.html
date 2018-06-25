@@ -129,7 +129,8 @@
         <p class="main_doc-p">Records with "1" as a read or write ID can be viewed and/or modified by any logged-in user.</p>
         <p class="main_doc-p">IDs greater than "1" will require that the logged-in user also have that token in their list of tokens.</p>
         <p class="main_doc-p">For security reasons, no logged-in user (other than the "God" login) can even know of the existence of tokens that they do not have in their list, and no record to which they do not have at least read permissions will ever be accessible.</p>
-        <p class="main_doc-p">Tokens can never be removed (except explicitly by the "God" admin). They are always available, so they can be reused. Security tokens can be assigned to multiple records. They are not exclusive.</p>
+        <p class="main_doc-p">Tokens can never be removed. They are always available, so they can be reused. Security tokens can be assigned to multiple records. They are not exclusive.</p>
+        <p class="main_doc-p">Tokens are managed by Manager Users, via the "<code>baseline</code>" plugin..</p>
 
         <h3 class="rest_api_doc-h3" id="main_overview_header-sample-curl">SAMPLE CURL-CALLING FUNCTION IN PHP</h3>
         <pre>/****************************************************************************************************************************/
