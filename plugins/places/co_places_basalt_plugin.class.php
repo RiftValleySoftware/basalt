@@ -28,21 +28,21 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                                 $in_additional_info = false ///< OPTIONAL: If true (default is false), then some extra information will be added to the basic ID and name.
                                             ) {
         $ret = parent::_get_short_description($in_object, $in_additional_info);
-        $ret = Array('id' => $in_place_object->id());
-        $longitude = $in_place_object->longitude();
-        $latitude = $in_place_object->latitude();
-        $name = $in_place_object->name;
-        
-        if (isset($name) && $name) {
-            $ret['name'] = $name;
-        }
+        $ret = Array('id' => $in_object->id());
+        $longitude = $in_object->longitude();
+        $latitude = $in_object->latitude();
+        $name = $in_object->name;
         
         if (isset($longitude) && is_float($longitude) && isset($latitude) && is_float($latitude)) {
             $ret['coords'] = sprintf("%f,%f", $latitude, $longitude);
         }
         
-        if (isset($in_place_object->distance)) {
-            $ret['distance'] = $in_place_object->distance;
+        if (isset($in_object->distance)) {
+            $ret['distance'] = $in_object->distance;
+        }
+        
+        if ($in_object->is_fuzzy()) {
+            $ret['fuzzy'] = true;
         }
         
         return $ret;
@@ -72,19 +72,19 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $ret['address'] = $address;
         }
         
-        if ($in_place_object->is_fuzzy()) {
-            $ret['fuzzy'] = true;
-        }
-        
         $address_elements = $in_place_object->get_address_elements();
         
         if (0 < count($address_elements)) {
             $ret['address_elements'] = $address_elements;
         }
         
+        if ($in_place_object->is_fuzzy()) {
+            $ret['fuzz_factor'] = $in_place_object->fuzz_factor();
+        }
+
         $child_objects = $this->_get_child_ids($in_place_object);
         if (0 < count($child_objects)) {
-            $ret['children_ids'] = $child_objects;
+            $ret['child_ids'] = $child_objects;
         }
         return $ret;
     }
@@ -131,7 +131,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $location_search = Array('radius' => $radius, 'longitude' => $longitude, 'latitude' => $latitude);
             }
             
-            $class_search = Array('%_Place', '%_Place_Collection', 'use_like' => 1);
+            $class_search = Array('%_Place_Collection', 'use_like' => 1);
             
             $search_array['access_class'] = $class_search;
             
