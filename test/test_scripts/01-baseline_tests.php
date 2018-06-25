@@ -15,7 +15,7 @@
 
 require_once(dirname(dirname(__FILE__)).'/run_basalt_tests.php');
 
-basalt_run_tests(1, 'BASELINE', 'We simply try the baseline (virtual plugin) commands.');
+basalt_run_tests(1, 'GENERIC BASELINE', 'Try the basic list plugins command, and access each plugin for its XML schema.');
 
 // -------------------------- DEFINITIONS AND TESTS -----------------------------------
 

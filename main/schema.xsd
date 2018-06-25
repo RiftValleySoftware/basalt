@@ -1,0 +1,31 @@
+    <xs:element name='baseline'>
+        <xs:complexType>
+            <xs:choice>
+                <xs:element ref='b:plugins'/>
+                <xs:element ref='b:tokens'/>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name='plugins'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs='unbounded' ref='b:value'/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name='tokens'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs='unbounded' ref='b:value'/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name='value'>
+        <xs:complexType>
+            <xs:simpleContent>
+                <xs:extension base='xs:NMTOKEN'>
+                    <xs:attribute name='sequence_index' use='required' type='xs:integer'/>
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
