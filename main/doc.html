@@ -1,13 +1,122 @@
 <h1 class="rest_api_doc-h1">Baseline REST API Plugin</h1>
-<h2 class="rest_api_doc-h2">Basic Access and Control of the BAOBAB Server</h2>
+<h2 class="rest_api_doc-h2">Information About Plugins and Security Tokens</h2>
+<header class="doc_toc-header rest_api_doc_div-people" id="00-people-toc">
+    <div class="wrap-toc-div">
+        <ul class="toc-ul">
+            <li><a href="#01-baseline-structure">BASIC URI STRUCTURE</a></li>
+            <li><a href="#01-baseline-directories">DIRECTORIES</a><ul class="toc-ul">
+                <li><a href="#01-baseline-directories-direct">No Directory (Direct Call)</a><ul class="toc-ul">
+                    <li><a href="#01-baseline-directories-direct-json">JSON</a></li>
+                    <li><a href="#01-baseline-directories-direct-xml">XML</a></li>
+                </ul></li>
+                <li><a href="#01-baseline-directories-tokens">tokens</a><ul class="toc-ul">
+                    <li><a href="#01-baseline-directories-tokens-json-get">JSON (GET)</a></li>
+                    <li><a href="#01-baseline-directories-tokens-json-post">JSON (POST)</a></li>
+                    <li><a href="#01-baseline-directories-tokens-xml-get">XML (GET)</a></li>
+                    <li><a href="#01-baseline-directories-tokens-xml-post">XML (POST)</a></li>
+                </ul></li>
+            </ul></li>
+        </ul>
+    </div>
+</header>
 <div class=" class="rest_api_doc-main-content">
     <header class="uri_structure-header rest_api_doc_div-baseline">
-        <h3 class="rest_api_doc-h3">BASIC URI STRUCTURE</h3>
-        <h4 class="rest_api_doc-h3">Plugin Name</h4>
+        <h3 class="rest_api_doc-h3" id="01-baseline-structure">BASIC URI STRUCTURE</h3>
+        <h4 class="rest_api_doc-h3" id="01-baseline-structure-name">Plugin Name</h4>
         <p class="main_doc-p">The plugin name is "<code>baseline</code>", all lowercase:</p>
         <div class="uri_display-div">
             <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_plugin-span">/baseline</span></code>
         </div>
         <p class="main_doc-p">You access the plugin functionality by placing the plugin name immediately following the server name in the REST URI.</p>
+        <p class="main_doc-p">There are no query parameters with the baseline plugin, and only GET and POST are allowed as methods.</p>
     </header>
+    <div class="uri_commands-div rest_api_doc_div-baseline" id="01-baseline-directories">
+        <h3 class="rest_api_doc-h3" id="01-baseline-directories-directories">DIRECTORIES</h3>
+        
+        <h4 class="rest_api_doc-h4" id="01-baseline-directories-direct">No Directory (Direct Call)</h4>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol-span">http[s]://</span><span class="uri_server-span">example.com</span><span class="uri_plugin-span">/baseline</span></code>
+        </div>
+        <p class="main_doc-p">Calling the plugin directly will simply list all the available plugins (including the baseline plugin).</p>
+        <h5 class="rest_api_doc-h5" id="01-baseline-directories-direct-json">JSON:</h5>
+        <pre class="code-dump-json">{
+  "baseline": {
+    "plugins": [
+      "baseline",
+      "people",
+      "places",
+      "things"
+    ]
+  }
+}</pre>
+        <h5 class="rest_api_doc-h5" id="01-baseline-directories-direct-xml">XML:</h5>
+        <pre class="code-dump-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;baseline xmlns="http://example.com"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://example.com http://example.com/xsd/baseline"&gt;
+  &lt;plugins&gt;
+    &lt;value sequence_index="0"&gt;baseline&lt;/value&gt;
+    &lt;value sequence_index="1"&gt;people&lt;/value&gt;
+    &lt;value sequence_index="2"&gt;places&lt;/value&gt;
+    &lt;value sequence_index="3"&gt;things&lt;/value&gt;
+  &lt;/plugins&gt;
+&lt;/baseline&gt;</pre>
+
+        <h4 class="rest_api_doc-h4" id="01-baseline-directories-tokens">tokens</h4>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol-span">http[s]://</span><span class="uri_server-span">example.com</span><span class="uri_plugin-span">/baseline/tokens</span></code>
+        </div>
+        <p class="main_doc-p">Calling the plugin with the "<code>tokens</code>" directory will list all of the tokens for the current logged-in user (GET), or will create a new token (POST), if the logged-in user is a Manager User.</p>
+        <p class="main_doc-p">GET will return a list of IDs, while POST will return only one ID (the new token).</p>
+        <h5 class="rest_api_doc-h5" id="01-baseline-directories-tokens-json-get">JSON (GET):</h5>
+        <pre class="code-dump-json">{
+  "baseline": {
+    "tokens": [
+      9,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ]
+  }
+}</pre>
+        <p class="main_doc-p">When a new token is created, it is added to the current login's list, and is returned in the transaction response, as a single integer.</p>
+        <h5 class="rest_api_doc-h5" id="01-baseline-directories-tokens-json-post">JSON (POST):</h5>
+        <pre class="code-dump-json">{
+  "baseline": {
+    "tokens": [
+      11
+    ]
+  }
+}</pre>
+        <h5 class="rest_api_doc-h5" id="01-baseline-directories-tokens-xml-get">XML (GET):</h5>
+        <pre class="code-dump-json">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;baseline xmlns="http://example.com"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://example.com http://example.com/xsd/baseline"&gt;
+  &lt;tokens&gt;
+    &lt;value sequence_index="0"&gt;9&lt;/value&gt;
+    &lt;value sequence_index="1"&gt;2&lt;/value&gt;
+    &lt;value sequence_index="2"&gt;3&lt;/value&gt;
+    &lt;value sequence_index="3"&gt;4&lt;/value&gt;
+    &lt;value sequence_index="4"&gt;5&lt;/value&gt;
+    &lt;value sequence_index="5"&gt;6&lt;/value&gt;
+    &lt;value sequence_index="6"&gt;7&lt;/value&gt;
+    &lt;value sequence_index="7"&gt;8&lt;/value&gt;
+  &lt;/tokens&gt;
+&lt;/baseline&gt;</pre>
+        
+        <h5 class="rest_api_doc-h5" id="01-baseline-directories-tokens-xml-post">XML (POST):</h5>
+        <pre class="code-dump-json">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;baseline xmlns="http://example.com"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://example.com http://example.com/xsd/baseline"&gt;
+  &lt;tokens&gt;
+    &lt;value sequence_index="0"&gt;11&lt;/value&gt;
+  &lt;/tokens&gt;
+&lt;/baseline&gt;</pre>
+    </div>
 </div>
