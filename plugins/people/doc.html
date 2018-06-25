@@ -42,6 +42,10 @@
                     <li><a href="#05-people-post-example-json">JSON</a></li>
                     <li><a href="#05-people-post-example-xml">XML</a></li>
                 </ul></li>
+                <li><a href="#06-people-put-example">Example PUT Response</a><ul class="toc-ul">
+                    <li><a href="#06-people-put-example-json">JSON</a></li>
+                    <li><a href="#06-people-put-example-xml">XML</a></li>
+                </ul></li>
             </ul></li>
         </ul>
     </div>
@@ -511,8 +515,10 @@
         <p><code>http://example.com/xml/people/people/?login_user&amp;child_ids=134,2,-3,-4,5,674,-32</code></p>
         <p class="main_doc-p">Would add IDs 134, 2, 5, and 674, and would remove IDs 3, 4, and 32 (if the user record originally had them). If the user record does not have the IDs, or the records indicated by the IDs are not visible to the current user, the IDs are ignored.</p>
         <p class="main_doc-p">Order does not matter, but your login ID must have at least read permissions for the resource indicated by the child ID. If you do not have that, that child ID will be ignored; even if the user has it.</p>
+        <p class="main_doc-p">You can apply a PUT command to multiple users and/or logins. Anything in the PUT URI that does not apply to a specific record is simply ignored for that record.</p>
         <h4 class="rest_api_doc-h4" id="04-people-post-queries-upload">Uploading Binary Data</h4>
         <p class="main_doc-p">You can upload binary data (such as a user avatar image) with the POST or PUT command. <a href="#main_overview_header-sending_payload_data">The main description</a> discusses the exact mechanism for doing this.</p>
+
         <h4 class="rest_api_doc-h4" id="05-people-post-example">Example POST Response</h4>
         <p class="main_doc-p">Create a new user/login pair, with most fields pre-populated, and an auto-generated password:</p>
         <p><code class="uri-example">http://example.com/json/people/people/?login_id=Marvin&amp;name=Marvin&amp;surname=Martian&amp;given_name=Marvin&amp;middle_name=D&amp;nickname=Angry+Little+Fella&amp;prefix=Mar.Tian&amp;suffix=Esq.&amp;tokens=6,7,8&amp;child_ids=2,5,6,7,8&amp;read_token=5&amp;write_token=5</code></p>
@@ -608,5 +614,158 @@
     &lt;/new_user&gt;
   &lt;/people&gt;
 &lt;/people&gt;</pre>
+
+        <h4 class="rest_api_doc-h4" id="06-people-put-example">Example PUT Response</h4>
+        <p class="main_doc-p">Change a user, with most fields changed:</p>
+        <p><code class="uri-example">http://example.com/json/people/people/7?login_user&name=Lenna&surname=Söderberg&given_name=Lena&middle_name=Whoah+Nellie!&nickname=Lenna+Sjööblom&prefix=Ms.&suffix=Scanner+Test+Model&tokens=3,4,5&child_ids=-2,-5,-6,7,-8&read_token=1&write_token=11</code></p>
+        <h5 class="rest_api_doc-h5" id="06-people-put-example-json">JSON:</h5>
+        <pre class="code-dump-json">{
+  "people": {
+    "people": {
+      "changed_users": [
+        {
+          "before": {
+            "id": 7,
+            "name": "Marvin",
+            "lang": "en",
+            "read_token": 5,
+            "write_token": 5,
+            "last_access": "2018-06-25 10:58:22",
+            "writeable": true,
+            "surname": "Martian",
+            "middle_name": "D",
+            "given_name": "Marvin",
+            "prefix": "Mar.Tian",
+            "suffix": "Esq.",
+            "nickname": "Angry Little Fella",
+            "associated_login": {
+              "id": 11,
+              "name": "Marvin",
+              "lang": "en",
+              "login_id": "Marvin",
+              "read_token": 5,
+              "write_token": 5,
+              "last_access": "2018-06-25 10:58:22",
+              "writeable": true,
+              "user_object_id": 7,
+              "security_tokens": [
+                11,
+                6,
+                7,
+                8
+              ]
+            }
+          },
+          "after": {
+            "id": 7,
+            "name": "Lenna",
+            "lang": "en",
+            "read_token": 1,
+            "write_token": 11,
+            "last_access": "2018-06-25 10:58:22",
+            "writeable": true,
+            "surname": "Söderberg",
+            "middle_name": "Whoah Nellie!",
+            "given_name": "Lena",
+            "prefix": "Ms.",
+            "suffix": "Scanner Test Model",
+            "nickname": "Lenna Sjööblom",
+            "associated_login": {
+              "id": 11,
+              "name": "Marvin",
+              "lang": "en",
+              "login_id": "Marvin",
+              "read_token": 1,
+              "write_token": 11,
+              "last_access": "2018-06-25 10:58:22",
+              "writeable": true,
+              "user_object_id": 7,
+              "security_tokens": [
+                3,
+                4,
+                5
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}</pre>
+        <h5 class="rest_api_doc-h5" id="06-people-put-example-xml">XML:</h5>
+        <pre class="code-dump-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;people xmlns="http://example.com"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://example.com http://example.com/xsd/people"&gt;
+  &lt;people&gt;
+    &lt;changed_users&gt;
+      &lt;value sequence_index="0"&gt;
+        &lt;before&gt;
+          &lt;id&gt;7&lt;/id&gt;
+          &lt;name&gt;Marvin&lt;/name&gt;
+          &lt;lang&gt;en&lt;/lang&gt;
+          &lt;read_token&gt;5&lt;/read_token&gt;
+          &lt;write_token&gt;5&lt;/write_token&gt;
+          &lt;last_access&gt;2018-06-25 10:58:39&lt;/last_access&gt;
+          &lt;writeable&gt;1&lt;/writeable&gt;
+          &lt;surname&gt;Martian&lt;/surname&gt;
+          &lt;middle_name&gt;D&lt;/middle_name&gt;
+          &lt;given_name&gt;Marvin&lt;/given_name&gt;
+          &lt;prefix&gt;Mar.Tian&lt;/prefix&gt;
+          &lt;suffix&gt;Esq.&lt;/suffix&gt;
+          &lt;nickname&gt;Angry Little Fella&lt;/nickname&gt;
+          &lt;associated_login&gt;
+            &lt;id&gt;11&lt;/id&gt;
+            &lt;name&gt;Marvin&lt;/name&gt;
+            &lt;lang&gt;en&lt;/lang&gt;
+            &lt;login_id&gt;Marvin&lt;/login_id&gt;
+            &lt;read_token&gt;5&lt;/read_token&gt;
+            &lt;write_token&gt;5&lt;/write_token&gt;
+            &lt;last_access&gt;2018-06-25 10:58:38&lt;/last_access&gt;
+            &lt;writeable&gt;1&lt;/writeable&gt;
+            &lt;user_object_id&gt;7&lt;/user_object_id&gt;
+            &lt;security_tokens&gt;
+              &lt;value sequence_index="0"&gt;11&lt;/value&gt;
+              &lt;value sequence_index="1"&gt;6&lt;/value&gt;
+              &lt;value sequence_index="2"&gt;7&lt;/value&gt;
+              &lt;value sequence_index="3"&gt;8&lt;/value&gt;
+            &lt;/security_tokens&gt;
+          &lt;/associated_login&gt;
+        &lt;/before&gt;
+        &lt;after&gt;
+          &lt;id&gt;7&lt;/id&gt;
+          &lt;name&gt;Lenna&lt;/name&gt;
+          &lt;lang&gt;en&lt;/lang&gt;
+          &lt;read_token&gt;1&lt;/read_token&gt;
+          &lt;write_token&gt;11&lt;/write_token&gt;
+          &lt;last_access&gt;2018-06-25 10:58:39&lt;/last_access&gt;
+          &lt;writeable&gt;1&lt;/writeable&gt;
+          &lt;surname&gt;Söderberg&lt;/surname&gt;
+          &lt;middle_name&gt;Whoah Nellie!&lt;/middle_name&gt;
+          &lt;given_name&gt;Lena&lt;/given_name&gt;
+          &lt;prefix&gt;Ms.&lt;/prefix&gt;
+          &lt;suffix&gt;Scanner Test Model&lt;/suffix&gt;
+          &lt;nickname&gt;Lenna Sjööblom&lt;/nickname&gt;
+          &lt;associated_login&gt;
+            &lt;id&gt;11&lt;/id&gt;
+            &lt;name&gt;Marvin&lt;/name&gt;
+            &lt;lang&gt;en&lt;/lang&gt;
+            &lt;login_id&gt;Marvin&lt;/login_id&gt;
+            &lt;read_token&gt;1&lt;/read_token&gt;
+            &lt;write_token&gt;11&lt;/write_token&gt;
+            &lt;last_access&gt;2018-06-25 10:58:38&lt;/last_access&gt;
+            &lt;writeable&gt;1&lt;/writeable&gt;
+            &lt;user_object_id&gt;7&lt;/user_object_id&gt;
+            &lt;security_tokens&gt;
+              &lt;value sequence_index="0"&gt;3&lt;/value&gt;
+              &lt;value sequence_index="1"&gt;4&lt;/value&gt;
+              &lt;value sequence_index="2"&gt;5&lt;/value&gt;
+            &lt;/security_tokens&gt;
+          &lt;/associated_login&gt;
+        &lt;/after&gt;
+      &lt;/value&gt;
+    &lt;/changed_users&gt;
+  &lt;/people&gt;
+&lt;/people&gt;</pre>        
     </div>
 </div>
