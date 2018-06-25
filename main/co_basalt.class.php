@@ -216,7 +216,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         
         if (isset($this->_andisol_instance) && ($this->_andisol_instance instanceof CO_Andisol) && $this->_andisol_instance->valid()) {
             if ('baseline' == $this->_plugin_selector) {
-                if ('GET' == $this->_request_type) {
+                if (('GET' == $this->_request_type) || ('POST' == $this->_request_type)) {
                     $result = $this->process_command($this->_andisol_instance, $this->_request_type, $this->_response_type, $this->_path, $this->_vars);
                 } else {
                     $header = 'HTTP/1.1 400 Incorrect HTTP Request Method';
@@ -301,16 +301,19 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
     \returns the HTTP response intermediate state, as an associative array.
      */
     protected function _process_token_command(  $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases (ignored).
-                                                $in_http_method,        ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
+                                                $in_http_method,        ///< REQUIRED: 'GET' or 'POST' are the only allowed values.
                                                 $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings. For the baseline, this should be exactly one element.
                                                 $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                                 ) {
         $ret = NULL;
-        
         if ($in_andisol_instance->logged_in()) {    // We also have to be logged in to have any access to tokens.
-            if (!isset($in_path) || !is_array($in_path) || !count($in_path)) {   // Do we just want a list of our tokens?
+            if (('GET' == $in_http_method) && (!isset($in_path) || !is_array($in_path) || !count($in_path))) {   // Do we just want a list of our tokens?
                 $ret = ['tokens' => $in_andisol_instance->current_login()->ids()];
+            } elseif (('POST' == $in_http_method) && $in_andisol_instance->manager()) {  // If we are handling POST, then we ignore everything else, and create a new token. However, we need to be a manager to do this.
+                $ret = ['tokens' => $in_andisol_instance->make_security_token()];
             } else {
+                header('HTTP/1.1 403 Unauthorized Command');
+                exit();
             }
         } else {
             header('HTTP/1.1 403 Unauthorized Command');
@@ -326,7 +329,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
     \returns the HTTP response intermediate state, as an associative array.
      */
     protected function _process_baseline_command(   $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases (ignored).
-                                                    $in_http_method,        ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
+                                                    $in_http_method,        ///< REQUIRED: 'GET' or 'POST' are the only allowed values.
                                                     $in_command,            ///< REQUIRED: The command to execute.
                                                     $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings. For the baseline, this should be exactly one element.
                                                     $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
@@ -334,7 +337,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         $ret = NULL;
         
         // No command simply means list the plugins.
-        if (!isset($in_command) || !$in_command) {
+        if (('GET' == $in_http_method) && (!isset($in_command) || !$in_command)) {
             $ret = Array('plugins' => CO_Config::plugin_names());
             array_unshift($ret['plugins'], $this->plugin_name());
         } elseif ('tokens' == $in_command) {   // If we are viewing or editing the tokens, then we deal with that here.
@@ -520,7 +523,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
     \returns the HTTP response string, as either JSON or XML.
      */
     public function process_command(    $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases (ignored).
-                                        $in_http_method,        ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
+                                        $in_http_method,        ///< REQUIRED: 'GET' or 'POST' are the only allowed values.
                                         $in_response_type,      ///< REQUIRED: 'json', 'xml' or 'xsd' -the response type.
                                         $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings. For the baseline, this should be exactly one element.
                                         $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
