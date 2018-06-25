@@ -39,6 +39,13 @@ function basalt_test_0081($in_login = NULL, $in_hashed_password = NULL, $in_pass
     } else {
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
     }
+    echo('<h3>Log Out, So We Can Log In Again:</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (205 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">Successful Logout!</pre>');
+    }
 }
 
 // --------------------
@@ -75,6 +82,13 @@ function basalt_test_0082($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+    echo('<h3>Log Out, So We Can Log In Again:</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (205 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">Successful Logout!</pre>');
     }
 }
 
@@ -113,6 +127,13 @@ function basalt_test_0083($in_login = NULL, $in_hashed_password = NULL, $in_pass
     } else {
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
     }
+    echo('<h3>Log Out, So We Can Log In Again:</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (205 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">Successful Logout!</pre>');
+    }
 }
 
 // --------------------
@@ -149,6 +170,13 @@ function basalt_test_0084($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+    echo('<h3>Log Out, So We Can Log In Again:</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (205 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">Successful Logout!</pre>');
     }
 }
 
@@ -324,6 +352,13 @@ function basalt_test_0087($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
         echo('<div style="text-align:center;margin:1em"><img src="data:'.$type.','.$payload.'" title="Has anyone seen my Immodium Q35 Explosive Space Modulator?" alt="Marvin" style="width:256px" /></div>');
     }
+    echo('<h3>Log Out, So We Can Log In Again:</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (205 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">Successful Logout!</pre>');
+    }
 }
 
 // --------------------
@@ -405,7 +440,7 @@ function basalt_test_0089($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     
     $new_login_id = '';
-    $new_password = '';
+    $password = '';
     
     echo('<h3>First, we create a new user and login pair:</h3>');
     $new_image = Array('filepath' => dirname(dirname(__FILE__)).'/images/lena.jpg', 'type' => 'image/jpeg', 'name' => 'lena.jpg');
@@ -417,7 +452,7 @@ function basalt_test_0089($in_login = NULL, $in_hashed_password = NULL, $in_pass
         $payload = (string)$xml_object->people->new_user->payload;
         $type = (string)$xml_object->people->new_user->payload_type;
         $new_login_id = (string)$xml_object->people->new_user->associated_login->login_id;
-        $new_password = (string)$xml_object->people->new_user->associated_login->password;
+        $password = (string)$xml_object->people->new_user->associated_login->password;
         $xml_object->people->new_user->payload = '[LARGE PAYLOAD]';
         $result = $xml_object->asXML();
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
@@ -425,7 +460,7 @@ function basalt_test_0089($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     
     echo('<h4>At this point, we have a new login. Let\'s first login with that ID:</h4>');
-    $lenas_api_key = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$new_login_id.'&password='.$new_password, NULL, NULL, $result_code);
+    $lenas_api_key = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$new_login_id.'&password='.$password, NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -492,7 +527,7 @@ function basalt_test_0089($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
 
     echo('<h3>Let\'s log in again, and try over:</h3>');
-    $lenas_api_key = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$new_login_id.'&password='.$new_password, NULL, NULL, $result_code);
+    $lenas_api_key = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$new_login_id.'&password='.$password, NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -500,7 +535,7 @@ function basalt_test_0089($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     
     echo('<h3>Oops. Wrong login. Let\'s try \'Lena\', instead:</h3>');
-    $lenas_api_key = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=Lena&password='.$new_password, NULL, NULL, $result_code);
+    $lenas_api_key = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=Lena&password='.$password, NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {

@@ -5,6 +5,7 @@ body {
 code,
 pre {
     padding: 0.25em;
+    max-width:100%;
     font-family: Menlo, Lucida, Lucida Console, Monaco, DejaVu Sans Mono, monospace;
     overflow: auto;
 }
@@ -25,6 +26,11 @@ pre.code-dump-xml {
 code {
     font-size: large;
     color:#900;
+}
+
+code.uri-example {
+    display:block;
+    white-space: nowrap;
 }
 
 div.rest_api_doc_div {

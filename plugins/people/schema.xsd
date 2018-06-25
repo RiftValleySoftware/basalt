@@ -176,7 +176,6 @@
             <xs:element minOccurs="0" name="api_key" type="xs:string"/>
             <xs:element minOccurs="0" name="api_key_age_in_seconds" type="xs:integer"/>
             <xs:element minOccurs="0" name="password" type="xs:string"/>
-            <xs:element minOccurs="0" name="new_password" type="xs:string"/>
         </xs:sequence>
         <xs:attribute name="sequence_index" type="xs:integer"/>
     </xs:complexType>

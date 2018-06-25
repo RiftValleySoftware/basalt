@@ -19,14 +19,25 @@
                     <li><a href="#03-people-query-login-user-xml">XML</a></li>
                 </ul></li>
             </ul></li>
-            <li><a href="#04-people-post">POST</a><ul class="toc-ul">
-                <li><a href="#04-people-post-queries">Query Arguments</a><ul class="toc-ul">
-                    <li><a href="#04-people-post-queries-login-user">login_user</a></li>
-                    <li><a href="#04-people-post-queries-login-id">login_id</a></li>
+            <li><a href="#04-people-post">POST AND PUT</a><ul class="toc-ul">
+                <li><a href="#04-people-post-queries-login">Query Arguments (Logins)</a><ul class="toc-ul">
+                    <li><a href="#04-people-post-queries-login-id">login_string</a></li>
                     <li><a href="#04-people-post-queries-password">password</a></li>
                     <li><a href="#04-people-post-queries-name">name</a></li>
                     <li><a href="#04-people-post-queries-is_manager">is_manager</a></li>
                 </ul></li>
+                <li><a href="#04-people-post-queries-people">Query Arguments (People)</a><ul class="toc-ul">
+                    <li><a href="#04-people-post-queries-people-login-user">login_user</a></li>
+                    <li><a href="#04-people-post-queries-people-name">name</a></li>
+                    <li><a href="#04-people-post-queries-people-surname">surname</a></li>
+                    <li><a href="#04-people-post-queries-people-given_name">given_name</a></li>
+                    <li><a href="#04-people-post-queries-people-middle_name">middle_name</a></li>
+                    <li><a href="#04-people-post-queries-people-prefix">prefix</a></li>
+                    <li><a href="#04-people-post-queries-people-suffix">suffix</a></li>
+                    <li><a href="#04-people-post-queries-people-nickname">nickname</a></li>
+                    <li><a href="#04-people-post-queries-people-children">child_ids</a></li>
+                </ul></li>
+                <li><a href="#04-people-post-queries-upload">Uploading Binary Data</a></li>
             </ul></li>
         </ul>
     </div>
@@ -457,22 +468,140 @@
         </pre>
     </div>
     <div class="post_arguments-div rest_api_doc_div-people" id="04-people-post">
-        <h3 class="rest_api_doc-h3">POST</h3>
-        <p class="main_doc-p">In this plugin, POST does only one thing: It creates new users and logins; one at a time (or a matched pair at once). In order to POST, your login ID must be a "manager" ID.</p>
+        <h3 class="rest_api_doc-h3">POST AND PUT</h3>
+        <p class="main_doc-p">In this plugin, POST does only one thing: It creates new users and logins; one at a time (or a matched pair at once). In order to POST, your login ID must be a "manager" ID. PUT is used to modify existing resources.</p>
         <p class="main_doc-p"><strong>NOTE:</strong> Specifying just the <a href="#02-people-directories-people">people subdirectory</a>, or just the <a href="#02-people-directories-logins">logins subdirectory</a> will cause just that resource to be created, with no matching second resource (a simple user record, with no login, or a simple login, with no user).</p>
         <p class="main_doc-p"><strong>NOTE:</strong> Standalone users (only "people") have no ability to log into the BAOBAB server. Standalone logins, however, can log into the BAOBAB server.</p>
-        <h4 class="rest_api_doc-h4" id="04-people-post-queries">Query Arguments</h4>
-        <h5 class="rest_api_doc-h5" id="04-people-post-queries-login-user">login_user</h5>
-        <p class="main_doc-p">If the <a href="#02-people-directories-people">people subdirectory</a> is specified, then you can assign the <a href="#03-people-query-login-user">login_user</a> query parameter. Doing this will cause the new user to be accompanied by a login ID, as well as a user. This parameter is ignored if you are specifying the <a href="#02-people-directories-logins">logins subdirectory</a>.</p>
-        <h5 class="rest_api_doc-h5" id="04-people-post-queries-login-id">login_id</h5>
-        <p class="main_doc-p">If you are specifying a new login (specifying the <a href="#02-people-directories-logins">logins subdirectory</a>), or you are also attaching the <a href="#03-people-query-login-user">login_user</a> query parameter, you are required to provide a "login_id" parameter with the POST command. This should be a string, and will be the login ID of the new user.</p>
+        <h4 class="rest_api_doc-h4" id="04-people-post-queries-login">Query Arguments (Logins)</h4>
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-login-id">login_string</h5>
+        <p class="main_doc-p">If you are specifying a new login (specifying the <a href="#02-people-directories-logins">logins subdirectory</a>), or you are also attaching the <a href="#03-people-query-login-user">login_user</a> query parameter, you are required to provide a "login_string" parameter with the POST command. This should be a string, and will be the login ID of the new user. This is not allowed in the PUT method (you can't change a user ID), unless you are the "God" login.</p>
         <h5 class="rest_api_doc-h5" id="04-people-post-queries-password">password</h5>
         <p class="main_doc-p">If you are specifying a new login (specifying the <a href="#02-people-directories-logins">logins subdirectory</a>), or you are also attaching the <a href="#03-people-query-login-user">login_user</a> query parameter, you have the option of providing your own password in the "password" query parameter. This should be a string, and should be the minimum length (or greater) required by the BAOBAB installation. Leaving this out, or providing too short of a password, will result in a random password being generated (and returned in the request response).</p>
         <h5 class="rest_api_doc-h5" id="04-people-post-queries-name">name</h5>
-        <p class="main_doc-p">You can optionally specify a name parameter. This is a string, and is put in the "object_name" record column in the new user/login. If you are specifying a new login (specifying the <a href="#02-people-directories-logins">logins subdirectory</a>), or you are also attaching the <a href="#03-people-query-login-user">login_user</a> query parameter, this will be applied to BOTH the user and the login.</p>
+        <p class="main_doc-p">You can optionally specify a name parameter. This is a string, and is put in the "object_name" record column in the new login.</p>
         <h5 class="rest_api_doc-h5" id="04-people-post-queries-name">tokens</h5>
         <p class="main_doc-p">If you are specifying a new login (specifying the <a href="#02-people-directories-logins">logins subdirectory</a>), or you are also attaching the <a href="#03-people-query-login-user">login_user</a> query parameter, you have the option of providing a CSV (<strong>C</strong>omma-<strong>S</strong>eparated <strong>V</strong>alues) list of integers, which will be security tokens for the new login. These tokens MUST be ones that your manager ID has available. You cannot assign any tokens that your own ID does not have.</p>
         <h5 class="rest_api_doc-h5" id="04-people-post-queries-is_manager">is_manager</h5>
         <p class="main_doc-p">If you are specifying a new login (specifying the <a href="#02-people-directories-logins">logins subdirectory</a>), or you are also attaching the <a href="#03-people-query-login-user">login_user</a> query parameter, you have the option of specifying the "is_manager" query parameter. If this is specified, then the resulting login will be a "manager" login, with the ability to create other logins. Remember that this login will be restricted to whatever tokens you provide, as its own "pool" of tokens.</p>
+        <h4 class="rest_api_doc-h4" id="04-people-post-queries-people">Query Arguments (People)</h4>
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-people-login-user">login_user</h5>
+        <p class="main_doc-p">If the <a href="#02-people-directories-people">people subdirectory</a> is specified, then you can assign the <a href="#03-people-query-login-user">login_user</a> query parameter. Doing this will cause the new user to be accompanied by a login ID, as well as a user. This parameter is ignored if you are specifying the <a href="#02-people-directories-logins">logins subdirectory</a>.</p>
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-people-name">name</h5>
+        <p class="main_doc-p">You can optionally specify a name parameter. This is a string, and is put in the "object_name" record column in the new user/login. If you are specifying a new login (specifying the <a href="#04-people-post-queries-people-login-user">login_user</a> query argument), this will be applied to BOTH the user and the login.</p>
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-people-surname">surname</h5>
+        <p class="main_doc-p">You can optionally specify a surname (family name). This applies only to the user record (not the login).</p>
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-people-given_name">given_name</h5>
+        <p class="main_doc-p">You can optionally specify a given (first) name. This applies only to the user record.</p>
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-people-middle_name">middle_name</h5>
+        <p class="main_doc-p">You can optionally specify a middle name. This applies only to the user record.</p>
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-people-prefix">prefix</h5>
+        <p class="main_doc-p">You can optionally specify a prefix (like "Dr.", "Ms.", "Sir", etc.). This applies only to the user record.</p>
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-people-suffix">suffix</h5>
+        <p class="main_doc-p">You can optionally specify a suffix (like "esq.", "III", "LCSW", etc.). This applies only to the user record.</p>
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-people-nickname">nickname</h5>
+        <p class="main_doc-p">You can optionally specify a nickname. This applies only to the user record.</p>
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-people-children">child_ids</h5>
+        <p class="main_doc-p">Users (not logins) are actually "collection" records. This means that they can have attached "child" records (of any type). You associate these records by providing their integer IDs as a CSV list in this query.</p>
+        <p class="main_doc-p">You specify IDs to be added by indicating them as positive integers, and to be removed, by specifying them as negative integers (prefixed by "-").</p>
+        <p class="main_doc-p">For example:</p>
+        <p><code>http://example.com/xml/people/people/?login_user&amp;child_ids=134,2,-3,-4,5,674,-32</code></p>
+        <p class="main_doc-p">Would add IDs 134, 2, 5, and 674, and would remove IDs 3, 4, and 32 (if the user record originally had them). If the user record does not have the IDs, or the records indicated by the IDs are not visible to the current user, the IDs are ignored.</p>
+        <p class="main_doc-p">Order does not matter, but your login ID must have at least read permissions for the resource indicated by the child ID. If you do not have that, that child ID will be ignored; even if the user has it.</p>
+        <h4 class="rest_api_doc-h4" id="04-people-post-queries-upload">Uploading Binary Data</h4>
+        <p class="main_doc-p">You can upload binary data (such as a user avatar image) with the POST or PUT command. <a href="#main_overview_header-sending_payload_data">The main description</a> discusses the exact mechanism for doing this.</p>
+        <h4 class="rest_api_doc-h4" id="05-people-post-example">The Result of A POST Command, Specifying A New Login/User Pair:</h4>
+        <h5 class="rest_api_doc-h5" id="05-people-post-example-json">JSON:</h5>
+        <p><code class="uri-example">http://example.com/json/people/people/?login_id=Marvin&amp;name=Marvin&amp;surname=Martian&amp;given_name=Marvin&amp;middle_name=D&amp;nickname=Angry+Little+Fella&amp;prefix=Mar.Tian&amp;suffix=Esq.&amp;tokens=6,7,8&amp;child_ids=2,5,6,7,8&amp;read_token=5&amp;write_token=5</code></p>
+        <pre class="code-dump-json">{
+  "people": {
+    "people": {
+      "new_user": {
+        "id": 7,
+        "name": "Marvin",
+        "lang": "en",
+        "read_token": 5,
+        "write_token": 5,
+        "last_access": "2018-06-25 00:38:52",
+        "writeable": true,
+        "surname": "Martian",
+        "middle_name": "D",
+        "given_name": "Marvin",
+        "prefix": "Mar.Tian",
+        "suffix": "Esq.",
+        "nickname": "Angry Little Fella",
+        "children_ids": [
+          2,
+          5,
+          6
+        ],
+        "associated_login": {
+          "id": 11,
+          "name": "Marvin",
+          "lang": "en",
+          "login_id": "Marvin",
+          "read_token": 5,
+          "write_token": 5,
+          "last_access": "2018-06-25 00:38:53",
+          "writeable": true,
+          "user_object_id": 7,
+          "security_tokens": [
+            11,
+            6,
+            7,
+            8
+          ],
+          "password": "nq;e3+6x"
+        }
+      }
+    }
+  }
+}</pre>
+
+        <h5 class="rest_api_doc-h5" id="05-people-post-example-xml">XML:</h5>
+        <pre class="code-dump-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;people xmlns="http://example.com"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://example.com http://example.com/xsd/people"&gt;
+  &lt;people&gt;
+    &lt;new_user&gt;
+      &lt;id&gt;7&lt;/id&gt;
+      &lt;name&gt;Marvin&lt;/name&gt;
+      &lt;lang&gt;en&lt;/lang&gt;
+      &lt;read_token&gt;5&lt;/read_token&gt;
+      &lt;write_token&gt;5&lt;/write_token&gt;
+      &lt;last_access&gt;2018-06-25 00:39:06&lt;/last_access&gt;
+      &lt;writeable&gt;1&lt;/writeable&gt;
+      &lt;surname&gt;Martian&lt;/surname&gt;
+      &lt;middle_name&gt;D&lt;/middle_name&gt;
+      &lt;given_name&gt;Marvin&lt;/given_name&gt;
+      &lt;prefix&gt;Mar.Tian&lt;/prefix&gt;
+      &lt;suffix&gt;Esq.&lt;/suffix&gt;
+      &lt;nickname&gt;Angry Little Fella&lt;/nickname&gt;
+      &lt;children_ids&gt;
+        &lt;value sequence_index="0"&gt;2&lt;/value&gt;
+        &lt;value sequence_index="1"&gt;5&lt;/value&gt;
+        &lt;value sequence_index="2"&gt;6&lt;/value&gt;
+      &lt;/children_ids&gt;
+      &lt;associated_login&gt;
+        &lt;id&gt;11&lt;/id&gt;
+        &lt;name&gt;Marvin&lt;/name&gt;
+        &lt;lang&gt;en&lt;/lang&gt;
+        &lt;login_id&gt;Marvin&lt;/login_id&gt;
+        &lt;read_token&gt;5&lt;/read_token&gt;
+        &lt;write_token&gt;5&lt;/write_token&gt;
+        &lt;last_access&gt;2018-06-25 00:39:06&lt;/last_access&gt;
+        &lt;writeable&gt;1&lt;/writeable&gt;
+        &lt;user_object_id&gt;7&lt;/user_object_id&gt;
+        &lt;security_tokens&gt;
+          &lt;value sequence_index="0"&gt;11&lt;/value&gt;
+          &lt;value sequence_index="1"&gt;6&lt;/value&gt;
+          &lt;value sequence_index="2"&gt;7&lt;/value&gt;
+          &lt;value sequence_index="3"&gt;8&lt;/value&gt;
+        &lt;/security_tokens&gt;
+        &lt;password&gt;nq;e3+6x&lt;/password&gt;
+      &lt;/associated_login&gt;
+    &lt;/new_user&gt;
+  &lt;/people&gt;
+&lt;/people&gt;</pre>
     </div>
 </div>

@@ -388,7 +388,7 @@ function basalt_test_0095($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     
     $new_login_id = NULL;
-    $new_password = NULL;
+    $password = NULL;
     
     echo('<h4>We will create the simplest login possible, with just a login string ID:</h4>');
     $result = call_REST_API('POST', 'http://localhost/basalt/test/basalt_runner.php/json/people/logins/?login_string=NewLogin', NULL, $king_cobra_api_key, $result_code);
@@ -397,12 +397,12 @@ function basalt_test_0095($in_login = NULL, $in_hashed_password = NULL, $in_pass
     } else {
         $json_object = json_decode($result);
         $new_login_id = $json_object->people->logins->new_login->login_id;
-        $new_password = $json_object->people->logins->new_login->password;
+        $password = $json_object->people->logins->new_login->password;
         echo('<pre style="color:green">'.prettify_json($result).'</pre>');
     }
     
     echo('<h4>Now, log into the new ID:</h4>');
-    $new_api_key = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$new_login_id.'&password='.$new_password, NULL, NULL, $result_code);
+    $new_api_key = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$new_login_id.'&password='.$password, NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -432,12 +432,12 @@ function basalt_test_0095($in_login = NULL, $in_hashed_password = NULL, $in_pass
     } else {
         $json_object = json_decode($result);
         $new_login_id = $json_object->people->logins->new_login->login_id;
-        $new_password = $json_object->people->logins->new_login->password;
+        $password = $json_object->people->logins->new_login->password;
         echo('<pre style="color:green">'.prettify_json($result).'</pre>');
     }
 
     echo('<h4>Now, log into the new ID:</h4>');
-    $new_api_key = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$new_login_id.'&password='.$new_password, NULL, NULL, $result_code);
+    $new_api_key = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$new_login_id.'&password='.$password, NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -470,7 +470,7 @@ function basalt_test_0096($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     
     $new_login_id = NULL;
-    $new_password = NULL;
+    $password = NULL;
     
     echo('<h4>First, List Our Own Information:</h4>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/logins/my_info?login_user', NULL, $king_cobra_api_key, $result_code);
@@ -487,7 +487,7 @@ function basalt_test_0096($in_login = NULL, $in_hashed_password = NULL, $in_pass
     } else {
         $json_object = json_decode($result);
         $new_login_id = $json_object->people->logins->changed_logins[0]->after->login_id;
-        $new_password = $json_object->people->logins->changed_logins[0]->after->new_password;
+        $password = $json_object->people->logins->changed_logins[0]->after->password;
         echo('<pre style="color:green">'.prettify_json($result).'</pre>');
     }
     
@@ -500,7 +500,7 @@ function basalt_test_0096($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
 
     echo('<h4>Log in \'king-cobra\' with the new password:</h4>');
-    $new_api_key = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$new_login_id.'&password='.$new_password, NULL, NULL, $result_code);
+    $new_api_key = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$new_login_id.'&password='.$password, NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {

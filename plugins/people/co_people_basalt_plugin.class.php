@@ -565,7 +565,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             if ($login_changed) {
                 $login_report['after'] = $this->_get_long_description($login_instance);
                 if ($changed_password) {
-                    $login_report['after']['new_password'] = $changed_password;
+                    $login_report['after']['password'] = $changed_password;
                 }
         
                 $ret['changed_logins'][] = $login_report;
@@ -977,7 +977,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     if ($user_changed) {
                         $user_report['after'] = $this->_get_long_user_description($user, $in_login_user);
                         if ($changed_password) {
-                            $user_report['after']['associated_login']['new_password'] = $changed_password;
+                            $user_report['after']['associated_login']['password'] = $changed_password;
                         }
                 
                         $ret['changed_users'][] = $user_report;
@@ -1172,7 +1172,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
         if (!$in_login_user || $login_id) {
             $ret = ['new_user'];
-            $new_password = NULL;
+            $password = NULL;
             
             if (isset($in_query['login_id'])) {
                 unset($in_query['login_id']);
@@ -1237,9 +1237,9 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     }
                 }
             
-                $new_password = $in_andisol_instance->create_new_user($login_id, $password, $name, $tokens, $read_token, $is_manager);
+                $password = $in_andisol_instance->create_new_user($login_id, $password, $name, $tokens, $read_token, $is_manager);
             
-                if ($new_password) {
+                if ($password) {
                     $user = $in_andisol_instance->get_user_from_login_string($login_id);
                 }
             } else {    // Standalone user (person).
@@ -1356,8 +1356,8 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 
                 $ret = Array('new_user' => $this->_get_long_user_description($user, true));
                 
-                if (isset($new_password)) {
-                    $ret['new_user']['associated_login']['password'] = $new_password;
+                if (isset($password)) {
+                    $ret['new_user']['associated_login']['password'] = $password;
                 }
             } else {
                 header('HTTP/1.1 400 Failed to Create User');
