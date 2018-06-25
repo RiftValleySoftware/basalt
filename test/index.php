@@ -60,13 +60,14 @@ require_once($config_file_path);
     
                 require_once(CO_Config::main_class_dir()."/co_basalt.class.php");
             ?>
-            <img src="../icon.png" style="display:block;margin:auto;width:80px" alt="A Lump of COAL" />
+            <img src="../icon.png" style="display:block;margin:auto;width:80px" alt="BASALT Logo" />
             <h1 class="header">MAIN ENVIRONMENT SETUP</h1>
             <div style="text-align:left;margin:auto;display:table">
                 <div class="main_div container">
                     <?php
                         echo("<div style=\"margin:auto;text-align:center;display:table\">");
-                        echo("<strong style=\"display:block;margin-top:0.25em;margin-bottom:0.25em\"><a href=\"../doc\">BASALT Documents</a></strong>\n");
+                        echo("<strong style=\"display:block;margin-top:0.25em;margin-bottom:0.25em\"><a href=\"../doc\">BASALT Technical Documents</a></strong>\n");
+                        echo("<strong style=\"display:block;margin-top:0.25em;margin-bottom:0.25em\"><a href=\"../doc.php\">BAOBAB REST Guide</a></strong>\n");
                         echo("<h2>File/Folder Locations</h2>");
                         echo("<pre style=\"margin:auto;text-align:left;display:table\">");
                         echo("<strong>BASALT Version</strong>..........".__BASALT_VERSION__."\n");

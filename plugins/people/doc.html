@@ -38,6 +38,10 @@
                     <li><a href="#04-people-post-queries-people-children">child_ids</a></li>
                 </ul></li>
                 <li><a href="#04-people-post-queries-upload">Uploading Binary Data</a></li>
+                <li><a href="#05-people-post-example">Example POST Response</a><ul class="toc-ul">
+                    <li><a href="#05-people-post-example-json">JSON</a></li>
+                    <li><a href="#05-people-post-example-xml">XML</a></li>
+                </ul></li>
             </ul></li>
         </ul>
     </div>
@@ -509,9 +513,10 @@
         <p class="main_doc-p">Order does not matter, but your login ID must have at least read permissions for the resource indicated by the child ID. If you do not have that, that child ID will be ignored; even if the user has it.</p>
         <h4 class="rest_api_doc-h4" id="04-people-post-queries-upload">Uploading Binary Data</h4>
         <p class="main_doc-p">You can upload binary data (such as a user avatar image) with the POST or PUT command. <a href="#main_overview_header-sending_payload_data">The main description</a> discusses the exact mechanism for doing this.</p>
-        <h4 class="rest_api_doc-h4" id="05-people-post-example">The Result of A POST Command, Specifying A New Login/User Pair:</h4>
-        <h5 class="rest_api_doc-h5" id="05-people-post-example-json">JSON:</h5>
+        <h4 class="rest_api_doc-h4" id="05-people-post-example">Example POST Response</h4>
+        <p class="main_doc-p">Create a new user/login pair, with most fields pre-populated, and an auto-generated password:</p>
         <p><code class="uri-example">http://example.com/json/people/people/?login_id=Marvin&amp;name=Marvin&amp;surname=Martian&amp;given_name=Marvin&amp;middle_name=D&amp;nickname=Angry+Little+Fella&amp;prefix=Mar.Tian&amp;suffix=Esq.&amp;tokens=6,7,8&amp;child_ids=2,5,6,7,8&amp;read_token=5&amp;write_token=5</code></p>
+        <h5 class="rest_api_doc-h5" id="05-people-post-example-json">JSON:</h5>
         <pre class="code-dump-json">{
   "people": {
     "people": {
