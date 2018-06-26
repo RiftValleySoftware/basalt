@@ -276,7 +276,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
             if (isset($this->_andisol_instance) && ($this->_andisol_instance instanceof CO_Andisol)) {
                 $this->error = $this->_andisol_instance->error;
                 if (isset($this->error) && ($this->error->error_code == CO_Lang_Common::$login_error_code_api_key_mismatch) || ($this->error->error_code == CO_Lang_Common::$pdo_error_code_invalid_login)) {
-                    $header = 'HTTP/1.1 401 Unauthorized';
+                    $header = 'HTTP/1.1 401 Unauthorized API Key';
                 } elseif (isset($this->error) && ($this->error->error_code == CO_Lang_Common::$login_error_code_api_key_invalid)) {
                     $header = 'HTTP/1.1 408 API Key Timeout';
                 } else {
