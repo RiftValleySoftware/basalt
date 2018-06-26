@@ -107,8 +107,119 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                         ) {
         $ret = [];
         if (isset($in_query) && is_array($in_query)) {
+            // See if they want to add new child data items to each user, or remove existing ones.
+            // We indicate adding ones via positive integers (the item IDs), and removing via negative integers (minus the item ID).
+            if (isset($in_query['child_ids'])) {
+                $ret['child_ids'] = Array('add' => [], 'remove' => []);
+                $child_item_list = [];          // If we are adding new child items, their IDs go in this list.
+                $delete_child_item_list = [];   // If we are removing items, we indicate that with negative IDs, and put those in a different list (absvaled).
+            
+                $child_id_list = array_map('intval', explode(',', $in_query['child_ids']));
+        
+                // Child IDs are a CSV list of integers, with IDs of data records.
+                if (isset($child_id_list) && is_array($child_id_list) && count($child_id_list)) {
+                    // Check for ones we can't see (we don't need write permission, but we do need read permission).
+                    foreach ($child_id_list as $id) {
+                        if (0 < $id) {  // See if we are adding to the list
+                            $item = $in_andisol_instance->get_single_data_record_by_id($id);
+                            // If we got the item, then it exists, and we can see it. Add its ID to our list.
+                            $child_item_list[] = $id;
+                        } else {    // If we are removing it, we still need read permission, but it goes in a different list.
+                            $item = $in_andisol_instance->get_single_data_record_by_id(-$id);
+                            $delete_child_item_list[] = -$id;
+                        }
+                    }
+            
+                    // Make sure there's no repeats.
+                    $child_item_list = array_unique($child_item_list);
+                    $delete_child_item_list = array_unique($delete_child_item_list);
+                
+                    // Because we're anal.
+                    sort($child_item_list);
+                    sort($delete_child_item_list);
+                
+                    // At this point, we have a list of IDs that we want to add, and IDs that we want to remove, from the various (or single) users.
+                }
+            
+                // If we have items we want to add, we add them to our TO DO list.
+                if (isset($child_item_list) && is_array($child_item_list) && count($child_item_list)) {
+                    $ret['child_ids']['add'] = $child_item_list;
+                }
+            
+                // If we have items we want to remove, we add those to our TO DO list.
+                if (isset($delete_child_item_list) && is_array($delete_child_item_list) && count($delete_child_item_list)) {
+                    $ret['child_ids']['remove'] = $delete_child_item_list;
+                }
+            }
+            
+            if (isset($in_query['name'])) {
+                $ret['name'] = floatval($in_query['name']);
+            }
+            
+            if (isset($in_query['longitude'])) {
+                $ret['longitude'] = floatval($in_query['longitude']);
+            }
+            
+            if (isset($in_query['latitude'])) {
+                $ret['latitude'] = floatval($in_query['latitude']);
+            }
+            
             if (isset($in_query['fuzz_factor'])) {
                 $ret['fuzz_factor'] = floatval($in_query['fuzz_factor']);
+            }
+            
+            if (isset($in_query['address_venue'])) {
+                $ret['address_venue'] = floatval($in_query['address_venue']);
+            }
+            
+            if (isset($in_query['address_street_address'])) {
+                $ret['address_street_address'] = floatval($in_query['address_street_address']);
+            }
+            
+            if (isset($in_query['address_extra_information'])) {
+                $ret['address_extra_information'] = floatval($in_query['address_extra_information']);
+            }
+            
+            if (isset($in_query['address_town'])) {
+                $ret['address_town'] = floatval($in_query['address_town']);
+            }
+            
+            if (isset($in_query['address_county'])) {
+                $ret['address_county'] = floatval($in_query['address_county']);
+            }
+            
+            if (isset($in_query['address_state'])) {
+                $ret['address_state'] = floatval($in_query['address_state']);
+            }
+            
+            if (isset($in_query['address_postal_code'])) {
+                $ret['address_postal_code'] = floatval($in_query['address_postal_code']);
+            }
+            
+            if (isset($in_query['address_nation'])) {
+                $ret['address_nation'] = floatval($in_query['address_nation']);
+            }
+            
+            // Next, we see if we want to change/set the "owner" object asociated with this. You can remove an associated owner object by passing in NULL or 0, here.
+            if (isset($in_query['owner_id'])) {
+                $ret['owner_id'] = abs(intval(trim($in_query['owner_id'])));
+            }
+        
+            // Next, look for the language.
+            if (isset($in_query['lang'])) {
+                $ret['lang'] = trim(strval($in_query['lang']));
+            }
+            
+            // Next, look for the last tag (the only one we're allowed to change).
+            if (isset($in_query['tag9'])) {
+                $ret['tag9'] = trim(strval($in_query['tag9']));
+            }
+        
+            // Next, we see if we the user is supplying a payload to be stored, or removing the existing one.
+            if (isset($in_query['remove_payload'])) { // If they did not specify a payload, maybe they want one removed?
+                $ret['remove_payload'] = true;
+            } elseif (isset($in_query['payload'])) {
+                $ret['payload'] = $in_query['payload'];
             }
         }
         
@@ -136,8 +247,103 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     $changed_place = ['before' => $this->_get_long_place_description($place)];
                     $result = true;
                     
+                    if ($result && isset($parameters['name'])) {
+                        $result = $place->set_name($parameters['name']);
+                    }
+                    
+                    if ($result && isset($parameters['lang'])) {
+                        $result = $place->set_name($parameters['lang']);
+                    }
+                    
+                    if ($result && isset($parameters['longitude'])) {
+                        $result = $place->set_longitude($parameters['longitude']);
+                    }
+                    
+                    if ($result && isset($parameters['latitude'])) {
+                        $result = $place->set_latitude($parameters['latitude']);
+                    }
+                    
                     if ($result && isset($parameters['fuzz_factor'])) {
                         $result = $place->set_fuzz_factor($parameters['fuzz_factor']);
+                    }
+                    
+                    if ($result && isset($parameters['address_venue'])) {
+                        $result = $place->set_address_element(0, $parameters['address_venue']);
+                    }
+                    
+                    if ($result && isset($parameters['address_street_address'])) {
+                        $result = $place->set_address_element(1, $parameters['address_street_address']);
+                    }
+                    
+                    if ($result && isset($parameters['address_extra_information'])) {
+                        $result = $place->set_address_element(2, $parameters['address_extra_information']);
+                    }
+                    
+                    if ($result && isset($parameters['address_town'])) {
+                        $result = $place->set_address_element(3, $parameters['address_town']);
+                    }
+                    
+                    if ($result && isset($parameters['address_county'])) {
+                        $result = $place->set_address_element(4, $parameters['address_county']);
+                    }
+                    
+                    if ($result && isset($parameters['address_state'])) {
+                        $result = $place->set_address_element(5, $parameters['address_state']);
+                    }
+                    
+                    if ($result && isset($parameters['address_postal_code'])) {
+                        $result = $place->set_address_element(6, $parameters['address_postal_code']);
+                    }
+                    
+                    if ($result && isset($parameters['address_nation'])) {
+                        $result = $place->set_address_element(7, $parameters['address_nation']);
+                    }
+                    
+                    if ($result && isset($parameters['tag8'])) {
+                        $result = $place->set_tag(8, $parameters['tag8']);
+                    }
+                    
+                    if ($result && isset($parameters['tag9'])) {
+                        $result = $place->set_tag(9, $parameters['tag9']);
+                    }
+                    
+                    if ($result && isset($parameters['remove_payload'])) {
+                        $result = $place->set_payload(NULL);
+                    } elseif ($result && isset($parameters['payload'])) {
+                        $result = $place->set_payload($parameters['payload']);
+                    }
+                    
+                    if ($result && isset($parameters['child_ids'])) {
+                        $add = $parameters['child_ids']['add'];
+                        $remove = $parameters['child_ids']['remove'];
+                    
+                        foreach ($remove as $id) {
+                            if ($id != $place->id()) {
+                                $child = $in_andisol_instance->get_single_data_record_by_id($id);
+                                if (isset($child)) {
+                                    $result = $place->deleteThisElement($child);
+                                }
+                        
+                                if (!$result) {
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if ($result) {
+                            foreach ($add as $id) {
+                                if ($id != $place->id()) {
+                                    $child = $in_andisol_instance->get_single_data_record_by_id($id);
+                                    if (isset($child)) {
+                                        $result = $place->appendElement($child);
+                                        
+                                        if (!$result) {
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                     
                     if ($result) {

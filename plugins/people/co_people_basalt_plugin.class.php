@@ -161,14 +161,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     protected function _get_xsd() {
         return $this->_process_xsd(dirname(__FILE__).'/schema.xsd');
     }
-        
-    /***********************/
-    /**
-    \returns a string, with our plugin name.
-     */
-    public function plugin_name() {
-        return 'people';
-    }
 
     /***********************/
     /**
@@ -942,6 +934,16 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                 $user_changed = true;
                                 break;
                             
+                            case 'tag8':
+                                $result = $user->set_tag(8, $value);
+                                $user_changed = true;
+                                break;
+                            
+                            case 'tag9':
+                                $result = $user->set_tag(9, $value);
+                                $user_changed = true;
+                                break;
+                            
                             case 'login_id':
                                 if ($in_andisol_instance->god()) {  // Only God can change login IDs.
                                     $result = $user->set_login_id($value);
@@ -1531,15 +1533,14 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             } elseif (isset($in_query['payload'])) {
                 $ret['payload'] = $in_query['payload'];
             }
+                
+            // Next, look for the last two tags (the only ones we're allowed to change).
+            if (isset($in_query['tag8'])) {
+                $ret['tag8'] = trim(strval($in_query['tag8']));
+            }
         
-            // See if they want to modify any tags.
-            for ($tag = 0; $tag < 10; $tag++) {
-                $tag_name = "tag".strval($tag);
-            
-                // Next, we see if we want to change the tag value. You can set a tag value to an empty string (specify "tag[0-9]=" in the URI).
-                if (isset($in_query['tag_name'])) {
-                    $ret['tag_name'] = trim(strval($in_query['tag_name']));
-                }
+            if (isset($in_query['tag9'])) {
+                $ret['tag9'] = trim(strval($in_query['tag9']));
             }
         }
         
@@ -1657,6 +1658,14 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         }
         
         return $ret;
+    }
+        
+    /***********************/
+    /**
+    \returns a string, with our plugin name.
+     */
+    public function plugin_name() {
+        return 'people';
     }
     
     /***********************/
