@@ -695,6 +695,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $is_numeric = array_reduce($login_id_list, function($carry, $item){ return $carry && ctype_digit($item); }, true);
         
             $login_id_list = $is_numeric ? array_map('intval', $login_id_list) : $login_id_list;
+            $login_id_list = array_unique($login_id_list);
         
             foreach ($login_id_list as $login_id) {
                 $login_instance = $is_numeric ? $in_andisol_instance->get_login_item($login_id) : $in_andisol_instance->get_login_item_by_login_string($login_id);
@@ -716,7 +717,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
             // If we do, indeed, have a list, we will force them to be ints, and cycle through them.
             if ($single_user_id || (1 < count($user_list))) {
-                $user_list = ($single_user_id ? [$single_user_id] : array_map('intval', $user_list));
+                $user_list = array_unique($single_user_id ? [$single_user_id] : array_map('intval', $user_list));
         
                 foreach ($user_list as $id) {
                     if (0 < $id) {

@@ -34,18 +34,14 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $ret['coords'] = sprintf("%f,%f", $latitude, $longitude);
         }
         
-        $address = $in_object->get_readable_address();
+        $address = trim($in_object->get_readable_address());
         
         if (isset($address) && $address) {
             $ret['address'] = $address;
         }
         
         if (isset($in_object->distance)) {
-            $ret['distance'] = $in_object->distance;
-        }
-        
-        if ($in_object->is_fuzzy()) {
-            $ret['fuzzy'] = true;
+            $ret['distance_in_km'] = $in_object->distance;
         }
         
         return $ret;
@@ -69,7 +65,14 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
         }
         
         if ($in_place_object->is_fuzzy()) {
-            $ret['fuzz_factor'] = $in_place_object->fuzz_factor();
+            $ret['fuzzy'] = true;
+            
+            // If this is a fuzzy location, but the logged-in user can see "the real," we show it to them.
+            if ($in_place_object->i_can_see_clearly_now()) {
+                $ret['raw_latitude'] = floatval($in_place_object->raw_latitude());
+                $ret['raw_longitude'] = floatval($in_place_object->raw_longitude());
+                $ret['fuzz_factor'] = $in_place_object->fuzz_factor();
+            }
         }
         
         $address_elements = $in_place_object->get_address_elements();
@@ -95,32 +98,50 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
     /***********************/
     /**
-    \returns a string, with our plugin name.
+    Parses the query parameters and cleans them for the database.
+    
+    \returns an associative array of the parameters, parsed for submission to the database.
      */
-    public function plugin_name() {
-        return 'places';
+    protected function _process_parameters( $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                            $in_query               ///< REQUIRED: The query string to be parsed.
+                                        ) {
+        $ret = [];
+        if (isset($in_query) && is_array($in_query)) {
+            if (isset($in_query['fuzz_factor'])) {
+                $ret['fuzz_factor'] = floatval($in_query['fuzz_factor']);
+            }
+        }
+        
+        return $ret;
     }
     
     /***********************/
     /**
     \returns an associative array, with the "raw" response.
      */
-    public function process_place_put(  $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
-                                        $in_object_list = [],       ///< OPTIONAL: This function is worthless without at least one object. This will be an array of place objects, holding the places to examine.
-                                        $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
-                                        $in_query = []              ///< OPTIONAL: The query parameters, as an associative array.
-                                    ) {
+    protected function _process_place_put(  $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                            $in_object_list = [],       ///< OPTIONAL: This function is worthless without at least one object. This will be an array of place objects, holding the places to examine.
+                                            $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
+                                            $in_query = []              ///< OPTIONAL: The query parameters, as an associative array.
+                                        ) {
         $ret = ['changed_places' => []];
         
         $fuzz_factor = isset($in_query) && is_array($in_query) && isset($in_query['fuzz_factor']) ? floatval($in_query['fuzz_factor']) : 0; // Set any fuzz factor.
-        if (isset($in_object_list) && is_array($in_object_list) && (0 < count($in_object_list))) {
+        
+        $parameters = $this->_process_parameters($in_andisol_instance, $in_query);
+            
+        if (isset($parameters) && is_array($parameters) && count($parameters) && isset($in_object_list) && is_array($in_object_list) && count($in_object_list)) {
             foreach ($in_object_list as $place) {
                 if ($place->user_can_write()) { // Belt and suspenders. Make sure we can write.
                     $changed_place = ['before' => $this->_get_long_place_description($place)];
-                    $result = $place->set_fuzz_factor($fuzz_factor);
+                    $result = true;
+                    
+                    if ($result && isset($parameters['fuzz_factor'])) {
+                        $result = $place->set_fuzz_factor($parameters['fuzz_factor']);
+                    }
+                    
                     if ($result) {
                         $changed_place['after'] = $this->_get_long_place_description($place);
-                        $changed_place['after']['last_access'] = date('Y-m-d H:i:s');
                         $ret['changed_places'][] = $changed_place;
                     }
                 }
@@ -134,12 +155,12 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
     /**
     \returns an associative array, with the "raw" response.
      */
-    public function process_place_get(  $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
-                                        $in_object_list = [],       ///< OPTIONAL: This function is worthless without at least one object. This will be an array of place objects, holding the places to examine.
-                                        $in_show_details = false,   ///< OPTIONAL: If true (default is false), then the resulting record will be returned in "detailed" format.
-                                        $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
-                                        $in_query = []              ///< OPTIONAL: The query parameters, as an associative array.
-                                    ) {
+    protected function _process_place_get(  $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                            $in_object_list = [],       ///< OPTIONAL: This function is worthless without at least one object. This will be an array of place objects, holding the places to examine.
+                                            $in_show_details = false,   ///< OPTIONAL: If true (default is false), then the resulting record will be returned in "detailed" format.
+                                            $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
+                                            $in_query = []              ///< OPTIONAL: The query parameters, as an associative array.
+                                        ) {
         $ret = [];
         
         if (isset($in_object_list) && is_array($in_object_list) && (0 < count($in_object_list))) {
@@ -153,6 +174,14 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
         }
         
         return $ret;
+    }
+        
+    /***********************/
+    /**
+    \returns a string, with our plugin name.
+     */
+    public function plugin_name() {
+        return 'places';
     }
         
     /***********************/
@@ -194,9 +223,9 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $placelist = $in_andisol_instance->generic_search($search_array, false, 0, 0, $writeable);
             
             if ('GET' == $in_http_method) {
-                $ret = $this->process_place_get($in_andisol_instance, $placelist, $show_details, $in_path, $in_query);
+                $ret = $this->_process_place_get($in_andisol_instance, $placelist, $show_details, $in_path, $in_query);
             } elseif ('PUT' == $in_http_method) {
-                $ret = $this->process_place_put($in_andisol_instance, $placelist, $in_path, $in_query);
+                $ret = $this->_process_place_put($in_andisol_instance, $placelist, $in_path, $in_query);
             }
         } else {
             $main_command = $in_path[0];    // Get the main command.
@@ -210,7 +239,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
             // If we do, indeed, have a list, we will force them to be ints, and cycle through them.
             if ($single_place_id || (1 < count($place_id_list))) {
-                $place_id_list = ($single_place_id ? [$single_place_id] : array_map('intval', $place_id_list));
+                $place_id_list = ($single_place_id ? [$single_place_id] : array_unique(array_map('intval', $place_id_list)));
                 $placelist = [];
                 
                 foreach ($place_id_list as $id) {
@@ -223,9 +252,9 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 }
                 
                 if ('GET' == $in_http_method) {
-                    $ret = $this->process_place_get($in_andisol_instance, $placelist, $show_details, $in_path, $in_query);
+                    $ret = $this->_process_place_get($in_andisol_instance, $placelist, $show_details, $in_path, $in_query);
                 } elseif ('PUT' == $in_http_method) {
-                    $ret = $this->process_place_put($in_andisol_instance, $placelist, $in_path, $in_query);
+                    $ret = $this->_process_place_put($in_andisol_instance, $placelist, $in_path, $in_query);
                 }
             } else {    // Otherwise, let's see what they want to do...
                 switch ($main_command) {
