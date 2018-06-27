@@ -244,6 +244,36 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     \returns an associative array, with the "raw" response.
      */
+    protected function _process_place_delete(   $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                                $in_object_list = [],   ///< OPTIONAL: This function is worthless without at least one object. This will be an array of place objects, holding the places to delete.
+                                                $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
+                                                $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
+                                            ) {
+        $ret = [];
+        
+        if ($in_andisol_instance->logged_in()) {    // Must be logged in to DELETE.
+            if (isset($in_object_list) && is_array($in_object_list) && (0 < count($in_object_list))) {
+                foreach ($in_object_list as $place) {
+                    $to_be_deleted = $this->_get_long_place_description($place);
+                    if ($place->user_can_write() && $place->delete_from_db()) {
+                        $ret['deleted_places'][] = $to_be_deleted;
+                    }
+                }
+            }
+        } else {
+            header('HTTP/1.1 403 Forbidden');
+            exit();
+        }
+        
+        return $ret;
+    }
+    
+    /***********************/
+    /**
+    Handles the POST operation (new).
+    
+    \returns an associative array, with the "raw" response.
+     */
     protected function _process_place_post( $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
                                             $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
                                             $in_query = []              ///< OPTIONAL: The query parameters, as an associative array.
@@ -285,7 +315,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
     \returns an associative array, with the "raw" response.
      */
     protected function _process_place_put(  $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
-                                            $in_object_list = [],       ///< OPTIONAL: This function is worthless without at least one object. This will be an array of place objects, holding the places to examine.
+                                            $in_object_list = [],       ///< OPTIONAL: This function is worthless without at least one object. This will be an array of place objects, holding the places to modify.
                                             $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
                                             $in_query = []              ///< OPTIONAL: The query parameters, as an associative array.
                                         ) {
@@ -507,6 +537,8 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     $ret = $this->_process_place_get($in_andisol_instance, $placelist, $show_details, $in_path, $in_query);
                 } elseif ('PUT' == $in_http_method) {
                     $ret = $this->_process_place_put($in_andisol_instance, $placelist, $in_path, $in_query);
+                } elseif ('DELETE' == $in_http_method) {
+                    $ret = $this->_process_place_delete($in_andisol_instance, $placelist, $in_path, $in_query);
                 }
             } else {
                 $main_command = $in_path[0];    // Get the main command.
@@ -536,6 +568,8 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         $ret = $this->_process_place_get($in_andisol_instance, $placelist, $show_details, $in_path, $in_query);
                     } elseif ('PUT' == $in_http_method) {
                         $ret = $this->_process_place_put($in_andisol_instance, $placelist, $in_path, $in_query);
+                    } elseif ('DELETE' == $in_http_method) {
+                        $ret = $this->_process_place_delete($in_andisol_instance, $placelist, $in_path, $in_query);
                     }
                 } else {    // Otherwise, let's see what they want to do...
                     switch ($main_command) {

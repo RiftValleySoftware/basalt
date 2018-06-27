@@ -646,7 +646,7 @@ function basalt_test_0125($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
  
     echo('<h3>This is all the places that will be included in the search:</h3>');
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?&search_radius=10&search_longitude=-77.063776&search_latitude=38.894926&show_details', NULL, $api_result, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_radius=10&search_longitude=-77.063776&search_latitude=38.894926&show_details', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -660,7 +660,7 @@ function basalt_test_0125($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
  
     echo('<h3>However, we\'ll only be able to modify these ones.</h3>');
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?&search_radius=10&search_longitude=-77.063776&search_latitude=38.894926&show_details&writeable', NULL, $api_result, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_radius=10&search_longitude=-77.063776&search_latitude=38.894926&show_details&writeable', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
