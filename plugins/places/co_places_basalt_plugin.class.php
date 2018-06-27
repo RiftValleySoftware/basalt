@@ -153,7 +153,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
             }
             
             if (isset($in_query['name'])) {
-                $ret['name'] = floatval($in_query['name']);
+                $ret['name'] = trim($in_query['name']);
             }
             
             if (isset($in_query['longitude'])) {
@@ -169,35 +169,35 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
             }
             
             if (isset($in_query['address_venue'])) {
-                $ret['address_venue'] = floatval($in_query['address_venue']);
+                $ret['address_venue'] = trim($in_query['address_venue']);
             }
             
             if (isset($in_query['address_street_address'])) {
-                $ret['address_street_address'] = floatval($in_query['address_street_address']);
+                $ret['address_street_address'] = trim($in_query['address_street_address']);
             }
             
             if (isset($in_query['address_extra_information'])) {
-                $ret['address_extra_information'] = floatval($in_query['address_extra_information']);
+                $ret['address_extra_information'] = trim($in_query['address_extra_information']);
             }
             
             if (isset($in_query['address_town'])) {
-                $ret['address_town'] = floatval($in_query['address_town']);
+                $ret['address_town'] = trim($in_query['address_town']);
             }
             
             if (isset($in_query['address_county'])) {
-                $ret['address_county'] = floatval($in_query['address_county']);
+                $ret['address_county'] = trim($in_query['address_county']);
             }
             
             if (isset($in_query['address_state'])) {
-                $ret['address_state'] = floatval($in_query['address_state']);
+                $ret['address_state'] = trim($in_query['address_state']);
             }
             
             if (isset($in_query['address_postal_code'])) {
-                $ret['address_postal_code'] = floatval($in_query['address_postal_code']);
+                $ret['address_postal_code'] = trim($in_query['address_postal_code']);
             }
             
             if (isset($in_query['address_nation'])) {
-                $ret['address_nation'] = floatval($in_query['address_nation']);
+                $ret['address_nation'] = trim($in_query['address_nation']);
             }
             
             // Next, we see if we want to change/set the "owner" object asociated with this. You can remove an associated owner object by passing in NULL or 0, here.
@@ -210,7 +210,11 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $ret['lang'] = trim(strval($in_query['lang']));
             }
             
-            // Next, look for the last tag (the only one we're allowed to change).
+            // Next, look for the last two tags (the only ones we're allowed to change).
+            if (isset($in_query['tag8'])) {
+                $ret['tag8'] = trim(strval($in_query['tag8']));
+            }
+            
             if (isset($in_query['tag9'])) {
                 $ret['tag9'] = trim(strval($in_query['tag9']));
             }
@@ -240,7 +244,6 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
         $fuzz_factor = isset($in_query) && is_array($in_query) && isset($in_query['fuzz_factor']) ? floatval($in_query['fuzz_factor']) : 0; // Set any fuzz factor.
         
         $parameters = $this->_process_parameters($in_andisol_instance, $in_query);
-            
         if (isset($parameters) && is_array($parameters) && count($parameters) && isset($in_object_list) && is_array($in_object_list) && count($in_object_list)) {
             foreach ($in_object_list as $place) {
                 if ($place->user_can_write()) { // Belt and suspenders. Make sure we can write.
@@ -252,7 +255,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     }
                     
                     if ($result && isset($parameters['lang'])) {
-                        $result = $place->set_name($parameters['lang']);
+                        $result = $place->set_lang($parameters['lang']);
                     }
                     
                     if ($result && isset($parameters['longitude'])) {
@@ -295,8 +298,8 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         $result = $place->set_address_element(6, $parameters['address_postal_code']);
                     }
                     
-                    if ($result && isset($parameters['address_nation'])) {
-                        $result = $place->set_address_element(7, $parameters['address_nation']);
+                    if ($result && isset($parameters['address_nation'])) {  // This might fail, if it's a nation-specific one, so we don't test for the result.
+                        $place->set_address_element(7, $parameters['address_nation']);
                     }
                     
                     if ($result && isset($parameters['tag8'])) {
