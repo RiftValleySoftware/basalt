@@ -266,11 +266,6 @@ function basalt_test_0117($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>Log Out, So We Can Log In Again:</h3>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
-    if (isset($result_code) && $result_code && (205 != $result_code)) {
-        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
-    } else {
-        echo('<pre style="color:green">Successful Logout!</pre>');
-    }
     
     echo('<h3>Now, let\'s see what we have (DC login).</h3>');
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=DCAdmin&password=CoreysGoryStory', NULL, NULL, $result_code);
@@ -294,11 +289,6 @@ function basalt_test_0117($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>Log Out, So We Can Log In Again:</h3>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
-    if (isset($result_code) && $result_code && (205 != $result_code)) {
-        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
-    } else {
-        echo('<pre style="color:green">Successful Logout!</pre>');
-    }
     
     echo('<h3>Now, let\'s see what we have (VA login).</h3>');
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=VAAdmin&password=CoreysGoryStory', NULL, NULL, $result_code);
@@ -322,11 +312,6 @@ function basalt_test_0117($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>Log Out, So We Can Log In Again:</h3>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
-    if (isset($result_code) && $result_code && (205 != $result_code)) {
-        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
-    } else {
-        echo('<pre style="color:green">Successful Logout!</pre>');
-    }
     
     echo('<h3>Now, let\'s see what we have (WVA login).</h3>');
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=WVAdmin&password=CoreysGoryStory', NULL, NULL, $result_code);
@@ -350,11 +335,6 @@ function basalt_test_0117($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>Log Out, So We Can Log In Again:</h3>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
-    if (isset($result_code) && $result_code && (205 != $result_code)) {
-        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
-    } else {
-        echo('<pre style="color:green">Successful Logout!</pre>');
-    }
     
     echo('<h3>Now, let\'s see what we have (DE login).</h3>');
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=DEAdmin&password=CoreysGoryStory', NULL, NULL, $result_code);
@@ -378,11 +358,6 @@ function basalt_test_0117($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>Log Out, So We Can Log In Again:</h3>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
-    if (isset($result_code) && $result_code && (205 != $result_code)) {
-        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
-    } else {
-        echo('<pre style="color:green">Successful Logout!</pre>');
-    }
     
     echo('<h3>Now, let\'s see what we have (main login).</h3>');
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=admin&password='.CO_Config::god_mode_password(), NULL, NULL, $result_code);
@@ -406,11 +381,6 @@ function basalt_test_0117($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>Log Out, So We Can Log In Again:</h3>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
-    if (isset($result_code) && $result_code && (205 != $result_code)) {
-        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
-    } else {
-        echo('<pre style="color:green">Successful Logout!</pre>');
-    }
 }
 
 // --------------------
@@ -420,7 +390,7 @@ function basalt_test_define_0118() {
 }
 
 function basalt_test_0118($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
-    $fuzzed_ids = ['MD' => [2,6,10,14,18], 'DC' => [1452,1456,1460,1464,1468], 'VA' => [855,859,863,867,871], 'WV' => [1575,1579,1583,1587,1591], 'DE' => [1609,1613,1617,1621,1625]];
+    $fuzzed_ids = ['MD' => [2,6,10], 'DC' => [1452,1456,1460], 'VA' => [855,859,863], 'WV' => [1575,1579,1583], 'DE' => [1609,1613,1617]];
     
     $id_key  = strtoupper(substr($in_login, 0, 2));
     
@@ -549,5 +519,186 @@ function basalt_test_define_0122() {
 
 function basalt_test_0122($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     basalt_test_0118($in_login, $in_hashed_password, $in_password);
+}
+
+// --------------------
+
+function basalt_test_define_0123() {
+    basalt_run_single_direct_test(123, 'PASS: Change A Select Few Meetings', 'We log in as the DC Admin, and change just three meetings to point to the Lincoln Memorial.', 'dc_area_tests', 'DCAdmin', '', 'CoreysGoryStory');
+}
+
+function basalt_test_0123($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    echo('<h3>First, we log in as the DC admin.</h3>');
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+ 
+    echo('<h3>List three places we\'ll be working on.</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/1452,1456,1460/?show_details', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+ 
+    echo('<h3>Now, we will apply the same set of settings to all three:</h3>');
+    $result = call_REST_API('PUT', 'http://localhost/basalt/test/basalt_runner.php/json/places/1452,1456,1460/?name=Changed+To+A+New+Name&lang=sv&longitude=-77.0502&latitude=38.8893&fuzz_factor=5&address_venue=Lincoln+Memorial&address_street_address=2+Lincoln+Memorial+Circle+NW&address_extra_information=Go+Up+The+Steps+And+Say+Hi+To+Abe&address_town=Washington+DC&address_county=DC&address_state=DC&address_postal_code=20037&address_nation=USA&tag8=HI&tag9=HOWAYA&child_ids=3,4,5,1470,1480,1490', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+ 
+    echo('<h3>See how that worked out.</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/1452,1456,1460/?show_details', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+}
+
+// --------------------
+
+function basalt_test_define_0124() {
+    basalt_run_single_direct_test(124, 'PASS: Change All of the Virginia Meetings to The Pentagon', 'We log in as the VA Admin, and change all visible meetings to point to the Pentagon.', 'dc_area_tests', 'VAAdmin', '', 'CoreysGoryStory');
+}
+
+function basalt_test_0124($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    echo('<h3>First, we log in as the VA admin.</h3>');
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+ 
+    echo('<h3>List the places we\'ll be working on.</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?show_details&writeable', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        $places = json_decode($result)->places;
+        echo('<div  style="text-align:left;display:table"><div id="test_0124_result_VA_login_record_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0124_result_VA_login_record_div\')" style="font-weight:bold">'.count($places).' places:</a></h3>');
+            echo('<div class="main_div inner_container">');
+                echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+ 
+    echo('<h3>Now, we will apply the same set of settings to all of our places:</h3>');
+    $result = call_REST_API('PUT', 'http://localhost/basalt/test/basalt_runner.php/json/places/?writeable&name=NA+In+The+Pentagon&lang=pt&longitude=-77.0563&latitude=38.8719&fuzz_factor=5&address_venue=The+Pentagon&address_street_address=1400+Defense+Pentagon&address_extra_information=Lots+Of+Brass&address_town=Arlington&address_county=Arlington&address_state=VA&address_postal_code=22202&tag8=NA&tag9=IN+DA+HOUSE&child_ids=853,854,855', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        $places = json_decode($result)->places->changed_places;
+        echo('<div  style="text-align:left;display:table"><div id="test_0124_results_VA_record_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0124_results_VA_record_div\')" style="font-weight:bold">'.count($places).' places were changed:</a></h3>');
+            echo('<div class="main_div inner_container">');
+                echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+    
+    echo('<h3>We\'ll need to log in again.</h3>');
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+ 
+    echo('<h3>See how that worked out.</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?show_details&writeable', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        $places = json_decode($result)->places;
+        echo('<div  style="text-align:left;display:table"><div id="test_0124_result_VA_login_record_2_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0124_result_VA_login_record_2_div\')" style="font-weight:bold">'.count($places).' places:</a></h3>');
+            echo('<div class="main_div inner_container">');
+                echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+}
+
+// --------------------
+
+function basalt_test_define_0125() {
+    basalt_run_single_direct_test(125, 'PASS: Using A Radius Search, Change Some Meetings, But Not All', 'We log in as the VA Admin, and change the meetings we can edit.', 'dc_area_tests', 'VAAdmin', '', 'CoreysGoryStory');
+}
+
+function basalt_test_0125($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    echo('<h3>First, we log in as the VA admin.</h3>');
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+ 
+    echo('<h3>This is all the places that will be included in the search:</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?&search_radius=10&search_longitude=-77.063776&search_latitude=38.894926&show_details', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        $places = json_decode($result)->places;
+        echo('<div  style="text-align:left;display:table"><div id="test_0125_result_VA_login_1_record_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0125_result_VA_login_1_record_div\')" style="font-weight:bold">'.count($places).' places:</a></h3>');
+            echo('<div class="main_div inner_container">');
+                echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+ 
+    echo('<h3>However, we\'ll only be able to modify these ones.</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?&search_radius=10&search_longitude=-77.063776&search_latitude=38.894926&show_details&writeable', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        $places = json_decode($result)->places;
+        echo('<div  style="text-align:left;display:table"><div id="test_0125_result_VA_login_2_record_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0125_result_VA_login_2_record_div\')" style="font-weight:bold">'.count($places).' places:</a></h3>');
+            echo('<div class="main_div inner_container">');
+                echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+ 
+    echo('<h3>Now, we will apply the same set of settings to the ones we can modify:</h3>');
+    $result = call_REST_API('PUT', 'http://localhost/basalt/test/basalt_runner.php/json/places/?writeable&search_radius=10&search_longitude=-77.063776&search_latitude=38.894926&name=NA+In+The+Pentagon&lang=pt&longitude=-77.0563&latitude=38.8719&fuzz_factor=5&address_venue=The+Pentagon&address_street_address=1400+Defense+Pentagon&address_extra_information=Lots+Of+Brass&address_town=Arlington&address_county=Arlington&address_state=VA&address_postal_code=22202&tag8=NA&tag9=IN+DA+HOUSE&child_ids=853,854,855', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        $places = json_decode($result)->places->changed_places;
+        echo('<div  style="text-align:left;display:table"><div id="test_0125_result_VA_login_3_record_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0125_result_VA_login_3_record_div\')" style="font-weight:bold">'.count($places).' places were changed:</a></h3>');
+            echo('<div class="main_div inner_container">');
+                echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+ 
+    echo('<h3>Which leaves us with:</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?&search_radius=10&search_longitude=-77.063776&search_latitude=38.894926&show_details', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        $places = json_decode($result)->places;
+        echo('<div  style="text-align:left;display:table"><div id="test_0125_result_VA_login_4_record_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0125_result_VA_login_4_record_div\')" style="font-weight:bold">'.count($places).' places:</a></h3>');
+            echo('<div class="main_div inner_container">');
+                echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
 }
 ?>

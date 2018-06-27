@@ -299,7 +299,10 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     }
                     
                     if ($result && isset($parameters['address_nation'])) {  // This might fail, if it's a nation-specific one, so we don't test for the result.
-                        $place->set_address_element(7, $parameters['address_nation']);
+                        $test = $place->set_address_element(7, $parameters['address_nation']);
+                        if (!$test) {   // If so, we add a note to the change record.
+                            $changed_place['nation_not_changed'] = true;
+                        }
                     }
                     
                     if ($result && isset($parameters['tag8'])) {
@@ -411,9 +414,9 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
 
         // For the default (no place ID), we simply act on a list of all available places (or ones selected by a radius/long lat search).
         if (0 == count($in_path)) {
-            $radius = isset($in_query) && is_array($in_query) && isset($in_query['radius']) && (0.0 < floatval($in_query['radius'])) ? floatval($in_query['radius']) : NULL;
-            $longitude = isset($in_query) && is_array($in_query) && isset($in_query['longitude']) ? floatval($in_query['longitude']) : NULL;
-            $latitude = isset($in_query) && is_array($in_query) && isset($in_query['latitude']) ? floatval($in_query['latitude']) : NULL;
+            $radius = isset($in_query) && is_array($in_query) && isset($in_query['search_radius']) && (0.0 < floatval($in_query['search_radius'])) ? floatval($in_query['search_radius']) : NULL;
+            $longitude = isset($in_query) && is_array($in_query) && isset($in_query['search_longitude']) ? floatval($in_query['search_longitude']) : NULL;
+            $latitude = isset($in_query) && is_array($in_query) && isset($in_query['search_latitude']) ? floatval($in_query['search_latitude']) : NULL;
             
             $location_search = NULL;
             

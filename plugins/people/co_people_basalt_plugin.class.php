@@ -176,6 +176,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         $show_details = isset($in_query) && is_array($in_query) && isset($in_query['show_details']);                // Flag that applies only for lists, forcing all people to be shown in detail.
         $logged_in = isset($in_query) && is_array($in_query) && isset($in_query['logged_in']) && $in_andisol_instance->manager();   // Flag that filters for only users that are logged in.
         $my_info = isset($in_path) && is_array($in_path) && (0 < count($in_path) && ('my_info' == $in_path[0]));    // This is a directory that specifies only our own user.
+        $writeable = isset($in_query) && is_array($in_query) && isset($in_query['writeable']);                      // Show/list only logins this user can modify.
         
         if (isset($my_info) && $my_info) {  // If we are just asking after our own info, then we just send that back.
             $login = $in_andisol_instance->current_login();
@@ -197,7 +198,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             foreach ($login_id_list as $id) {
                 if (($is_numeric && (0 < $id)) || !$is_numeric) {
                     $login_instance = $is_numeric ? $in_andisol_instance->get_login_item($id) : $in_andisol_instance->get_login_item_by_login_string($id);
-                    if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
+                    if (isset($login_instance) && ($login_instance instanceof CO_Security_Login) && (!$writeable || $login_instance->user_can_write())) {
                         if (!$logged_in || ($logged_in && $login_instance->get_api_key())) { // See if they are filtering for logins.
                             if ($show_details) {
                                 $ret[] = $this->_get_long_description($login_instance);
@@ -213,7 +214,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $login_id_list = $in_andisol_instance->get_cobra_instance()->get_all_logins();
             if (0 < count($login_id_list)) {
                 foreach ($login_id_list as $login_instance) {
-                    if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
+                    if (isset($login_instance) && ($login_instance instanceof CO_Security_Login) && (!$writeable || $login_instance->user_can_write())) {
                         if (!$logged_in || ($logged_in && $login_instance->get_api_key())) { // See if they are filtering for logins.
                             if ($show_details) {
                                 $ret[] = $this->_get_long_description($login_instance);
@@ -1562,6 +1563,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         $show_details = isset($in_query) && is_array($in_query) && isset($in_query['show_details']);                // Flag that indicates that all people be shown in detail.
         $logged_in = isset($in_query) && is_array($in_query) && isset($in_query['logged_in']) && $in_andisol_instance->manager();   // Flag that filters for only users that are logged in.
         $my_info = isset($in_path) && is_array($in_path) && (0 < count($in_path) && ('my_info' == $in_path[0]));    // Directory that specifies we are only looking for our own info.
+        $writeable = isset($in_query) && is_array($in_query) && isset($in_query['writeable']);                      // Show/list only people this user can modify.
         
         if ($logged_in) {   // If we are looking for logged in users, then this should be true, Q.E.D.
             $login_user = true;
@@ -1590,7 +1592,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     if (!$logged_in || ($logged_in && $login_instance->get_api_key())) { // See if they are filtering for logins.
                         $id_string = $login_instance->login_id;
                         $user = $in_andisol_instance->get_user_from_login_string($id_string);
-                        if (isset($user) && ($user instanceof CO_User_Collection)) {
+                        if (isset($user) && ($user instanceof CO_User_Collection) && (!$writeable || $user->user_can_write())) {
                             if ($show_details) {
                                 $ret[] = $this->_get_long_user_description($user, $login_user);
                             } else {
@@ -1614,7 +1616,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 foreach ($user_list as $id) {
                     if (0 < $id) {
                         $user = $in_andisol_instance->get_single_data_record_by_id($id);
-                        if (isset($user) && ($user instanceof CO_User_Collection)) {
+                        if (isset($user) && ($user instanceof CO_User_Collection) && (!$writeable || $user->user_can_write())) {
                             if (!$login_user || ($login_user && $user->has_login())) {
                                 if ($logged_in) {   // If we are only looking for logged-in users, then we skip to the next one if this is not a logged-in user.
                                     $login_instance = $user->get_login_instance();
@@ -1637,7 +1639,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $userlist = $in_andisol_instance->get_all_users();
             if (0 < count($userlist)) {
                 foreach ($userlist as $user) {
-                    if (isset($user) && ($user instanceof CO_User_Collection)) {
+                    if (isset($user) && ($user instanceof CO_User_Collection) && (!$writeable || $user->user_can_write())) {
                         if (!$login_user || ($login_user && $user->has_login())) {
                             if ($logged_in) {   // If we are only looking for logged-in users, then we skip to the next one if this is not a logged-in user.
                                 $login_instance = $user->get_login_instance();
