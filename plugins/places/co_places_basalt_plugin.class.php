@@ -156,6 +156,14 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $ret['name'] = trim($in_query['name']);
             }
             
+            if (isset($in_query['read_token'])) {
+                $ret['read_token'] = intval($in_query['read_token']);
+            }
+            
+            if (isset($in_query['write_token'])) {
+                $ret['write_token'] = intval($in_query['write_token']);
+            }
+            
             if (isset($in_query['longitude'])) {
                 $ret['longitude'] = floatval($in_query['longitude']);
             }
@@ -232,6 +240,48 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     /***********************/
     /**
+    Handles the POST operation (new).
+    
+    \returns an associative array, with the "raw" response.
+     */
+    protected function _process_place_post( $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                            $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
+                                            $in_query = []              ///< OPTIONAL: The query parameters, as an associative array.
+                                            ) {
+        $ret = [];
+        
+        if ($in_andisol_instance->logged_in()) {    // Must be logged in to POST.
+            $new_record = $in_andisol_instance->create_general_data_item(0, NULL, 'CO_Place_Collection');
+            
+            if ($new_record instanceof CO_Place_Collection) {
+                if (isset($in_query) && is_array($in_query) && count($in_query)) {
+                    $temp = $this->_process_place_put($in_andisol_instance, [$new_record], $in_path, $in_query);
+                    if (isset($temp) && is_array($temp) && count($temp)) {
+                        $ret['new_place'] = $temp['changed_places'][0]['after'];
+                    } else {
+                        $new_record-delete_from_db();
+                        header('HTTP/1.1 400 Resource Not Created');
+                        exit();
+                    }
+                } else {
+                    $ret['new_place'] = $this->_get_long_place_description($new_record);
+                }
+            } else {
+                header('HTTP/1.1 400 Resource Not Created');
+                exit();
+            }
+        } else {
+            header('HTTP/1.1 403 Forbidden');
+            exit();
+        }
+        
+        return $ret;
+    }
+        
+    /***********************/
+    /**
+    Handle the PUT operation (modify).
+    
     \returns an associative array, with the "raw" response.
      */
     protected function _process_place_put(  $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
@@ -239,125 +289,138 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                             $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
                                             $in_query = []              ///< OPTIONAL: The query parameters, as an associative array.
                                         ) {
-        $ret = ['changed_places' => []];
+        if ($in_andisol_instance->logged_in()) {    // Must be logged in to PUT.
+            $ret = ['changed_places' => []];
         
-        $fuzz_factor = isset($in_query) && is_array($in_query) && isset($in_query['fuzz_factor']) ? floatval($in_query['fuzz_factor']) : 0; // Set any fuzz factor.
+            $fuzz_factor = isset($in_query) && is_array($in_query) && isset($in_query['fuzz_factor']) ? floatval($in_query['fuzz_factor']) : 0; // Set any fuzz factor.
         
-        $parameters = $this->_process_parameters($in_andisol_instance, $in_query);
-        if (isset($parameters) && is_array($parameters) && count($parameters) && isset($in_object_list) && is_array($in_object_list) && count($in_object_list)) {
-            foreach ($in_object_list as $place) {
-                if ($place->user_can_write()) { // Belt and suspenders. Make sure we can write.
-                    $changed_place = ['before' => $this->_get_long_place_description($place)];
-                    $result = true;
+            $parameters = $this->_process_parameters($in_andisol_instance, $in_query);
+            if (isset($parameters) && is_array($parameters) && count($parameters) && isset($in_object_list) && is_array($in_object_list) && count($in_object_list)) {
+                foreach ($in_object_list as $place) {
+                    if ($place->user_can_write()) { // Belt and suspenders. Make sure we can write.
+                        $changed_place = ['before' => $this->_get_long_place_description($place)];
+                        $result = true;
                     
-                    if ($result && isset($parameters['name'])) {
-                        $result = $place->set_name($parameters['name']);
-                    }
-                    
-                    if ($result && isset($parameters['lang'])) {
-                        $result = $place->set_lang($parameters['lang']);
-                    }
-                    
-                    if ($result && isset($parameters['longitude'])) {
-                        $result = $place->set_longitude($parameters['longitude']);
-                    }
-                    
-                    if ($result && isset($parameters['latitude'])) {
-                        $result = $place->set_latitude($parameters['latitude']);
-                    }
-                    
-                    if ($result && isset($parameters['fuzz_factor'])) {
-                        $result = $place->set_fuzz_factor($parameters['fuzz_factor']);
-                    }
-                    
-                    if ($result && isset($parameters['address_venue'])) {
-                        $result = $place->set_address_element(0, $parameters['address_venue']);
-                    }
-                    
-                    if ($result && isset($parameters['address_street_address'])) {
-                        $result = $place->set_address_element(1, $parameters['address_street_address']);
-                    }
-                    
-                    if ($result && isset($parameters['address_extra_information'])) {
-                        $result = $place->set_address_element(2, $parameters['address_extra_information']);
-                    }
-                    
-                    if ($result && isset($parameters['address_town'])) {
-                        $result = $place->set_address_element(3, $parameters['address_town']);
-                    }
-                    
-                    if ($result && isset($parameters['address_county'])) {
-                        $result = $place->set_address_element(4, $parameters['address_county']);
-                    }
-                    
-                    if ($result && isset($parameters['address_state'])) {
-                        $result = $place->set_address_element(5, $parameters['address_state']);
-                    }
-                    
-                    if ($result && isset($parameters['address_postal_code'])) {
-                        $result = $place->set_address_element(6, $parameters['address_postal_code']);
-                    }
-                    
-                    if ($result && isset($parameters['address_nation'])) {  // This might fail, if it's a nation-specific one, so we don't test for the result.
-                        $test = $place->set_address_element(7, $parameters['address_nation']);
-                        if (!$test) {   // If so, we add a note to the change record.
-                            $changed_place['nation_not_changed'] = true;
+                        if ($result && isset($parameters['name'])) {
+                            $result = $place->set_name($parameters['name']);
                         }
-                    }
+             
+                        if ($result && isset($parameters['read_token'])) {
+                            $result = $place->set_read_security_id($parameters['read_token']);
+                        }
+             
+                        if ($result && isset($parameters['write_token'])) {
+                            $result = $place->set_write_security_id($parameters['write_token']);
+                        }
+             
+                        if ($result && isset($parameters['lang'])) {
+                            $result = $place->set_lang($parameters['lang']);
+                        }
                     
-                    if ($result && isset($parameters['tag8'])) {
-                        $result = $place->set_tag(8, $parameters['tag8']);
-                    }
+                        if ($result && isset($parameters['longitude'])) {
+                            $result = $place->set_longitude($parameters['longitude']);
+                        }
                     
-                    if ($result && isset($parameters['tag9'])) {
-                        $result = $place->set_tag(9, $parameters['tag9']);
-                    }
+                        if ($result && isset($parameters['latitude'])) {
+                            $result = $place->set_latitude($parameters['latitude']);
+                        }
                     
-                    if ($result && isset($parameters['remove_payload'])) {
-                        $result = $place->set_payload(NULL);
-                    } elseif ($result && isset($parameters['payload'])) {
-                        $result = $place->set_payload($parameters['payload']);
-                    }
+                        if ($result && isset($parameters['fuzz_factor'])) {
+                            $result = $place->set_fuzz_factor($parameters['fuzz_factor']);
+                        }
                     
-                    if ($result && isset($parameters['child_ids'])) {
-                        $add = $parameters['child_ids']['add'];
-                        $remove = $parameters['child_ids']['remove'];
+                        if ($result && isset($parameters['address_venue'])) {
+                            $result = $place->set_address_element(0, $parameters['address_venue']);
+                        }
                     
-                        foreach ($remove as $id) {
-                            if ($id != $place->id()) {
-                                $child = $in_andisol_instance->get_single_data_record_by_id($id);
-                                if (isset($child)) {
-                                    $result = $place->deleteThisElement($child);
-                                }
-                        
-                                if (!$result) {
-                                    break;
-                                }
+                        if ($result && isset($parameters['address_street_address'])) {
+                            $result = $place->set_address_element(1, $parameters['address_street_address']);
+                        }
+                    
+                        if ($result && isset($parameters['address_extra_information'])) {
+                            $result = $place->set_address_element(2, $parameters['address_extra_information']);
+                        }
+                    
+                        if ($result && isset($parameters['address_town'])) {
+                            $result = $place->set_address_element(3, $parameters['address_town']);
+                        }
+                    
+                        if ($result && isset($parameters['address_county'])) {
+                            $result = $place->set_address_element(4, $parameters['address_county']);
+                        }
+                    
+                        if ($result && isset($parameters['address_state'])) {
+                            $result = $place->set_address_element(5, $parameters['address_state']);
+                        }
+                    
+                        if ($result && isset($parameters['address_postal_code'])) {
+                            $result = $place->set_address_element(6, $parameters['address_postal_code']);
+                        }
+                    
+                        if ($result && isset($parameters['address_nation'])) {  // This might fail, if it's a nation-specific one, so we don't test for the result.
+                            $test = $place->set_address_element(7, $parameters['address_nation']);
+                            if (!$test) {   // If so, we add a note to the change record.
+                                $changed_place['nation_not_changed'] = true;
                             }
                         }
-                        
-                        if ($result) {
-                            foreach ($add as $id) {
+                    
+                        if ($result && isset($parameters['tag8'])) {
+                            $result = $place->set_tag(8, $parameters['tag8']);
+                        }
+                    
+                        if ($result && isset($parameters['tag9'])) {
+                            $result = $place->set_tag(9, $parameters['tag9']);
+                        }
+                    
+                        if ($result && isset($parameters['remove_payload'])) {
+                            $result = $place->set_payload(NULL);
+                        } elseif ($result && isset($parameters['payload'])) {
+                            $result = $place->set_payload($parameters['payload']);
+                        }
+                    
+                        if ($result && isset($parameters['child_ids'])) {
+                            $add = $parameters['child_ids']['add'];
+                            $remove = $parameters['child_ids']['remove'];
+                    
+                            foreach ($remove as $id) {
                                 if ($id != $place->id()) {
                                     $child = $in_andisol_instance->get_single_data_record_by_id($id);
                                     if (isset($child)) {
-                                        $result = $place->appendElement($child);
+                                        $result = $place->deleteThisElement($child);
+                                    }
+                        
+                                    if (!$result) {
+                                        break;
+                                    }
+                                }
+                            }
+                        
+                            if ($result) {
+                                foreach ($add as $id) {
+                                    if ($id != $place->id()) {
+                                        $child = $in_andisol_instance->get_single_data_record_by_id($id);
+                                        if (isset($child)) {
+                                            $result = $place->appendElement($child);
                                         
-                                        if (!$result) {
-                                            break;
+                                            if (!$result) {
+                                                break;
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
                     
-                    if ($result) {
-                        $changed_place['after'] = $this->_get_long_place_description($place);
-                        $ret['changed_places'][] = $changed_place;
+                        if ($result) {
+                            $changed_place['after'] = $this->_get_long_place_description($place);
+                            $ret['changed_places'][] = $changed_place;
+                        }
                     }
                 }
             }
+        } else {
+            header('HTTP/1.1 403 Forbidden');
+            exit();
         }
         
         return $ret;
@@ -365,6 +428,8 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     /***********************/
     /**
+    Handles the GET operation (list records).
+    
     \returns an associative array, with the "raw" response.
      */
     protected function _process_place_get(  $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
@@ -409,67 +474,72 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                         $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                     ) {
         $ret = [];
-        $show_details = isset($in_query) && is_array($in_query) && isset($in_query['show_details']);    // Show all places in detail (applies only to GET).
-        $writeable = isset($in_query) && is_array($in_query) && isset($in_query['writeable']);          // Show/list only places this user can modify.
-
-        // For the default (no place ID), we simply act on a list of all available places (or ones selected by a radius/long lat search).
-        if (0 == count($in_path)) {
-            $radius = isset($in_query) && is_array($in_query) && isset($in_query['search_radius']) && (0.0 < floatval($in_query['search_radius'])) ? floatval($in_query['search_radius']) : NULL;
-            $longitude = isset($in_query) && is_array($in_query) && isset($in_query['search_longitude']) ? floatval($in_query['search_longitude']) : NULL;
-            $latitude = isset($in_query) && is_array($in_query) && isset($in_query['search_latitude']) ? floatval($in_query['search_latitude']) : NULL;
-            
-            $location_search = NULL;
-            
-            if (isset($radius) && isset($longitude) && isset($latitude)) {
-                $location_search = Array('radius' => $radius, 'longitude' => $longitude, 'latitude' => $latitude);
-            }
-            
-            $class_search = Array('%_Place_Collection', 'use_like' => 1);
-            
-            $search_array['access_class'] = $class_search;
-            
-            if (isset($location_search)) {
-                $search_array['location'] = $location_search;
-            }
-
-            $placelist = $in_andisol_instance->generic_search($search_array, false, 0, 0, $writeable);
-            
-            if ('GET' == $in_http_method) {
-                $ret = $this->_process_place_get($in_andisol_instance, $placelist, $show_details, $in_path, $in_query);
-            } elseif ('PUT' == $in_http_method) {
-                $ret = $this->_process_place_put($in_andisol_instance, $placelist, $in_path, $in_query);
-            }
+        
+        if ('POST' == $in_http_method) {    // We handle POST directly.
+            $ret = $this->_process_place_post($in_andisol_instance, $in_path, $in_query);
         } else {
-            $main_command = $in_path[0];    // Get the main command.
-        
-            // This tests to see if we only got one single digit as our "command."
-            $single_place_id = (ctype_digit($main_command) && (1 < intval($main_command))) ? intval($main_command) : NULL;    // This will be for if we are looking only one single place.
-        
-            // The first thing that we'll do, is look for a list of place IDs. If that is the case, we split them into an array of int.
-        
-            $place_id_list = explode(',', $main_command);
-        
-            // If we do, indeed, have a list, we will force them to be ints, and cycle through them.
-            if ($single_place_id || (1 < count($place_id_list))) {
-                $place_id_list = ($single_place_id ? [$single_place_id] : array_unique(array_map('intval', $place_id_list)));
-                $placelist = [];
-                
-                foreach ($place_id_list as $id) {
-                    if (0 < $id) {
-                        $place = $in_andisol_instance->get_single_data_record_by_id($id);
-                        if (isset($place) && ($place instanceof CO_Place)) {
-                            $placelist[] = $place;
-                        }
-                    }
+            $show_details = isset($in_query) && is_array($in_query) && isset($in_query['show_details']);    // Show all places in detail (applies only to GET).
+            $writeable = isset($in_query) && is_array($in_query) && isset($in_query['writeable']);          // Show/list only places this user can modify.
+
+            // For the default (no place ID), we simply act on a list of all available places (or ones selected by a radius/long lat search).
+            if (0 == count($in_path)) {
+                $radius = isset($in_query) && is_array($in_query) && isset($in_query['search_radius']) && (0.0 < floatval($in_query['search_radius'])) ? floatval($in_query['search_radius']) : NULL;
+                $longitude = isset($in_query) && is_array($in_query) && isset($in_query['search_longitude']) ? floatval($in_query['search_longitude']) : NULL;
+                $latitude = isset($in_query) && is_array($in_query) && isset($in_query['search_latitude']) ? floatval($in_query['search_latitude']) : NULL;
+            
+                $location_search = NULL;
+            
+                if (isset($radius) && isset($longitude) && isset($latitude)) {
+                    $location_search = Array('radius' => $radius, 'longitude' => $longitude, 'latitude' => $latitude);
                 }
-                
+            
+                $class_search = Array('%_Place_Collection', 'use_like' => 1);
+            
+                $search_array['access_class'] = $class_search;
+            
+                if (isset($location_search)) {
+                    $search_array['location'] = $location_search;
+                }
+
+                $placelist = $in_andisol_instance->generic_search($search_array, false, 0, 0, $writeable);
+            
                 if ('GET' == $in_http_method) {
                     $ret = $this->_process_place_get($in_andisol_instance, $placelist, $show_details, $in_path, $in_query);
                 } elseif ('PUT' == $in_http_method) {
                     $ret = $this->_process_place_put($in_andisol_instance, $placelist, $in_path, $in_query);
                 }
-            } else {    // Otherwise, let's see what they want to do...
-                switch ($main_command) {
+            } else {
+                $main_command = $in_path[0];    // Get the main command.
+        
+                // This tests to see if we only got one single digit as our "command."
+                $single_place_id = (ctype_digit($main_command) && (1 < intval($main_command))) ? intval($main_command) : NULL;    // This will be for if we are looking only one single place.
+        
+                // The first thing that we'll do, is look for a list of place IDs. If that is the case, we split them into an array of int.
+        
+                $place_id_list = explode(',', $main_command);
+        
+                // If we do, indeed, have a list, we will force them to be ints, and cycle through them.
+                if ($single_place_id || (1 < count($place_id_list))) {
+                    $place_id_list = ($single_place_id ? [$single_place_id] : array_unique(array_map('intval', $place_id_list)));
+                    $placelist = [];
+                
+                    foreach ($place_id_list as $id) {
+                        if (0 < $id) {
+                            $place = $in_andisol_instance->get_single_data_record_by_id($id);
+                            if (isset($place) && ($place instanceof CO_Place)) {
+                                $placelist[] = $place;
+                            }
+                        }
+                    }
+                
+                    if ('GET' == $in_http_method) {
+                        $ret = $this->_process_place_get($in_andisol_instance, $placelist, $show_details, $in_path, $in_query);
+                    } elseif ('PUT' == $in_http_method) {
+                        $ret = $this->_process_place_put($in_andisol_instance, $placelist, $in_path, $in_query);
+                    }
+                } else {    // Otherwise, let's see what they want to do...
+                    switch ($main_command) {
+                    }
                 }
             }
         }
