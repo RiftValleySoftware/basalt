@@ -330,13 +330,15 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     if ($place->user_can_write()) { // Belt and suspenders. Make sure we can write.
                         $changed_place = ['before' => $this->_get_long_place_description($place)];
                         $result = true;
+                        
+                        $original_id = $place->lock();
+                
+                        if (!isset($parameters['read_token'])) {
+                            $parameters['read_token'] = $original_id;
+                        }
                     
                         if ($result && isset($parameters['name'])) {
                             $result = $place->set_name($parameters['name']);
-                        }
-             
-                        if ($result && isset($parameters['read_token'])) {
-                            $result = $place->set_read_security_id($parameters['read_token']);
                         }
              
                         if ($result && isset($parameters['write_token'])) {
@@ -445,6 +447,11 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                             $changed_place['after'] = $this->_get_long_place_description($place);
                             $ret['changed_places'][] = $changed_place;
                         }
+                    }
+                    
+                    // We unlock by setting the read ID.
+                    if ($result && isset($parameters['read_token'])) {
+                        $result = $place->set_read_security_id($parameters['read_token']);
                     }
                 }
             }

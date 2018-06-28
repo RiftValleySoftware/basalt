@@ -43,7 +43,7 @@ class CO_Config {
                                                     */
     
     /// These are special callbacks for logging. Read carefully. The first logs the bottom of the stack, the second, the top.
-    static private $_low_level_log_handler_function = 'global_scope_basalt_low_level_logging_function';
+    static private $_low_level_log_handler_function = 'global_scope_badger_low_level_logging_function';
                                                      /**<   WARNING: DANGER WILL ROBINSON DANGER
                                                             This is a special "callback caller" for logging Database calls (PDO). The callback must be defined in the CO_Config::$_low_level_log_handler_function static variable,
                                                             either as a function (global scope), or as an array (with element 0 being the object, itself, and element 1 being the name of the function).
@@ -75,6 +75,8 @@ class CO_Config {
                                                             It should be noted that there may be security, legal, ethical and resource ramifications for logging.
                                                             It is up to the implementor to ensure compliance with all constraints.
                                                     */
+                                                    
+    static private $_server_secret = 'Supercalifragilisticexpialidocious';  ///< This is a random string of characters that must be presented in the authentication header, along with the temporary API key.
     
     static $lang = 'en';                            ///< The default language for the server.
     static $min_pw_len = 8;                         ///< The minimum password length.
@@ -141,7 +143,7 @@ function global_scope_basalt_logging_function($in_andisol_instance, $in_server_v
     fclose($log_file);
 }
 
-function global_scope_basalt_low_level_logging_function($id, $in_sql, $in_params) {
+function global_scope_badger_low_level_logging_function($id, $in_sql, $in_params) {
     $id_entry = '' != $id ? "$id" : '-';
     $date_entry = date('\[d\/M\/Y:H:m:s O\]');
     $request_entry = $_SERVER['REQUEST_METHOD'].' '.$_SERVER['REQUEST_URI'];

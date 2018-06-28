@@ -771,6 +771,12 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $user_changed = false;
                 if ($user->user_can_write()) {    // We have to be allowed to write to this user.
                     $user_report = Array('before' => $this->_get_long_user_description($user, $in_login_user));
+                    $original_id = $user->lock();
+                
+                    if (!isset($mod_list['read_token'])) {
+                        $mod_list['read_token'] = $original_id;
+                    }
+                
                     foreach ($mod_list as $key => $value) {
                         switch ($key) {
                             case 'child_ids':
@@ -848,19 +854,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                     }
                                 }
                             
-                                break;
-                                
-                            case 'read_token':
-                                $result = $user->set_read_security_id($value);
-                            
-                                if ($result && $in_login_user) {
-                                    $login_instance = $user->get_login_instance();
-                            
-                                    if ($login_instance) {
-                                        $result = $login_instance->set_read_security_id($value);
-                                        $user_changed = true;
-                                    }
-                                }
                                 break;
                                 
                             case 'write_token':
@@ -975,6 +968,18 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                     }
                                 }
                                 break;
+                        }
+                    }
+                    
+                    // We unlock by setting the read security.
+                    $result = $user->set_read_security_id($mod_list['read_token']);
+                
+                    if ($result && $in_login_user) {
+                        $login_instance = $user->get_login_instance();
+                
+                        if ($login_instance) {
+                            $result = $login_instance->set_read_security_id($value);
+                            $user_changed = true;
                         }
                     }
                     
@@ -1251,6 +1256,12 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             }
             
             if (isset($user) && ($user instanceof CO_User_Collection)) {
+                $original_id = $user->lock();
+                
+                if (!isset($settings_list['read_token'])) {
+                    $settings_list['read_token'] = $original_id;
+                }
+                
                 foreach ($settings_list as $key => $value) {
                     switch ($key) {
                         case 'child_ids':
@@ -1297,10 +1308,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                     $result = $login_instance->set_lang($value);
                                 }
                             }
-                            break;
-                                
-                        case 'read_token':
-                            $result = $user->set_read_security_id($value);
                             break;
                                 
                         case 'write_token':
@@ -1356,6 +1363,11 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         header('HTTP/1.1 400 Improper Data Provided');
                         exit();
                     }
+                }
+                
+                // Unlock by setting the read token.
+                if ($result) {
+                    $result = $user->set_read_security_id($settings_list['read_token']);
                 }
                 
                 $ret = Array('new_user' => $this->_get_long_user_description($user, true));

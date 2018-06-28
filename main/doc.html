@@ -25,7 +25,7 @@
         <h4 class="rest_api_doc-h3" id="01-baseline-structure-name">Plugin Name</h4>
         <p class="main_doc-p">The plugin name is "<code>baseline</code>", all lowercase:</p>
         <div class="uri_display-div">
-            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_plugin-span">/baseline</span></code>
+            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type-span">/[json|xml|xsd]</span><span class="uri_plugin-span">/baseline</span></code>
         </div>
         <p class="main_doc-p">You access the plugin functionality by placing the plugin name immediately following the server name in the REST URI.</p>
         <p class="main_doc-p">There are no query parameters with the baseline plugin, and only GET and POST are allowed as methods.</p>
@@ -34,11 +34,11 @@
         <h3 class="rest_api_doc-h3" id="01-baseline-directories-directories">DIRECTORIES</h3>
         
         <h4 class="rest_api_doc-h4" id="01-baseline-directories-direct">No Directory (Direct Call)</h4>
-        <div class="uri_display-div">
-            <code class="uri-code"><span class="uri_protocol-span">http[s]://</span><span class="uri_server-span">example.com</span><span class="uri_plugin-span">/baseline</span></code>
-        </div>
         <p class="main_doc-p">Calling the plugin directly will simply list all the available plugins (including the baseline plugin).</p>
         <h5 class="rest_api_doc-h5" id="01-baseline-directories-direct-json">JSON:</h5>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol-span">http[s]://</span><span class="uri_server-span">example.com</span><span class="uri_response_type-span">/json</span><span class="uri_plugin-span">/baseline</span></code>
+        </div>
         <pre class="code-dump-json">{
   "baseline": {
     "plugins": [
@@ -50,6 +50,9 @@
   }
 }</pre>
         <h5 class="rest_api_doc-h5" id="01-baseline-directories-direct-xml">XML:</h5>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol-span">http[s]://</span><span class="uri_server-span">example.com</span><span class="uri_response_type-span">/xml</span><span class="uri_plugin-span">/baseline</span></code>
+        </div>
         <pre class="code-dump-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;baseline xmlns="http://example.com"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -64,7 +67,7 @@
 
         <h4 class="rest_api_doc-h4" id="01-baseline-directories-tokens">tokens</h4>
         <div class="uri_display-div">
-            <code class="uri-code"><span class="uri_protocol-span">http[s]://</span><span class="uri_server-span">example.com</span><span class="uri_plugin-span">/baseline/tokens</span></code>
+            <code class="uri-code"><span class="uri_protocol-span">http[s]://</span><span class="uri_server-span">example.com</span><span class="uri_response_type-span">/json</span><span class="uri_plugin-span">/baseline/tokens</span></code>
         </div>
         <p class="main_doc-p">Calling the plugin with the "<code>tokens</code>" directory will list all of the tokens for the current logged-in user (GET), or will create a new token (POST), if the logged-in user is a Manager User.</p>
         <p class="main_doc-p">GET will return a list of IDs, while POST will return only one ID (the new token).</p>

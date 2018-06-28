@@ -35,7 +35,7 @@ function call_REST_API( $method,                /**< REQUIRED:  This is the meth
                         $display_log = false    ///< OPTIONAL:  Default is false. If true, then the function will echo detailed debug information.
                         ) {
     
-    $method = strtoupper(trim($method));    // Make sure the method is always uppercase.
+    $method = strtoupper(trim($method));            // Make sure the method is always uppercase.
     
     // Initialize function local variables.
     $file = NULL;               // This will be a file handle, for uploads.
@@ -109,10 +109,12 @@ function call_REST_API( $method,                /**< REQUIRED:  This is the meth
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
     }
 
-    // Authentication. We provide the API key here.
-    if (isset($api_key)) {
+    $server_secret = CO_Config::server_secret();    // Get the server secret.
+    
+    // Authentication. We provide the Server Secret and the API key here.
+    if (isset($server_secret) && isset($api_key)) {
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($curl, CURLOPT_USERPWD, "$api_key:$api_key");
+        curl_setopt($curl, CURLOPT_USERPWD, "$server_secret:$api_key");
     }
 
     curl_setopt($curl, CURLOPT_HEADER, false);          // Do not return any headers, please.

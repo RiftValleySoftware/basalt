@@ -423,13 +423,13 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                 
                 exit();
             } elseif ((1 == count($this->_path)) && ('logout' == $this->_path[0]))  {   // See if the user wants to log out a session.
-                $api_key1 = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : NULL;
-                $api_key2 = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : NULL;
-                // If we don't have a valid API key pair, we scrag the process.
-                if(!(isset($api_key1) && isset($api_key2) && $api_key1 && ($api_key1 == $api_key2))) {
+                $server_secret = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : NULL;
+                $api_key = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : NULL;
+                // If we don't have a valid API key/Server Secret pair, we scrag the process.
+                if(!(isset($api_key) && $api_key && ($server_secret == Co_Config::server_secret()))) {
                     header('HTTP/1.1 403 Unauthorized Login');
                 } else {
-                    $andisol_instance = new CO_Andisol('', '', '', $api_key1);
+                    $andisol_instance = new CO_Andisol('', '', '', $api_key);
                 
                     if (isset($andisol_instance) && ($andisol_instance instanceof CO_Andisol) && $andisol_instance->logged_in()) {
                         if (method_exists('CO_Config', 'call_log_handler_function')) {
@@ -454,14 +454,14 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                 
                 exit();
             } else {
-                $api_key1 = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : NULL;
-                $api_key2 = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : NULL;
+                $server_secret = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : NULL;
+                $api_key = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : NULL;
             
-                // If we don't have a valid API key pair, we just forget about API keys.
-                if(!(isset($api_key1) && isset($api_key2) && $api_key1 && ($api_key1 == $api_key2))) {
-                    $api_key1 = NULL;
+                // If we don't have a valid API key/Server Secret pair, we just forget about API keys.
+                if(!(isset($api_key) && $api_key && ($server_secret == Co_Config::server_secret()))) {
+                    $api_key = NULL;
                 }
-                $andisol_instance = new CO_Andisol('', '', '', $api_key1);
+                $andisol_instance = new CO_Andisol('', '', '', $api_key);
                 
                 if (isset($andisol_instance) && ($andisol_instance instanceof CO_Andisol)) {
                     if (method_exists('CO_Config', 'call_log_handler_function')) {

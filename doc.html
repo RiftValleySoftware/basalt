@@ -4,6 +4,8 @@
     <div class="wrap-toc-div">
         <ul class="toc-ul">
             <li><a href="#main_overview_header-overview">OVERVIEW</a></li>
+            <li><a href="#main_overview_rest-like">RESTLIKE, NOT RESTFUL</a></li>
+            <li><a href="#main_overview_optimized-for-r">OPTIMISED FOR "R"</a></li>
             <li><a href="#main_overview_header-methods">HTTP REST METHODS</a></li>
             <li><a href="#main_overview_header-plugins">REST PLUGINS</a></li>
             <li><a href="#main_overview_header-uri-structure">BASIC URI STRUCTURE</a><ul class="toc-ul">
@@ -40,6 +42,14 @@
         <p class="main_doc-p">The BAOBAB REST API is a fairly basic, but powerful facility to access and affect the data on a Great Rift Valley Platform BAOBAB server. It is a fairly granular interface, designed to be generic.</p>
         <p class="main_doc-p">Security and flexibility are the main axes for the BAOBAB server. BAOBAB was created to be a low-level service; so commands and interactions are generally kept simple and generic. The REST API is designed to be coupled with SDKs on the client end that interpret and aggregate BAOBAB REST interactions into a more powerful and dense form.</p>
         <p class="main_doc-p">As a result of this, BAOBAB REST commands may seem "over-simple." This is deliberate.</p>
+        
+        <h3 class="rest_api_doc-h3" id="main_overview_rest-like">RESTLIKE, NOT RESTFUL</h3>
+        <p class="main_doc-p">Although we will be referring to this API as a "REST API," it is not actually a true REST API. This is because of the way that the POST and PUT methods are treated. Instead of accepting full copies of entire data elements in JSON or XML, these methods allow partial specification of these elements as format-neutral URI query arguments and inline/form data transfer (sort of like <a href="https://en.wikipedia.org/wiki/Patch_verb">REST PATCH</a>, but different -PATCH is actually a specification for "pseudo-scripting," and we don't do that). Most of the "heavy lifting" in the BAOBAB REST API is done in query parameters, as opposed to resource locations.</p>
+        <p class="main_doc-p">In most other aspects, the API follows REST structure and protocol for implementation of <a href="https://en.wikipedia.org/wiki/Create,_read,_update_and_delete">CRUD</a> functionality. Interactions are atomic and stateless, and GET interactions are never used to affect data; only to fetch it.</p>
+        <p class="main_doc-p">This is far more efficient than "classic" REST. As this is a private API for internal use, restricted to the BAOBAB server; this is fine. The true exposed API is really meant to be the SDKs that form the "outer boundary" of the Application Layer.</p>
+        
+        <h3 class="rest_api_doc-h3" id="main_overview_optimized-for-r">OPTIMISED FOR "R"</h3>
+        <p class="main_doc-p">The BAOBAB REST API has been optimized to afford darta access and reading (the "R" in "CRUD"). Modification, deletion and creation are less efficient, but are also vetted more stringently than read operations.</p>
         
         <h3 class="rest_api_doc-h3" id="main_overview_header-methods">HTTP REST METHODS</h3>
         <p class="main_doc-p">REST interactions use <a href="http://www.restapitutorial.com/lessons/httpmethods.html">GET, POST, PUT, and DELETE</a> methods for connection and control. GET is the method used to extract data or log into the system, and the other methods are used to affect the data.</p>
@@ -87,10 +97,10 @@
         <p class="main_doc-p">You cannot specify any operation other than "<code class="uri_plugin-span">login</code>" with your login credentials. All subsequent interactions require the API key.</p>
 
         <h4 class="rest_api_doc-h4" id="main_overview_header-authentication-using-key">Using the BAOBAB API Key</h4>
-        <p class="main_doc-p">Once you have obtained the API Key, you must present it in <a href="https://en.wikipedia.org/wiki/Basic_access_authentication#Client_side">the standard HTTP Authentication (Authorization) Header</a>. The key must be placed in <strong>BOTH</strong> the login ID and password portions of the header, like so (Sample is PHP code for <a href="http://php.net/manual/en/book.curl.php">a cURL</a> call):</p>
-        <pre>    // $api_key contains the string returned from the "login" call.
+        <p class="main_doc-p">Once you have obtained the API Key, you must present it, along with a "Server Secret," provided by the BAOBAB Server Administrator, in <a href="https://en.wikipedia.org/wiki/Basic_access_authentication#Client_side">the standard HTTP Authentication (Authorization) Header</a>. The Server Secret must be placed in the username portion of the header, and the API Key must be placed in the password portion of the header, like so (Sample is PHP code for <a href="http://php.net/manual/en/book.curl.php">a cURL</a> call):</p>
+        <pre>    // $server_secret contains the BAOBAB Server Secret, and $api_key contains the string returned from the "login" call.
     curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-    curl_setopt($curl, CURLOPT_USERPWD, "$api_key:$api_key");</pre>
+    curl_setopt($curl, CURLOPT_USERPWD, "$server_secret:$api_key");</pre>
         <p class="main_doc-p">This needs to be done for every interaction that requires a login. Failing to provide it will not terminate the interaction (unless it is doing something that specifically requires a login), but will likely limit the capabilities of the call. Providing an invalid key (or, possibly, using a different source IP address from that used to obtain the key) will result in a <code>403 Forbidden</code> response.</p>
 
         <h3 class="rest_api_doc-h3" id="main_overview_header-sending_payload_data">SENDING BINARY/FILE DATA TO BAOBAB</h3>
@@ -139,16 +149,17 @@ This function is provided as an example of making REST calls to BAOBAB, and to p
 
 \returns the resulting transfer from the server, as a string of bytes.
  */
-function call_REST_API( $method,            /**< REQUIRED:  This is the method to call. It should be one of:
-                                                            - 'GET'     This is considered the default, but should be provided anyway, in order to ensure that the intent is clear.
-                                                            - 'POST'    This means that the resource needs to be created.
-                                                            - 'PUT'     This means that the resource is to be modified.
-                                                            - 'DELETE'  This means that the resource is to be deleted.
-                                            */
-                        $url,               ///< REQIRED:   This is the base URL for the call. It should include the entire URI, including query arguments.
-                        $data_file = NULL,  ///< OPTIONAL:  Default is NULL. This is a POSIX pathname to a file to be uploaded to the server, along with the URL. This will be Base64-encoded, so it is not necessary for it to be already encoded.
-                        $api_key = NULL,    ///< OPTIONAL:  Default is NULL. This is an API key from the BAOBAB server. It needs to be provided for any operation that requires user authentication.
-                        &$httpCode = NULL   ///< OPTIONAL:  Default is NULL. If provided, this has a reference to an integer data item that will be set to any HTTP response code.
+function call_REST_API( $method,                /**< REQUIRED:  This is the method to call. It should be one of:
+                                                                - 'GET'     This is considered the default, but should be provided anyway, in order to ensure that the intent is clear.
+                                                                - 'POST'    This means that the resource needs to be created.
+                                                                - 'PUT'     This means that the resource is to be modified.
+                                                                - 'DELETE'  This means that the resource is to be deleted.
+                                                */
+                        $url,                   ///< REQIRED:   This is the base URL for the call. It should include the entire URI, including query arguments.
+                        $data_file = NULL,      ///< OPTIONAL:  Default is NULL. This is a POSIX pathname to a file to be uploaded to the server, along with the URL. This will be Base64-encoded, so it is not necessary for it to be already encoded.
+                        $server_secret = NULL,  ///< OPTIONAL:  Default is NULL. This is a special "Server Secret" string, provided by the BAOBAB Server Administrator. It needs to be provided for any operation that requires user authentication.
+                        $api_key = NULL,        ///< OPTIONAL:  Default is NULL. This is an API key from the BAOBAB server. It needs to be provided for any operation that requires user authentication.
+                        &$httpCode = NULL       ///< OPTIONAL:  Default is NULL. If provided, this has a reference to an integer data item that will be set to any HTTP response code.
                         ) {
     
     // Initialize function local variables.
@@ -214,10 +225,10 @@ function call_REST_API( $method,            /**< REQUIRED:  This is the method t
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
     }
 
-    // Authentication. We provide the API key here.
-    if (isset($api_key)) {
+    // Authentication. We provide the Server Secret and the API key here.
+    if (isset($server_secret) && isset($api_key)) {
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($curl, CURLOPT_USERPWD, "$api_key:$api_key");
+        curl_setopt($curl, CURLOPT_USERPWD, "$server_secret:$api_key");
     }
 
     curl_setopt($curl, CURLOPT_HEADER, false);          // Do not return any headers, please.
