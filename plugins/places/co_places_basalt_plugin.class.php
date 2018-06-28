@@ -319,23 +319,18 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                             $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
                                             $in_query = []              ///< OPTIONAL: The query parameters, as an associative array.
                                         ) {
+$start = microtime(true);        
         if ($in_andisol_instance->logged_in()) {    // Must be logged in to PUT.
             $ret = ['changed_places' => []];
-        
             $fuzz_factor = isset($in_query) && is_array($in_query) && isset($in_query['fuzz_factor']) ? floatval($in_query['fuzz_factor']) : 0; // Set any fuzz factor.
         
             $parameters = $this->_process_parameters($in_andisol_instance, $in_query);
             if (isset($parameters) && is_array($parameters) && count($parameters) && isset($in_object_list) && is_array($in_object_list) && count($in_object_list)) {
                 foreach ($in_object_list as $place) {
                     if ($place->user_can_write()) { // Belt and suspenders. Make sure we can write.
+                        $place->set_batch_mode();
                         $changed_place = ['before' => $this->_get_long_place_description($place)];
                         $result = true;
-                        
-                        $original_id = $place->lock();
-                
-                        if (!isset($parameters['read_token'])) {
-                            $parameters['read_token'] = $original_id;
-                        }
                     
                         if ($result && isset($parameters['name'])) {
                             $result = $place->set_name($parameters['name']);
@@ -447,11 +442,17 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                             $changed_place['after'] = $this->_get_long_place_description($place);
                             $ret['changed_places'][] = $changed_place;
                         }
-                    }
                     
-                    // We unlock by setting the read ID.
-                    if ($result && isset($parameters['read_token'])) {
-                        $result = $place->set_read_security_id($parameters['read_token']);
+                        // We unlock by setting the read ID.
+                        if ($result && isset($parameters['read_token'])) {
+                            $result = $place->set_read_security_id($parameters['read_token']);
+                        }
+                    
+                        $result = $place->clear_batch_mode();
+                        
+                        if (!$result) {
+                            break;
+                        }
                     }
                 }
             }
@@ -459,7 +460,6 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
             header('HTTP/1.1 403 Forbidden');
             exit();
         }
-        
         return $ret;
     }
     

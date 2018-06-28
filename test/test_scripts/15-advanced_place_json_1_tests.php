@@ -15,6 +15,8 @@
 
 require_once(dirname(dirname(__FILE__)).'/run_basalt_tests.php');
 
+set_time_limit ( 3600 );
+
 basalt_run_tests(117, 'ADVANCED JSON PLACES TESTS PART 1', 'Verify that the "Location Fuzzing" works, and the basics of PUT are operational.');
 
 // -------------------------- DEFINITIONS AND TESTS -----------------------------------
@@ -591,6 +593,17 @@ function basalt_test_0124($in_login = NULL, $in_hashed_password = NULL, $in_pass
             echo('</div>');
         echo('</div></div>');
     }
+    
+    echo('<h3>Log Out, So We Can Log In Again:</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
+    
+    echo('<h3>We\'ll need to log in again.</h3>');
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
  
     echo('<h3>Now, we will apply the same set of settings to all of our places:</h3>');
     $result = call_REST_API('PUT', 'http://localhost/basalt/test/basalt_runner.php/json/places/?writeable&name=NA+In+The+Pentagon&lang=pt&longitude=-77.0563&latitude=38.8719&fuzz_factor=5&address_venue=The+Pentagon&address_street_address=1400+Defense+Pentagon&address_extra_information=Lots+Of+Brass&address_town=Arlington&address_county=Arlington&address_state=VA&address_postal_code=22202&tag8=NA&tag9=IN+DA+HOUSE&child_ids=853,854,855', NULL, $api_result, $result_code);
@@ -605,6 +618,20 @@ function basalt_test_0124($in_login = NULL, $in_hashed_password = NULL, $in_pass
             echo('</div>');
         echo('</div></div>');
     }
+    
+    echo('<h3>Log Out, So We Can Log In Again:</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
+    
+    echo('<h3>We\'ll need to log in again.</h3>');
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+    
+    echo('<h3>Log Out, So We Can Log In Again:</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
     
     echo('<h3>We\'ll need to log in again.</h3>');
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);

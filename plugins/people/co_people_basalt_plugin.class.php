@@ -771,11 +771,8 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $user_changed = false;
                 if ($user->user_can_write()) {    // We have to be allowed to write to this user.
                     $user_report = Array('before' => $this->_get_long_user_description($user, $in_login_user));
-                    $original_id = $user->lock();
-                
-                    if (!isset($mod_list['read_token'])) {
-                        $mod_list['read_token'] = $original_id;
-                    }
+                  
+                    $user->set_batch_mode();
                 
                     foreach ($mod_list as $key => $value) {
                         switch ($key) {
@@ -983,6 +980,12 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                             $result = $login_instance->set_read_security_id($value);
                             $user_changed = true;
                         }
+                    }
+                
+                    $result = $user->clear_batch_mode();
+                    
+                    if (!$result) {
+                        break;
                     }
                     
                     if ($user_changed) {
@@ -1195,7 +1198,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             }
             
             if (!$password || (strlen($password) < CO_Config::$min_pw_len)) {
-                $password = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*~_-=+;:,.!?"), 0, CO_Config::$min_pw_len);
+                $password = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"), 0, CO_Config::$min_pw_len + 2);
             }
             
             $name = isset($in_query) && is_array($in_query) && isset($in_query['name']) && trim($in_query['name']) ? trim($in_query['name']) : NULL;

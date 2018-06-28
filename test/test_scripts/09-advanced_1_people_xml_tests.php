@@ -57,6 +57,12 @@ function basalt_test_0074($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
         echo('<div style="text-align:center;margin:1em"><img src="data:'.$type.','.$payload.'" title="Woah! Norm, have you been taking hormones?" alt="Lena, not Norm" style="width:256px;border-radius:2em;border:none" /></div>');
     }
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">Logged out!</pre>');
+    }
 }
 
 // --------------------

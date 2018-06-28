@@ -43,7 +43,7 @@ class CO_Config {
                                                     */
     
     /// These are special callbacks for logging. Read carefully. The first logs the bottom of the stack, the second, the top.
-    static private $_low_level_log_handler_function = 'global_scope_badger_low_level_logging_function';
+    static private $_low_level_log_handler_function = NULL; // 'global_scope_badger_low_level_logging_function';
                                                      /**<   WARNING: DANGER WILL ROBINSON DANGER
                                                             This is a special "callback caller" for logging Database calls (PDO). The callback must be defined in the CO_Config::$_low_level_log_handler_function static variable,
                                                             either as a function (global scope), or as an array (with element 0 being the object, itself, and element 1 being the name of the function).
@@ -61,7 +61,7 @@ class CO_Config {
                                                             It is up to the implementor to ensure compliance with all constraints.
                                                     */
 
-    static private $_log_handler_function = 'global_scope_basalt_logging_function';
+    static private $_log_handler_function =  NULL; // 'global_scope_basalt_logging_function';
                                                     /**<    This is a special callback for logging REST calls (BASALT). For most functions in the global scope, this will simply be the function name,
                                                             or as an array (with element 0 being the object, itself, and element 1 being the name of the function).
                                                             If this will be an object method, then it should be an array, with element 0 as the object, and element 1 a string, containing the function name.
