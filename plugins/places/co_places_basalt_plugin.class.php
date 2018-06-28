@@ -85,6 +85,18 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
         if (0 < count($child_objects)) {
             $ret['child_ids'] = $child_objects;
         }
+        
+        $payload = $in_place_object->get_payload();
+        
+        if ($payload) {
+            $ret['payload'] = base64_encode($payload);
+            $temp_file = tempnam(sys_get_temp_dir(), 'RVP');  
+            file_put_contents($temp_file , $payload);
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);  
+            $content_type = finfo_file($finfo, $temp_file);
+            $ret['payload_type'] = $content_type.';base64';
+        }
+        
         return $ret;
     }
     
@@ -584,7 +596,7 @@ $start = microtime(true);
                     }
                 
                     if ('GET' == $in_http_method) {
-                        $ret = $this->_process_place_get($in_andisol_instance, $placelist, $show_details, $in_path, $in_query);
+                        $ret = $this->_process_place_get($in_andisol_instance, $placelist, $show_details, $search_count_only, $search_ids_only, $in_path, $in_query);
                     } elseif ('PUT' == $in_http_method) {
                         $ret = $this->_process_place_put($in_andisol_instance, $placelist, $in_path, $in_query);
                     } elseif ('DELETE' == $in_http_method) {

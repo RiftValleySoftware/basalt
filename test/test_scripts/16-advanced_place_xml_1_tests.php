@@ -567,7 +567,7 @@ function basalt_test_0132($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
  
     echo('<h3>Now, we will apply the same set of settings to all three:</h3>');
-    $result = call_REST_API('PUT', 'http://localhost/basalt/test/basalt_runner.php/xml/places/1452,1456,1460/?name=Changed+To+A+New+Name&lang=sv&longitude=-77.0502&latitude=38.8893&fuzz_factor=5&address_venue=Lincoln+Memorial&address_street_address=2+Lincoln+Memorial+Circle+NW&address_extra_information=Go+Up+The+Steps+And+Say+Hi+To+Abe&address_town=Washington+DC&address_county=DC&address_state=DC&address_postal_code=20037&address_nation=USA&tag8=HI&tag9=HOWAYA&child_ids=3,4,5,1470,1480,1490', NULL, $api_result, $result_code);
+    $result = call_REST_API('PUT', 'http://localhost/basalt/test/basalt_runner.php/xml/places/1452,1456,1460/?name=Changed+To+A+New+Name&lang=sv&longitude=-77.0502&latitude=38.8893&fuzz_factor=5&address_venue=Lincoln+Memorial&address_street_address=2+Lincoln+Memorial+Circle+NW&address_extra_information=Go+Up+The+Steps+And+Say+Hi+To+Abe&address_town=Washington+DC&address_county=DC&address_state=DC&address_postal_code=20037&address_nation=USA&tag8=HI&tag9=HOWAYA&child_ids=3,4,5,1470,1480,1490', Array('filepath' => dirname(dirname(__FILE__)).'/images/Lincoln-Memorial.jpg', 'type' => 'image/jpeg', 'name' => 'Lincoln-Memorial.jpg'), $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
