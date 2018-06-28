@@ -469,20 +469,28 @@ $start = microtime(true);
     
     \returns an associative array, with the "raw" response.
      */
-    protected function _process_place_get(  $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
-                                            $in_object_list = [],       ///< OPTIONAL: This function is worthless without at least one object. This will be an array of place objects, holding the places to examine.
-                                            $in_show_details = false,   ///< OPTIONAL: If true (default is false), then the resulting record will be returned in "detailed" format.
-                                            $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
-                                            $in_query = []              ///< OPTIONAL: The query parameters, as an associative array.
+    protected function _process_place_get(  $in_andisol_instance,           ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                            $in_object_list = [],           ///< OPTIONAL: This function is worthless without at least one object. This will be an array of place objects, holding the places to examine.
+                                            $in_show_details = false,       ///< OPTIONAL: If true (default is false), then the resulting record will be returned in "detailed" format.
+                                            $in_search_count_only = false,  ///< OPTIONAL: If true, then we are only looking for a single integer count.
+                                            $in_search_ids_only = false,    ///< OPTIONAL: If true, then we are going to return just an array of int (the IDs of the resources).
+                                            $in_path = [],                  ///< OPTIONAL: The REST path, as an array of strings.
+                                            $in_query = []                  ///< OPTIONAL: The query parameters, as an associative array.
                                         ) {
         $ret = [];
-        
-        if (isset($in_object_list) && is_array($in_object_list) && (0 < count($in_object_list))) {
-            foreach ($in_object_list as $place) {
-                if ($in_show_details) {
-                    $ret[] = $this->_get_long_place_description($place);
-                } else {
-                    $ret[] = $this->_get_short_description($place);
+    
+        if ($in_search_count_only) {
+            $ret['count'] = intval($in_object_list);
+        } elseif (isset($in_object_list) && is_array($in_object_list) && (0 < count($in_object_list))) {
+            if ($in_search_ids_only) {
+                $ret['ids'] = $in_object_list;
+            } else {
+                foreach ($in_object_list as $place) {
+                    if ($in_show_details) {
+                        $ret[] = $this->_get_long_place_description($place);
+                    } else {
+                        $ret[] = $this->_get_short_description($place);
+                    }
                 }
             }
         }
@@ -517,6 +525,10 @@ $start = microtime(true);
         } else {
             $show_details = isset($in_query) && is_array($in_query) && isset($in_query['show_details']);    // Show all places in detail (applies only to GET).
             $writeable = isset($in_query) && is_array($in_query) && isset($in_query['writeable']);          // Show/list only places this user can modify.
+            $search_count_only = isset($in_query) && is_array($in_query) && isset($in_query['search_count_only']);  // Ignored for discrete IDs. If true, then a simple "count" result is returned as an integer.
+            $search_ids_only = isset($in_query) && is_array($in_query) && isset($in_query['search_ids_only']);      // Ignored for discrete IDs. If true, then the response will be an array of integers, denoting resource IDs.
+            $search_page_size = isset($in_query) && is_array($in_query) && isset($in_query['search_page_size']) ? abs(intval($in_query['search_page_size'])) : 0;           // Ignored for discrete IDs. This is the size of a page of results (1-based result count. 0 is no page size).
+            $search_initial_page = isset($in_query) && is_array($in_query) && isset($in_query['search_initial_page']) ? abs(intval($in_query['search_initial_page'])) : 0;  // Ignored for discrete IDs, or if search_page_size is 0. The page we are interested in (0-based. 0 is the first page).
 
             // For the default (no place ID), we simply act on a list of all available places (or ones selected by a radius/long lat search).
             if (0 == count($in_path)) {
@@ -529,19 +541,19 @@ $start = microtime(true);
                 if (isset($radius) && isset($longitude) && isset($latitude)) {
                     $location_search = Array('radius' => $radius, 'longitude' => $longitude, 'latitude' => $latitude);
                 }
-            
+                
                 $class_search = Array('%_Place_Collection', 'use_like' => 1);
             
                 $search_array['access_class'] = $class_search;
-            
+                
                 if (isset($location_search)) {
                     $search_array['location'] = $location_search;
                 }
-
-                $placelist = $in_andisol_instance->generic_search($search_array, false, 0, 0, $writeable);
-            
+                
+                $placelist = $in_andisol_instance->generic_search($search_array, false, $search_page_size, $search_initial_page, $writeable, $search_count_only, $search_ids_only);
+                
                 if ('GET' == $in_http_method) {
-                    $ret = $this->_process_place_get($in_andisol_instance, $placelist, $show_details, $in_path, $in_query);
+                    $ret = $this->_process_place_get($in_andisol_instance, $placelist, $show_details, $search_count_only, $search_ids_only, $in_path, $in_query);
                 } elseif ('PUT' == $in_http_method) {
                     $ret = $this->_process_place_put($in_andisol_instance, $placelist, $in_path, $in_query);
                 } elseif ('DELETE' == $in_http_method) {
