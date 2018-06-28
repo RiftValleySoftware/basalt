@@ -41,7 +41,7 @@ function call_REST_API( $method,                /**< REQUIRED:  This is the meth
                                                                 - 'DELETE'  This means that the resource is to be deleted.
                                                 */
                         $url,                   ///< REQIRED:   This is the base URL for the call. It should include the entire URI, including query arguments.
-                        $data_file = NULL,      ///< OPTIONAL:  Default is NULL. This is a POSIX pathname to a file to be uploaded to the server, along with the URL. This will be Base64-encoded, so it is not necessary for it to be already encoded.
+                        $data_file = NULL,      ///< OPTIONAL:  Default is NULL. This is an associative array, containing a POSIX pathname, and a MIME type ("filepath" and "type") to a file to be uploaded to the server, along with the URL. This will be Base64-encoded, so it is not necessary for it to be already encoded.
                         $api_key = NULL,        ///< OPTIONAL:  Default is NULL. This is an API key from the BAOBAB server. It needs to be provided for any operation that requires user authentication.
                         &$httpCode = NULL,      ///< OPTIONAL:  Default is NULL. If provided, this has a reference to an integer data item that will be set to any HTTP response code.
                         $display_log = false    ///< OPTIONAL:  Default is false. If true, then the function will echo detailed debug information.
@@ -55,7 +55,7 @@ function call_REST_API( $method,                /**< REQUIRED:  This is the meth
     $file = NULL;               // This will be a file handle, for uploads.
     $content_type = NULL;       // This is used to signal the content-type for uploaded files.
     $file_size = 0;             // This is the size, in bytes, of uploaded files.
-    $temp_file_name = NULL;     // This is a temporary file that is used to hold files before they sent to the server.
+    $temp_file_name = NULL;     // This is a temporary file that is used to hold files before they are sent to the server.
     
     // If a file is provided by the caller, we read it into a temporary location, and Base64-encode it.
     if ($data_file) {
