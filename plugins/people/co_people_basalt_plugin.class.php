@@ -971,9 +971,11 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         }
                     }
                     
-                    // We unlock by setting the read security.
-                    $result = $user->set_read_security_id($mod_list['read_token']);
-                
+                    if ($result && isset($mod_list['read_token'])) {
+                        // We unlock by setting the read security.
+                        $result = $user->set_read_security_id($mod_list['read_token']);
+                    }
+                    
                     if ($result && $in_login_user) {
                         $login_instance = $user->get_login_instance();
                 
@@ -1366,7 +1368,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 }
                 
                 // Unlock by setting the read token.
-                if ($result) {
+                if ($result && isset($settings_list['read_token'])) {
                     $result = $user->set_read_security_id($settings_list['read_token']);
                 }
                 

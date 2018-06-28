@@ -14,6 +14,18 @@
 /// If __DISPLAY_BASICS__ is set to true, then the call_REST_API function will display the basic URI and API key as echos.
 define ('__DISPLAY_BASICS__', true);
 
+$config_file_path = dirname(__FILE__).'/test/config/s_config.class.php';
+
+date_default_timezone_set ( 'UTC' );
+
+define('LGV_CONFIG_CATCHER', 1);
+
+require_once($config_file_path);
+
+global $g_server_secret;
+
+$g_server_secret = CO_Config::server_secret();    // Get the server secret.
+    
 /****************************************************************************************************************************/
 /**
 This is the function that is used by the BASALT testing facility to make REST calls to the Greater Rift Valley BAOBAB server.
@@ -37,6 +49,8 @@ function call_REST_API( $method,                /**< REQUIRED:  This is the meth
     
     $method = strtoupper(trim($method));            // Make sure the method is always uppercase.
     
+    global $g_server_secret;
+
     // Initialize function local variables.
     $file = NULL;               // This will be a file handle, for uploads.
     $content_type = NULL;       // This is used to signal the content-type for uploaded files.
@@ -112,9 +126,9 @@ function call_REST_API( $method,                /**< REQUIRED:  This is the meth
     $server_secret = CO_Config::server_secret();    // Get the server secret.
     
     // Authentication. We provide the Server Secret and the API key here.
-    if (isset($server_secret) && isset($api_key)) {
+    if (isset($g_server_secret) && isset($api_key)) {
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($curl, CURLOPT_USERPWD, "$server_secret:$api_key");
+        curl_setopt($curl, CURLOPT_USERPWD, "$g_server_secret:$api_key");
     }
 
     curl_setopt($curl, CURLOPT_HEADER, false);          // Do not return any headers, please.
