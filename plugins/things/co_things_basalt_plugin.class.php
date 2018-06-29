@@ -36,6 +36,16 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     /***********************/
     /**
+    This returns an array of classnames, handled by this plugin.
+    
+    \returns an array of string, with the names of the classes handled by this plugin.
+     */
+    static public function classes_managed() {
+        return [];
+    }
+    
+    /***********************/
+    /**
     This runs our plugin command.
     
     \returns the HTTP response string, as either JSON or XML.

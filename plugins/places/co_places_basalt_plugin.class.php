@@ -124,11 +124,6 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $content_type = finfo_file($finfo, $temp_file);
             $ret['payload_type'] = $content_type.';base64';
         }
-
-        $child_objects = $this->_get_child_ids($in_place_object);
-        if (0 < count($child_objects)) {
-            $ret['child_ids'] = $child_objects;
-        }
         
         return $ret;
     }
@@ -550,6 +545,16 @@ $start = microtime(true);
     public function plugin_name() {
         return 'places';
     }
+    
+    /***********************/
+    /**
+    This returns an array of classnames, handled by this plugin.
+    
+    \returns an array of string, with the names of the classes handled by this plugin.
+     */
+    static public function classes_managed() {
+        return ['CO_Place_Collection', 'CO_US_Place_Collection', 'CO_Place', 'CO_US_Place', 'CO_LL_Location'];
+    }
         
     /***********************/
     /**
@@ -573,7 +578,7 @@ $start = microtime(true);
             $search_count_only = isset($in_query) && is_array($in_query) && isset($in_query['search_count_only']);  // Ignored for discrete IDs. If true, then a simple "count" result is returned as an integer.
             $search_ids_only = isset($in_query) && is_array($in_query) && isset($in_query['search_ids_only']);      // Ignored for discrete IDs. If true, then the response will be an array of integers, denoting resource IDs.
             $search_page_size = isset($in_query) && is_array($in_query) && isset($in_query['search_page_size']) ? abs(intval($in_query['search_page_size'])) : 0;           // Ignored for discrete IDs. This is the size of a page of results (1-based result count. 0 is no page size).
-            $search_initial_page = isset($in_query) && is_array($in_query) && isset($in_query['search_initial_page']) ? abs(intval($in_query['search_initial_page'])) : 0;  // Ignored for discrete IDs, or if search_page_size is 0. The page we are interested in (0-based. 0 is the first page).
+            $search_page_number = isset($in_query) && is_array($in_query) && isset($in_query['search_page_number']) ? abs(intval($in_query['search_page_number'])) : 0;  // Ignored for discrete IDs, or if search_page_size is 0. The page we are interested in (0-based. 0 is the first page).
 
             // For the default (no place ID), we simply act on a list of all available places (or ones selected by a radius/long lat search).
             if (0 == count($in_path)) {
@@ -612,7 +617,7 @@ $start = microtime(true);
                     $search_array['location'] = $location_search;
                 }
                 
-                $placelist = $in_andisol_instance->generic_search($search_array, false, $search_page_size, $search_initial_page, $writeable, $search_count_only, $search_ids_only);
+                $placelist = $in_andisol_instance->generic_search($search_array, false, $search_page_size, $search_page_number, $writeable, $search_count_only, $search_ids_only);
                 
                 if ('GET' == $in_http_method) {
                     $ret = $this->_process_place_get($in_andisol_instance, $placelist, $show_details, $search_count_only, $search_ids_only, $in_path, $in_query);
@@ -622,7 +627,7 @@ $start = microtime(true);
                     $ret = $this->_process_place_delete($in_andisol_instance, $placelist, $in_path, $in_query);
                 }
                 
-                if ($location_search) {
+                if ($location_search && !$search_count_only) {
                     $ret['search_location'] = $location_search;
                 }
             } else {

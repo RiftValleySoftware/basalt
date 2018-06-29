@@ -112,11 +112,11 @@ abstract class A_CO_Basalt_Plugin {
         $read_item = intval($in_object->read_security_id);
         $write_item = intval($in_object->write_security_id);
         
-        if ((2 > $read_item) || in_array($read_item, $my_ids)) {
+        if (((2 > $read_item) || in_array($read_item, $my_ids)) && count($my_ids)) {
             $ret['read_token'] = $read_item;
         }
         
-        if ((2 > $read_item) || in_array($write_item, $my_ids)) {
+        if ((2 > $read_item) || in_array($write_item, $my_ids) && count($my_ids)) {
             $ret['write_token'] = $write_item;
         }
         
@@ -130,6 +130,11 @@ abstract class A_CO_Basalt_Plugin {
         
         if (method_exists($in_object, 'owner_id') && (0 < $in_object->owner_id())) {
             $ret['owner_id'] = $in_object->owner_id();
+        }
+        
+        $child_objects = $this->_get_child_ids($in_object);
+        if (0 < count($child_objects)) {
+            $ret['children'] = $this->_get_child_handler_data($in_object);
         }
         
         return $ret;
@@ -169,7 +174,7 @@ abstract class A_CO_Basalt_Plugin {
     
     \returns XML, containing the schema for this plugin's responses. The schema needs to be comprehensive.
      */
-    protected function _process_xsd(    $in_schema_file_path    ///< The file path (POSIX) to the schema file to process.
+    protected function _process_xsd(    $in_schema_file_path    ///< REQUIRED: The file path (POSIX) to the schema file to process.
                                     ) {
         $ret = '';
         
@@ -213,12 +218,70 @@ abstract class A_CO_Basalt_Plugin {
     
     \returns an empty array if no children (or the object is not a collection), or an array of integers (each being the Data database ID of a child object).
      */
-    protected function _get_child_ids(  $in_object  ///< This is the object we are testing.
+    protected function _get_child_ids(  $in_object  ///< REQUIRED: This is the object we are testing.
                                     ) {
         $ret = [];
         
         if (method_exists($in_object, 'children') && (0 < $in_object->count())) {
             $ret = $in_object->children_ids();
+        }
+        
+        return $ret;
+    }
+    
+    /***********************/
+    /**
+    This returns any handler for the presented class.
+    
+    \returns a string, with the plugin name that handles the given class.
+     */
+    static protected function _get_handler( $in_classname   ///< REQUIRED: The name of the class we are querying for a handler.
+                                            ) {
+        $plugin_dirs = CO_Config::plugin_dirs();
+        
+        foreach ($plugin_dirs as $plugin_dir) {
+            if (isset($plugin_dir) && is_dir($plugin_dir)) {
+                $plugin_name = basename($plugin_dir);
+                $plugin_classname = 'CO_'.$plugin_name.'_Basalt_Plugin';
+                $plugin_filename = strtolower($plugin_classname).'.class.php';
+                $plugin_file = $plugin_dir.'/'.$plugin_filename;
+                include_once($plugin_file);
+                $class_list = $plugin_classname::classes_managed();
+                if (in_array($in_classname, $class_list)) {
+                    return $plugin_name;
+                }
+            }
+        }
+        
+        return NULL;
+    }
+    
+    /***********************/
+    /**
+    This returns a list of handler plugins for each of the child IDs of a collection object.
+    
+    \returns an associative array, with the key being the handler, and each ID being part of a sub-array, under that key. NULL, if the object is not a collection, or has no children.
+     */
+    protected function _get_child_handler_data( $in_object  ///< REQUIRED: This is the object we are testing.
+                                                ) {
+        $ret = [];
+        
+        $id_list = $this->_get_child_ids($in_object);
+        $access_object = $in_object->get_access_object();
+        
+        if (isset($access_object) && is_array($id_list) && count($id_list)) {
+            foreach ($id_list as $id) {
+                $instance = $access_object->get_single_data_record_by_id($id);
+                
+                if (isset($instance) && ($instance instanceof CO_Main_DB_Record)) {
+                    $class_name = get_class($instance);
+                    
+                    if ($class_name) {
+                        $handler = self::_get_handler($class_name);
+                        $ret[$handler][] = $id;
+                    }
+                }
+            }
         }
         
         return $ret;
@@ -237,7 +300,15 @@ abstract class A_CO_Basalt_Plugin {
         
     /***********************/
     /**
-    This runs our plugin name.
+    This returns an array of classnames, handled by this plugin.
+    
+    \returns an array of string, with the names of the classes handled by this plugin.
+     */
+    abstract static public function classes_managed();
+        
+    /***********************/
+    /**
+    This returns our plugin name.
     
     \returns a string, with our plugin name.
      */

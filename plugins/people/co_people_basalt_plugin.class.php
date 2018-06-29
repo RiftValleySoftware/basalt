@@ -130,11 +130,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $ret['payload_type'] = $content_type.';base64';
         }
         
-        $child_objects = $this->_get_child_ids($in_user_object);
-        if (0 < count($child_objects)) {
-            $ret['children_ids'] = $child_objects;
-        }
-        
         if ($in_with_login_info) {
             $login_instance = $in_user_object->get_login_instance();
             if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {
@@ -1685,6 +1680,16 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
      */
     public function plugin_name() {
         return 'people';
+    }
+    
+    /***********************/
+    /**
+    This returns an array of classnames, handled by this plugin.
+    
+    \returns an array of string, with the names of the classes handled by this plugin.
+     */
+    static public function classes_managed() {
+        return ['CO_User_Collection', 'CO_Login_Manager', 'CO_Cobra_login', 'CO_Security_Login'];
     }
     
     /***********************/

@@ -175,7 +175,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                                 // See if they have sent any data to us via the standard HTTP channel (PUT).
                                 $put_data = fopen('php://input', 'r');
                                 if (isset($put_data) && $put_data) {
-                                    while ($data = fread($put_data, 1024)) {    // Read it in 1K chunks.
+                                    while ($data = fread($put_data, 2048)) {    // Read it in 2K chunks.
                                         $file_data .= $data;
                                     }
                                     fclose($put_data);
@@ -484,14 +484,6 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
     
     /***********************/
     /**
-    \returns a string, with our plugin name.
-     */
-    public function plugin_name() {
-        return _PLUGIN_NAME_;
-    }
-    
-    /***********************/
-    /**
     \returns an array of strings, all lowercase, with the names of all the plugins used by BASALT.
      */
     public function get_plugin_names() {
@@ -514,6 +506,24 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
      */
     public function logged_in() {
         return isset($this->_andisol_instance) ? $this->_andisol_instance->logged_in() : false;
+    }
+        
+    /***********************/
+    /**
+    \returns a string, with our plugin name.
+     */
+    public function plugin_name() {
+        return _PLUGIN_NAME_;
+    }
+    
+    /***********************/
+    /**
+    This returns an array of classnames, handled by this plugin.
+    
+    \returns an array of string, with the names of the classes handled by this plugin.
+     */
+    static public function classes_managed() {
+        return [];
     }
     
     /***********************/

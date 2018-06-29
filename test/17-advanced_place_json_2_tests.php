@@ -237,13 +237,13 @@ function basalt_test_0141($in_login = NULL, $in_hashed_password = NULL, $in_pass
     $current_page = 0;
     echo('<h3>Next, Paginate in Pages of Twenty:</h3>');
     do {
-        $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_page_size='.$page_size.'&search_initial_page='.$current_page, NULL, NULL, $result_code);
+        $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_page_size='.$page_size.'&search_page_number='.$current_page, NULL, NULL, $result_code);
         if (isset($result_code) && $result_code && (200 != $result_code)) {
             echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
             break;
         } else {
             $places = json_decode($result)->places;
-            if (!count($places)) {
+            if (!isset($places) || !is_array($places) || !count($places)) {
                 break;
             } else {
                 echo('<div  style="text-align:left;display:table"><div id="test_0141_results_1_'.$current_page.'div" class="inner_closed">');
@@ -261,13 +261,13 @@ function basalt_test_0141($in_login = NULL, $in_hashed_password = NULL, $in_pass
     $current_page = 0;
     echo('<h3>Do it again, but this time with a location/radius search:</h3>');
     do {
-        $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_radius=10&search_longitude=-77.063776&search_latitude=38.894926&search_page_size='.$page_size.'&search_initial_page='.$current_page, NULL, NULL, $result_code);
+        $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_radius=10&search_longitude=-77.063776&search_latitude=38.894926&search_page_size='.$page_size.'&search_page_number='.$current_page, NULL, NULL, $result_code);
         if (isset($result_code) && $result_code && (200 != $result_code)) {
             echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
             break;
         } else {
             $places = json_decode($result)->places;
-            if (!count($places)) {
+            if (!isset($places) || !is_array($places) || !count($places)) {
                 break;
             } else {
                 echo('<div  style="text-align:left;display:table"><div id="test_0141_results_2_'.$current_page.'div" class="inner_closed">');
@@ -302,7 +302,7 @@ function basalt_test_0142($in_login = NULL, $in_hashed_password = NULL, $in_pass
     $current_page = 0;
     echo('<h3>Next, Paginate in Pages of Twenty:</h3>');
     do {
-        $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_count_only&search_page_size='.$page_size.'&search_initial_page='.$current_page, NULL, NULL, $result_code);
+        $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_count_only&search_page_size='.$page_size.'&search_page_number='.$current_page, NULL, NULL, $result_code);
         if (isset($result_code) && $result_code && (200 != $result_code)) {
             echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
             break;
@@ -321,7 +321,7 @@ function basalt_test_0142($in_login = NULL, $in_hashed_password = NULL, $in_pass
     $current_page = 0;
     echo('<h3>Do it again, but this time with a location/radius search:</h3>');
     do {
-        $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_count_only&search_radius=10&search_longitude=-77.063776&search_latitude=38.894926&search_page_size='.$page_size.'&search_initial_page='.$current_page, NULL, NULL, $result_code);
+        $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_count_only&search_radius=10&search_longitude=-77.063776&search_latitude=38.894926&search_page_size='.$page_size.'&search_page_number='.$current_page, NULL, NULL, $result_code);
         if (isset($result_code) && $result_code && (200 != $result_code)) {
             echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
             break;
@@ -363,13 +363,16 @@ function basalt_test_0143($in_login = NULL, $in_hashed_password = NULL, $in_pass
     $current_page = 0;
     echo('<h3>Next, Paginate in Pages of Twenty:</h3>');
     do {
-        $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_ids_only&search_page_size='.$page_size.'&search_initial_page='.$current_page, NULL, NULL, $result_code);
+        $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_ids_only&search_page_size='.$page_size.'&search_page_number='.$current_page, NULL, NULL, $result_code);
         if (isset($result_code) && $result_code && (200 != $result_code)) {
             echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
             break;
         } else {
-            $places = json_decode($result)->places->ids;
-            if (!count($places)) {
+            $places = json_decode($result)->places;
+            if (isset($places->ids)) {
+                $places = $places->ids;
+            }
+            if (!isset($places) || !is_array($places) || !count($places)) {
                 break;
             } else {
                 echo('<div  style="text-align:left;display:table"><div id="test_0143_results_1_'.$current_page.'div" class="inner_closed">');
@@ -387,13 +390,16 @@ function basalt_test_0143($in_login = NULL, $in_hashed_password = NULL, $in_pass
     $current_page = 0;
     echo('<h3>Do it again, but this time with a location/radius search:</h3>');
     do {
-        $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_ids_only&search_radius=10&search_longitude=-77.063776&search_latitude=38.894926&search_page_size='.$page_size.'&search_initial_page='.$current_page, NULL, NULL, $result_code);
+        $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_ids_only&search_radius=10&search_longitude=-77.063776&search_latitude=38.894926&search_page_size='.$page_size.'&search_page_number='.$current_page, NULL, NULL, $result_code);
         if (isset($result_code) && $result_code && (200 != $result_code)) {
             echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
             break;
         } else {
-            $places = json_decode($result)->places->ids;
-            if (!count($places)) {
+            $places = json_decode($result)->places;
+            if (isset($places->ids)) {
+                $places = $places->ids;
+            }
+            if (!isset($places) || !is_array($places) || !count($places)) {
                 break;
             } else {
                 echo('<div  style="text-align:left;display:table"><div id="test_0143_results_2_'.$current_page.'div" class="inner_closed">');

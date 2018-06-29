@@ -1,15 +1,21 @@
-<h1 class="rest_api_doc-h1" id="BAOBAB-REST-Plugin-People">People REST API Plugin</h1>
+<h1 class="rest_api_doc-h1" id="BAOBAB-REST-Plugin-people">People REST API Plugin</h1>
 <h2 class="rest_api_doc-h2">Basic Access and Control of User and Login Data on the BAOBAB Server</h2>
 <header class="doc_toc-header rest_api_doc_div-people" id="02-people-toc">
     <div class="wrap-toc-div">
         <ul class="toc-ul">
-            <li><a href="#01-people-structure">BASIC URI STRUCTURE</a></li>
+            <li><a href="#01-people-structure">BASIC URI STRUCTURE</a><ul class="toc-ul">
+                <li><a href="#01-people-structure-main-resources">Main Resource Directories</a><ul class="toc-ul">
+                    <li><a href="#01-people-structure-main-resources-people">people</a></li>
+                    <li><a href="#01-people-structure-main-resources-logins">logins</a></li>
+                </ul></li>
+            </ul></li>
             <li><a href="#02-people-directories">DIRECTORIES</a><ul class="toc-ul">
                 <li><a href="#02-people-directories-open">Open Query (No IDs Specified)</a></li>
                 <li><a href="#02-people-directories-people">people</a></li>
                 <li><a href="#02-people-directories-logins">logins</a></li>
             </ul></li>
             <li><a href="#03-people-query">QUERY ARGUMENTS</a><ul class="toc-ul">
+                <li><a href="#03-people-query-writeable">writeable</a></li>
                 <li><a href="#03-people-query-show-details">show_details</a><ul class="toc-ul">
                     <li><a href="#03-people-query-show-details-json">JSON</a></li>
                     <li><a href="#03-people-query-show_details-xml">XML</a></li>
@@ -51,21 +57,22 @@
     </div>
 </header>
 <div class=" class="rest_api_doc-main-content">
-    <header class="uri_structure-header rest_api_doc_div-people" id="01-people-structure">
-        <h3 class="rest_api_doc-h3">BASIC URI STRUCTURE</h3>
+    <header class="uri_structure-header rest_api_doc_div-people">
+        <h3 class="rest_api_doc-h3" id="01-people-structure">BASIC URI STRUCTURE</h3>
         <h4 class="rest_api_doc-h3">Plugin Name</h4>
         <p class="main_doc-p">The plugin name is "<code><span class="uri_plugin-span">people</span></code>", all lowercase:</p>
         <div class="uri_display-div">
             <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin-span">/people</span></code>
         </div>
         <p class="main_doc-p">You access the plugin functionality by placing the plugin name immediately following the response type in the REST URI.</p>
-        <h4 class="rest_api_doc-h3">Main Resource Directories</h4>
-        <p class="main_doc-p">There are two possible main resource directories.</p>
-        <p class="main_doc-p">People:</p>
+
+        <h4 class="rest_api_doc-h3" id="01-people-structure-main-resources">Main Resource Directories</h4>
+        <p class="main_doc-p">There are two possible main resource directories:</p>
+        <p class="main_doc-p" id="01-people-structure-main-resources-people">People:</p>
         <div class="uri_display-div">
             <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory-span">/people</span></code>
         </div>
-        <p class="main_doc-p">and Logins:</p>
+        <p class="main_doc-p" id="01-people-structure-main-resources-logins">and Logins:</p>
         <div class="uri_display-div">
             <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory-span">/logins</span></code>
         </div>
@@ -110,11 +117,17 @@
         <h3 class="rest_api_doc-h3">QUERY ARGUMENTS</h3>
         <h4 class="rest_api_doc-h4">Resource Selection Arguments</h4>
         <p class="main_doc-p">These arguments apply to GET, PUT and DELETE.</p>
+        <h5 class="rest_api_doc-h5" id="03-people-query-writeable">writeable</h5>
+        <p class="main_doc-p">This only applies if you are logged into the BAOBAB server. If you specify this (no value required), then the resulting list will consist only of records to which your logged-in user has modification permissions:</p>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory_lite-span">/people</span><span class="uri_subdirectory_lite-span"><span class="uri_subdirectory_lite-span">/&lt;SUBDIRECTORY&gt;</span><span class="uri_query-span">?writeable</span></code>
+            <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory_lite-span">/logins</span><span class="uri_subdirectory_lite-span"><span class="uri_subdirectory_lite-span">/&lt;SUBDIRECTORY&gt;</span><span class="uri_query-span">?writeable</span></code>
+        </div>
         <h5 class="rest_api_doc-h5" id="03-people-query-show-details">show_details</h5>
         <p class="main_doc-p">If you apply this to GET commands, the returned resources will be in 'expanded' format, with a great deal of information. This will not apply to the "<code>my_info</code>" subdirectory, which is already returned in 'expanded' format.</p>
         <div class="uri_display-div">
             <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory_lite-span">/people</span><span class="uri_subdirectory_lite-span">/&lt;SUBDIRECTORY&gt;</span><span class="uri_query-span">?show_details</span></code>
-            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/logins</span><span class="uri_directory_lite-span">/people</span><span class="uri_subdirectory_lite-span">/&lt;SUBDIRECTORY&gt;</span><span class="uri_query-span">?show_details</span></code>
+            <code class="uri-code"><span class="uri_protocol_lite-span">http[s]://</span><span class="uri_server_lite-span">&lt;YOUR SERVER NAME&gt;</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/people</span><span class="uri_directory_lite-span">/logins</span><span class="uri_subdirectory_lite-span">/&lt;SUBDIRECTORY&gt;</span><span class="uri_query-span">?show_details</span></code>
         </div>
         <p class="main_doc-p">These will result in responses similar to these (Note that the order of the response data follows the requests):</p>
         <h4 class="rest_api_doc-h4" id="03-people-query-show-details-json">JSON:</h4>
