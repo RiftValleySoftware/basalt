@@ -105,6 +105,17 @@ class CO_Config {
     */
     static $google_api_key = 'AIzaSyAPCtPBLI24J6qSpkpjngXAJtp8bhzKzK8';
     
+    /**
+    This flag, if set to true (default is false), will allow REST users to send in an address as part of a location search.
+    This is ignored, if there is no $google_api_key. It should be noted that each address lookup does count against the API key quota, so that should be considered
+    before enabling this functionality.
+    
+    If enabled, REST users will be able to send in a 'search_address_lookup=' (instead of 'search_longitude=' and 'search_latitude=') query parameter, as well as a 'search_radius=' parameter.
+    */
+    static $allow_address_lookup = true;    
+    static $allow_general_address_lookup = true;    ///< If true (default is false), then just anyone (login not required) can do an address lookup. If false, then only logged-in users can do an address lookup. Ignored if $allow_address_lookup is false.
+    static $default_region_bias = '';       ///< A default server Region bias.
+    
     /***********************/
     /**
     \returns the POSIX path to the main BASALT directory.

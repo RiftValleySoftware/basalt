@@ -13,11 +13,44 @@
 */
 defined( 'LGV_BASALT_CATCHER' ) or die ( 'Cannot Execute Directly' );	// Makes sure that this file is in the correct context.
 
+define('LGV_CHAMELEON_UTILS_CATCHER', 1);
+
+require_once(CO_Config::chameleon_main_class_dir().'/co_chameleon_utils.class.php');
+
 /****************************************************************************************************************************/
 /**
 This is a REST plugin that allows access to places (locations).
  */
 class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
+    /***********************/
+    /**
+    This static protected method will allow us to do a Google lookup of an address, and return a long/lat.
+    
+    \returns an associative array of floats ("longitude" and "latitude"). NULL, if lookup failed.
+     */
+    static protected function _lookup_address(  $in_address_string,     ///< The address to look up, in a single string (Google will do its best to parse the string).
+                                                $in_region_bias = NULL  ///< Any region bias (like "us" or "sv"). Max. 3 characters.
+                                                ) {
+        if (isset(CO_Config::$allow_address_lookup) && CO_Config::$allow_address_lookup && CO_Config::$google_api_key) {
+            $in_address_string = urlencode($in_address_string);
+            $in_region_bias = urlencode(strtolower(trim(substr($in_region_bias, 0, 3))));
+            $bias = (NULL != $in_region_bias) ? 'region='.$in_region_bias.'&' : '';
+            $http_status = '';
+            $error_catcher = '';
+        
+            $uri = 'https://maps.googleapis.com/maps/api/geocode/json?'.$bias.'key='.CO_Config::$google_api_key.'&address='.$in_address_string;
+        
+            $resulting_json = json_decode(CO_Chameleon_Utils::call_curl($uri, false, $http_status, $error_catcher));
+            if (isset($resulting_json) && $resulting_json &&isset($resulting_json->results) && is_array($resulting_json->results) && count($resulting_json->results)) {
+                if (isset($resulting_json->results[0]->geometry) && isset($resulting_json->results[0]->geometry->location) && isset($resulting_json->results[0]->geometry->location->lng) && isset($resulting_json->results[0]->geometry->location->lat)) {
+                    return Array( 'longitude' => floatval($resulting_json->results[0]->geometry->location->lng), 'latitude' => floatval($resulting_json->results[0]->geometry->location->lat));
+                }
+            }
+        }
+        
+        return NULL;
+    }
+    
     /***********************/
     /**
     This returns a fairly short summary of the place.
@@ -547,7 +580,24 @@ $start = microtime(true);
                 $radius = isset($in_query) && is_array($in_query) && isset($in_query['search_radius']) && (0.0 < floatval($in_query['search_radius'])) ? floatval($in_query['search_radius']) : NULL;
                 $longitude = isset($in_query) && is_array($in_query) && isset($in_query['search_longitude']) ? floatval($in_query['search_longitude']) : NULL;
                 $latitude = isset($in_query) && is_array($in_query) && isset($in_query['search_latitude']) ? floatval($in_query['search_latitude']) : NULL;
-            
+                $search_region_bias = isset($in_query) && is_array($in_query) && isset($in_query['search_region_bias']) ? strtolower(trim($search_region_bias)) : CO_Config::$default_region_bias;  // This is a region bias for an address lookup. Ignored if search_address is not specified.
+                
+                // Long/lat trumps an address.
+                // If we have an address, and no long/lat, we see if we can do a lookup.
+                if (isset(CO_Config::$allow_address_lookup) && CO_Config::$allow_address_lookup && CO_Config::$google_api_key) {
+                    $address =  isset($in_query) && is_array($in_query) && isset($in_query['search_address']) && trim($in_query['search_address']) ? trim($in_query['search_address']) : NULL;
+                    if (isset($address) && $address && !(isset($longitude) && isset($latitude))) {
+                        if (CO_Config::$allow_general_address_lookup || $in_andisol_instance->logged_in()) {
+                            $result = self::_lookup_address($address, $search_region_bias);
+                    
+                            if ($result && is_array($result) && (1 < count($result))) {
+                                $longitude = $result['longitude'];
+                                $latitude = $result['latitude'];
+                            }
+                        }
+                    }
+                }
+                
                 $location_search = NULL;
             
                 if (isset($radius) && isset($longitude) && isset($latitude)) {

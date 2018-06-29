@@ -15,7 +15,7 @@
 
 require_once(dirname(dirname(__FILE__)).'/run_basalt_tests.php');
 
-basalt_run_tests(135, 'ADVANCED JSON PLACES TESTS PART 2', 'Verify POST and DELETE.');
+basalt_run_tests(135, 'ADVANCED JSON PLACES TESTS PART 2', 'Verify POST, DELETE and Special Functions.');
 
 // -------------------------- DEFINITIONS AND TESTS -----------------------------------
 
@@ -406,5 +406,21 @@ function basalt_test_0143($in_login = NULL, $in_hashed_password = NULL, $in_pass
             }
         }
     } while ($current_page < 1000);
+}
+
+// --------------------
+
+function basalt_test_define_0144() {
+    basalt_run_single_direct_test(144, 'PASS: Do An Address Lookup Radius Search', 'We don\'t log in, and do a search, based on a string address (the White House).', 'dc_area_tests');
+}
+
+function basalt_test_0144($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_radius=10&search_address=1600+Pennsylvania+Avenue,+Washington+DC', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
 }
 ?>
