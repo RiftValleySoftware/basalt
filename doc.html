@@ -1,6 +1,6 @@
-<h1 class="rest_api_doc-h1">BAOBAB REST API </h1>
+<h1 class="rest_api_doc-h1" id="BAOBAB-REST">BAOBAB REST API </h1>
 <h2 class="rest_api_doc-h2">Basic Access and Control of the BAOBAB Server</h2>
-<header class="doc_toc-header rest_api_doc_div-people" id="00-people-toc">
+<header class="doc_toc-header rest_api_doc_div-people" id="00-main-toc">
     <div class="wrap-toc-div">
         <ul class="toc-ul">
             <li><a href="#main_overview_header-overview">OVERVIEW</a></li>
@@ -44,7 +44,7 @@
         <p class="main_doc-p">As a result of this, BAOBAB REST commands may seem "over-simple." This is deliberate.</p>
         
         <h3 class="rest_api_doc-h3" id="main_overview_rest-like">RESTLIKE, NOT RESTFUL</h3>
-        <p class="main_doc-p">Although we will be referring to this API as a "REST API," it is not actually a true REST API. This is because of the way that the POST and PUT methods are treated. Instead of accepting full copies of entire data elements in JSON or XML, these methods allow partial specification of these elements as format-neutral URI query arguments and inline/form data transfer (sort of like <a href="https://en.wikipedia.org/wiki/Patch_verb">REST PATCH</a>, but different -PATCH is actually a specification for "pseudo-scripting," and we don't do that). Most of the "heavy lifting" in the BAOBAB REST API is done in query parameters, as opposed to resource locations.</p>
+        <p class="main_doc-p">Although we will be referring to this API as a "REST API," it is not actually a true REST API. This is because of the way that the POST and PUT methods are treated. Instead of accepting full copies of entire data elements in JSON or XML, these methods allow partial specification of these elements as format-neutral URI query arguments and inline/form data transfer. Most of the "heavy lifting" in the BAOBAB REST API is done in query parameters, as opposed to resource locations.</p>
         <p class="main_doc-p">In most other aspects, the API follows REST structure and protocol for implementation of <a href="https://en.wikipedia.org/wiki/Create,_read,_update_and_delete">CRUD</a> functionality. Interactions are atomic and stateless, and GET interactions are never used to affect data; only to fetch it.</p>
         <p class="main_doc-p">This is far more efficient than "classic" REST. As this is a private API for internal use, restricted to the BAOBAB server; this is fine. The true exposed API is really meant to be the SDKs that form the "outer boundary" of the Application Layer.</p>
         
