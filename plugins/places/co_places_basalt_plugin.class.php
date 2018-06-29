@@ -621,6 +621,10 @@ $start = microtime(true);
                 } elseif ('DELETE' == $in_http_method) {
                     $ret = $this->_process_place_delete($in_andisol_instance, $placelist, $in_path, $in_query);
                 }
+                
+                if ($location_search) {
+                    $ret['search_location'] = $location_search;
+                }
             } else {
                 $main_command = $in_path[0];    // Get the main command.
         
