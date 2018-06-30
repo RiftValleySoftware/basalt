@@ -224,7 +224,7 @@ function basalt_test_0141($in_login = NULL, $in_hashed_password = NULL, $in_pass
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
-        $places = json_decode($result)->places;
+        $places = json_decode($result)->places->results;
         echo('<div  style="text-align:left;display:table"><div id="test_0141_results_1_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0141_results_1_div\')" style="font-weight:bold">The Whole Enchilada ('.count($places).'):</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -242,7 +242,7 @@ function basalt_test_0141($in_login = NULL, $in_hashed_password = NULL, $in_pass
             echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
             break;
         } else {
-            $places = json_decode($result)->places;
+            $places = json_decode($result)->places->results;
             if (!isset($places) || !is_array($places) || !count($places)) {
                 break;
             } else {
@@ -266,7 +266,7 @@ function basalt_test_0141($in_login = NULL, $in_hashed_password = NULL, $in_pass
             echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
             break;
         } else {
-            $places = json_decode($result)->places;
+            $places = json_decode($result)->places->results;
             if (!isset($places) || !is_array($places) || !count($places)) {
                 break;
             } else {
@@ -307,7 +307,7 @@ function basalt_test_0142($in_login = NULL, $in_hashed_password = NULL, $in_pass
             echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
             break;
         } else {
-            $places = json_decode($result)->places;
+            $places = json_decode($result)->places->results;
             if (!isset($places) || !isset($places->count) || !intval($places->count)) {
                 break;
             } else {
@@ -326,7 +326,7 @@ function basalt_test_0142($in_login = NULL, $in_hashed_password = NULL, $in_pass
             echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
             break;
         } else {
-            $places = json_decode($result)->places;
+            $places = json_decode($result)->places->results;
             if (!isset($places) || !isset($places->count) || !intval($places->count)) {
                 break;
             } else {
@@ -350,7 +350,7 @@ function basalt_test_0143($in_login = NULL, $in_hashed_password = NULL, $in_pass
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
-        $places = json_decode($result)->places->ids;
+        $places = json_decode($result)->places->results->ids;
         echo('<div  style="text-align:left;display:table"><div id="test_0143_results_1_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0143_results_1_div\')" style="font-weight:bold">The Whole Enchilada ('.count($places).'):</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -368,7 +368,7 @@ function basalt_test_0143($in_login = NULL, $in_hashed_password = NULL, $in_pass
             echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
             break;
         } else {
-            $places = json_decode($result)->places;
+            $places = json_decode($result)->places->results;
             if (isset($places->ids)) {
                 $places = $places->ids;
             }
@@ -395,7 +395,7 @@ function basalt_test_0143($in_login = NULL, $in_hashed_password = NULL, $in_pass
             echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
             break;
         } else {
-            $places = json_decode($result)->places;
+            $places = json_decode($result)->places->results;
             if (isset($places->ids)) {
                 $places = $places->ids;
             }

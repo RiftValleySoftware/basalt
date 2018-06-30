@@ -39,7 +39,7 @@ function basalt_test_0117($in_login = NULL, $in_hashed_password = NULL, $in_pass
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
-        $places = json_decode($result)->places;
+        $places = json_decode($result)->places->results;
         
         $modify_these = [];
         
@@ -80,7 +80,7 @@ function basalt_test_0117($in_login = NULL, $in_hashed_password = NULL, $in_pass
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
-        $places = json_decode($result)->places;
+        $places = json_decode($result)->places->results;
         
         $modify_these = [];
         
@@ -121,7 +121,7 @@ function basalt_test_0117($in_login = NULL, $in_hashed_password = NULL, $in_pass
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
-        $places = json_decode($result)->places;
+        $places = json_decode($result)->places->results;
         
         $modify_these = [];
         
@@ -162,7 +162,7 @@ function basalt_test_0117($in_login = NULL, $in_hashed_password = NULL, $in_pass
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
-        $places = json_decode($result)->places;
+        $places = json_decode($result)->places->results;
         
         $modify_these = [];
         
@@ -203,7 +203,7 @@ function basalt_test_0117($in_login = NULL, $in_hashed_password = NULL, $in_pass
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
-        $places = json_decode($result)->places;
+        $places = json_decode($result)->places->results;
         
         $modify_these = [];
         
@@ -237,7 +237,7 @@ function basalt_test_0117($in_login = NULL, $in_hashed_password = NULL, $in_pass
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
-        $places = json_decode($result)->places;
+        $places = json_decode($result)->places->results;
         echo('<div  style="text-align:left;display:table"><div id="test_0117_result_no_login_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0117_result_no_login_record_div\')" style="font-weight:bold">'.count($places).' places are available:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -258,7 +258,7 @@ function basalt_test_0117($in_login = NULL, $in_hashed_password = NULL, $in_pass
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
-        $places = json_decode($result)->places;
+        $places = json_decode($result)->places->results;
         echo('<div  style="text-align:left;display:table"><div id="test_0117_result_MD_login_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0117_result_MD_login_record_div\')" style="font-weight:bold">'.count($places).' places are available:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -281,7 +281,7 @@ function basalt_test_0117($in_login = NULL, $in_hashed_password = NULL, $in_pass
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
-        $places = json_decode($result)->places;
+        $places = json_decode($result)->places->results;
         echo('<div  style="text-align:left;display:table"><div id="test_0117_result_DC_login_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0117_result_DC_login_record_div\')" style="font-weight:bold">'.count($places).' places are available:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -304,7 +304,7 @@ function basalt_test_0117($in_login = NULL, $in_hashed_password = NULL, $in_pass
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
-        $places = json_decode($result)->places;
+        $places = json_decode($result)->places->results;
         echo('<div  style="text-align:left;display:table"><div id="test_0117_result_VA_login_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0117_result_VA_login_record_div\')" style="font-weight:bold">'.count($places).' places are available:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -327,7 +327,7 @@ function basalt_test_0117($in_login = NULL, $in_hashed_password = NULL, $in_pass
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
-        $places = json_decode($result)->places;
+        $places = json_decode($result)->places->results;
         echo('<div  style="text-align:left;display:table"><div id="test_0117_result_WVA_login_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0117_result_WVA_login_record_div\')" style="font-weight:bold">'.count($places).' places are available:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -350,7 +350,7 @@ function basalt_test_0117($in_login = NULL, $in_hashed_password = NULL, $in_pass
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
-        $places = json_decode($result)->places;
+        $places = json_decode($result)->places->results;
         echo('<div  style="text-align:left;display:table"><div id="test_0117_result_DE_login_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0117_result_DE_login_record_div\')" style="font-weight:bold">'.count($places).' places are available:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -373,7 +373,7 @@ function basalt_test_0117($in_login = NULL, $in_hashed_password = NULL, $in_pass
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
-        $places = json_decode($result)->places;
+        $places = json_decode($result)->places->results;
         echo('<div  style="text-align:left;display:table"><div id="test_0117_result_main_login_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0117_result_main_login_record_div\')" style="font-weight:bold">'.count($places).' places are available:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -412,12 +412,12 @@ function basalt_test_0118($in_login = NULL, $in_hashed_password = NULL, $in_pass
     echo('<p style="color:green">Trying ID List for '.$id_key.'. The numbers should all be different.</p>');
     foreach ($fuzzed_ids[$id_key] as $id) {
         for ($try = 0; $try < 3; $try++) {
-            $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/'.$id, NULL, $api_result, $result_code, true);
+            $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/'.$id, NULL, $api_result, $result_code);
             if (isset($result_code) && $result_code && (200 != $result_code)) {
                 echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
                 break;
             } else {
-                $place = json_decode($result)->places[0];
+                $place = json_decode($result)->places->results[0];
                 $places_try[$id][] = $place->coords;
             }
         }
@@ -435,7 +435,7 @@ function basalt_test_0118($in_login = NULL, $in_hashed_password = NULL, $in_pass
                 echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
                 break;
             } else {
-                $place = json_decode($result)->places[0];
+                $place = json_decode($result)->places->results[0];
                 $places_try[$id]['coords'][] = $place->coords;
                 if (isset($place->raw_latitude)) {
                     $places_try[$id]['real_coords'][] = $place->raw_latitude.','.$place->raw_longitude;
@@ -468,7 +468,7 @@ function basalt_test_0118($in_login = NULL, $in_hashed_password = NULL, $in_pass
                         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
                         break;
                     } else {
-                        $place = json_decode($result)->places[0];
+                        $place = json_decode($result)->places->results[0];
                         $places_try[$id]['coords'][] = $place->coords;
                         if (isset($place->raw_latitude)) {
                             $places_try[$id]['real_coords'][] = $place->raw_latitude.','.$place->raw_longitude;
@@ -585,7 +585,7 @@ function basalt_test_0124($in_login = NULL, $in_hashed_password = NULL, $in_pass
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
-        $places = json_decode($result)->places;
+        $places = json_decode($result)->places->results;
         echo('<div  style="text-align:left;display:table"><div id="test_0124_result_VA_login_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0124_result_VA_login_record_div\')" style="font-weight:bold">'.count($places).' places:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -646,7 +646,7 @@ function basalt_test_0124($in_login = NULL, $in_hashed_password = NULL, $in_pass
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
-        $places = json_decode($result)->places;
+        $places = json_decode($result)->places->results;
         echo('<div  style="text-align:left;display:table"><div id="test_0124_result_VA_login_record_2_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0124_result_VA_login_record_2_div\')" style="font-weight:bold">'.count($places).' places:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -677,7 +677,7 @@ function basalt_test_0125($in_login = NULL, $in_hashed_password = NULL, $in_pass
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
-        $places = json_decode($result)->places;
+        $places = json_decode($result)->places->results;
         echo('<div  style="text-align:left;display:table"><div id="test_0125_result_VA_login_1_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0125_result_VA_login_1_record_div\')" style="font-weight:bold">'.count($places).' places:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -691,7 +691,7 @@ function basalt_test_0125($in_login = NULL, $in_hashed_password = NULL, $in_pass
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
-        $places = json_decode($result)->places;
+        $places = json_decode($result)->places->results;
         echo('<div  style="text-align:left;display:table"><div id="test_0125_result_VA_login_2_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0125_result_VA_login_2_record_div\')" style="font-weight:bold">'.count($places).' places:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -719,7 +719,7 @@ function basalt_test_0125($in_login = NULL, $in_hashed_password = NULL, $in_pass
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
-        $places = json_decode($result)->places;
+        $places = json_decode($result)->places->results;
         echo('<div  style="text-align:left;display:table"><div id="test_0125_result_VA_login_4_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0125_result_VA_login_4_record_div\')" style="font-weight:bold">'.count($places).' places:</a></h3>');
             echo('<div class="main_div inner_container">');

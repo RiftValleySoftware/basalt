@@ -4,8 +4,14 @@
 
                 <xs:element minOccurs='0' name='count' type="xs:integer"/>
 
-                <xs:element minOccurs='0' maxOccurs='unbounded' name='value' type='b:place_structure'/>
-                
+                <xs:element minOccurs='0' name='results'>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element minOccurs='0' maxOccurs='unbounded' name='value' type='b:place_structure'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
                 <xs:element minOccurs='0' name='search_location'>
                     <xs:complexType>
                         <xs:sequence>

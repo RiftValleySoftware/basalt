@@ -112,11 +112,12 @@ abstract class A_CO_Basalt_Plugin {
         $read_item = intval($in_object->read_security_id);
         $write_item = intval($in_object->write_security_id);
         
-        if (((2 > $read_item) || in_array($read_item, $my_ids)) && count($my_ids)) {
+        // Checking for the availability of the Security DB is a quick login check. If not logged in, the DB will not be available.
+        if ((((2 > $read_item) || in_array($read_item, $my_ids)) && count($my_ids)) && $in_object->get_access_object()->security_db_available()) {
             $ret['read_token'] = $read_item;
         }
         
-        if ((2 > $read_item) || in_array($write_item, $my_ids) && count($my_ids)) {
+        if (((2 > $read_item) || in_array($write_item, $my_ids) && count($my_ids)) && $in_object->get_access_object()->security_db_available()) {
             $ret['write_token'] = $write_item;
         }
         

@@ -40,7 +40,7 @@ function basalt_test_0126($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $xml_object = simplexml_load_string($result);
-        $places = json_decode(json_encode($xml_object))->value;
+        $places = json_decode(json_encode($xml_object))->results->value;
         $modify_these = [];
         
         echo('<p style="color:green; font-weight:bold;font-size:large">There were '.count($places).' places returned.</p>');
@@ -82,7 +82,7 @@ function basalt_test_0126($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $xml_object = simplexml_load_string($result);
-        $places = json_decode(json_encode($xml_object))->value;
+        $places = json_decode(json_encode($xml_object))->results->value;
         
         $modify_these = [];
         
@@ -125,7 +125,7 @@ function basalt_test_0126($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $xml_object = simplexml_load_string($result);
-        $places = json_decode(json_encode($xml_object))->value;
+        $places = json_decode(json_encode($xml_object))->results->value;
         
         $modify_these = [];
         
@@ -168,7 +168,7 @@ function basalt_test_0126($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $xml_object = simplexml_load_string($result);
-        $places = json_decode(json_encode($xml_object))->value;
+        $places = json_decode(json_encode($xml_object))->results->value;
         
         $modify_these = [];
         
@@ -211,7 +211,7 @@ function basalt_test_0126($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $xml_object = simplexml_load_string($result);
-        $places = json_decode(json_encode($xml_object))->value;
+        $places = json_decode(json_encode($xml_object))->results->value;
         
         $modify_these = [];
         
@@ -247,7 +247,7 @@ function basalt_test_0126($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $xml_object = simplexml_load_string($result);
-        $places = json_decode(json_encode($xml_object))->value;
+        $places = json_decode(json_encode($xml_object))->results->value;
         echo('<div  style="text-align:left;display:table"><div id="test_display_0117_result_xml_no_login_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_display_0117_result_xml_no_login_record_div\')" style="font-weight:bold">'.count($places).' places are available:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -269,7 +269,7 @@ function basalt_test_0126($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $xml_object = simplexml_load_string($result);
-        $places = json_decode(json_encode($xml_object))->value;
+        $places = json_decode(json_encode($xml_object))->results->value;
         echo('<div  style="text-align:left;display:table"><div id="test_display_0117_result_xml_MD_login_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_display_0117_result_xml_MD_login_record_div\')" style="font-weight:bold">'.count($places).' places are available:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -293,7 +293,7 @@ function basalt_test_0126($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $xml_object = simplexml_load_string($result);
-        $places = json_decode(json_encode($xml_object))->value;
+        $places = json_decode(json_encode($xml_object))->results->value;
         echo('<div  style="text-align:left;display:table"><div id="test_display_0117_result_xml_DC_login_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_display_0117_result_xml_DC_login_record_div\')" style="font-weight:bold">'.count($places).' places are available:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -317,7 +317,7 @@ function basalt_test_0126($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $xml_object = simplexml_load_string($result);
-        $places = json_decode(json_encode($xml_object))->value;
+        $places = json_decode(json_encode($xml_object))->results->value;
         echo('<div  style="text-align:left;display:table"><div id="test_display_0117_result_xml_VA_login_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_display_0117_result_xml_VA_login_record_div\')" style="font-weight:bold">'.count($places).' places are available:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -341,7 +341,7 @@ function basalt_test_0126($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $xml_object = simplexml_load_string($result);
-        $places = json_decode(json_encode($xml_object))->value;
+        $places = json_decode(json_encode($xml_object))->results->value;
         echo('<div  style="text-align:left;display:table"><div id="test_display_0117_result_xml_WVA_login_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_display_0117_result_xml_WVA_login_record_div\')" style="font-weight:bold">'.count($places).' places are available:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -365,7 +365,7 @@ function basalt_test_0126($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $xml_object = simplexml_load_string($result);
-        $places = json_decode(json_encode($xml_object))->value;
+        $places = json_decode(json_encode($xml_object))->results->value;
         echo('<div  style="text-align:left;display:table"><div id="test_display_0117_result_xml_DE_login_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_display_0117_result_xml_DE_login_record_div\')" style="font-weight:bold">'.count($places).' places are available:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -389,7 +389,7 @@ function basalt_test_0126($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $xml_object = simplexml_load_string($result);
-        $places = json_decode(json_encode($xml_object))->value;
+        $places = json_decode(json_encode($xml_object))->results->value;
         echo('<div  style="text-align:left;display:table"><div id="test_display_0117_result_xml_main_login_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_display_0117_result_xml_main_login_record_div\')" style="font-weight:bold">'.count($places).' places are available:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -434,7 +434,7 @@ function basalt_test_0127($in_login = NULL, $in_hashed_password = NULL, $in_pass
                 break;
             } else {
                 $xml_object = simplexml_load_string($result);
-                $place = json_decode(json_encode($xml_object))->value;
+                $place = json_decode(json_encode($xml_object))->results->value;
                 $places_try[$id][] = $place->coords;
             }
         }
@@ -453,7 +453,7 @@ function basalt_test_0127($in_login = NULL, $in_hashed_password = NULL, $in_pass
                 break;
             } else {
                 $xml_object = simplexml_load_string($result);
-                $place = json_decode(json_encode($xml_object))->value;
+                $place = json_decode(json_encode($xml_object))->results->value;
                 $places_try[$id]['coords'][] = $place->coords;
                 if (isset($place->raw_latitude)) {
                     $places_try[$id]['real_coords'][] = $place->raw_latitude.','.$place->raw_longitude;
@@ -487,7 +487,7 @@ function basalt_test_0127($in_login = NULL, $in_hashed_password = NULL, $in_pass
                         break;
                     } else {
                         $xml_object = simplexml_load_string($result);
-                        $place = json_decode(json_encode($xml_object))->value;
+                        $place = json_decode(json_encode($xml_object))->results->value;
                         $places_try[$id]['coords'][] = $place->coords;
                         if (isset($place->raw_latitude)) {
                             $places_try[$id]['real_coords'][] = $place->raw_latitude.','.$place->raw_longitude;
@@ -605,7 +605,7 @@ function basalt_test_0133($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $xml_object = simplexml_load_string($result);
-        $places = json_decode(json_encode($xml_object))->value;
+        $places = json_decode(json_encode($xml_object))->results->value;
         echo('<div  style="text-align:left;display:table"><div id="test_display_0124_result_xml_VA_login_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_display_0124_result_xml_VA_login_record_div\')" style="font-weight:bold">'.count($places).' places:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -643,7 +643,7 @@ function basalt_test_0133($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $xml_object = simplexml_load_string($result);
-        $places = json_decode(json_encode($xml_object))->value;
+        $places = json_decode(json_encode($xml_object))->results->value;
         echo('<div  style="text-align:left;display:table"><div id="test_display_0124_result_xml_VA_login_record_2_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_display_0124_result_xml_VA_login_record_2_div\')" style="font-weight:bold">'.count($places).' places:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -675,7 +675,7 @@ function basalt_test_0134($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $xml_object = simplexml_load_string($result);
-        $places = json_decode(json_encode($xml_object))->value;
+        $places = json_decode(json_encode($xml_object))->results->value;
         echo('<div  style="text-align:left;display:table"><div id="test_display_0125_result_xml_VA_login_1_xml_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_display_0125_result_xml_VA_login_1_xml_record_div\')" style="font-weight:bold">'.count($places).' places:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -690,7 +690,7 @@ function basalt_test_0134($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $xml_object = simplexml_load_string($result);
-        $places = json_decode(json_encode($xml_object))->value;
+        $places = json_decode(json_encode($xml_object))->results->value;
         echo('<div  style="text-align:left;display:table"><div id="test_display_0125_result_xml_VA_login_2_xml_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_display_0125_result_xml_VA_login_2_xml_record_div\')" style="font-weight:bold">'.count($places).' places:</a></h3>');
             echo('<div class="main_div inner_container">');
@@ -720,7 +720,7 @@ function basalt_test_0134($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $xml_object = simplexml_load_string($result);
-        $places = json_decode(json_encode($xml_object))->value;
+        $places = json_decode(json_encode($xml_object))->results->value;
         echo('<div  style="text-align:left;display:table"><div id="test_display_0125_result_xml_VA_login_4_xml_record_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_display_0125_result_xml_VA_login_4_xml_record_div\')" style="font-weight:bold">'.count($places).' places:</a></h3>');
             echo('<div class="main_div inner_container">');

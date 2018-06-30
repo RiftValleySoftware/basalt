@@ -34,6 +34,17 @@
                     <li><a href="#02-places-queries-pagination-search_page_size">search_page_size</a></li>
                     <li><a href="#02-places-queries-pagination-search_page_number">search_page_number</a></li>
                 </ul></li>
+                <li><a href="#03-places-queries-locality-searches">Locality Searches</a><ul class="toc-ul">
+                    <li><a href="#03-places-queries-locality-searches-search_radius">search_radius</a></li>
+                    <li><a href="#03-places-queries-locality-searches-longlat">Direct Longitude/Latitude Searches</a><ul class="toc-ul">
+                        <li><a href="#03-places-queries-locality-searches-longlat-search_longitude">search_longitude</a></li>
+                        <li><a href="#03-places-queries-locality-searches-longlat-search_latitude">search_latitude</a></li>
+                    </ul></li>
+                    <li><a href="#03-places-queries-locality-searches-address">Address Lookup Searches</a><ul class="toc-ul">
+                        <li><a href="#03-places-queries-locality-searches-address-search_address">search_address</a></li>
+                        <li><a href="#03-places-queries-locality-searches-address-search_address">search_region_bias</a></li>
+                    </ul></li>
+                </ul></li>
             </ul></li>
             <li><a href=""></a></li>
             <li><a href=""></a><ul class="toc-ul">
@@ -79,41 +90,44 @@
             <code class="uri-code"><span class="uri_protocol-span">https://</span><span class="uri_server-span">example.com</span><span class="uri_response_type-span">/json</span><span class="uri_plugin-span">/places</span><span class="uri_directory-span">/2,3,...1723,1724</span></code>
         </div>
         <pre class="code-dump-json">{
-  "places": [
-    {
-      "id": 2,
-      "name": "New Start",
-      "lang": "en",
-      "coords": "39.059283,-76.877007",
-      "address": "Queens Chapel United Methodist Church, 7410 Old Muirkirk Road, Beltsville, MD 20705 USA"
-    },
-    {
-      "id": 3,
-      "name": "Dealing With Feelings",
-      "lang": "en",
-      "coords": "38.564376,-76.078324",
-      "address": "New Way of Life Club, 742 Race St., Cambridge, MD 21613 USA"
-    },
+  "places": {
+    "results": [
+      {
+        "id": 2,
+        "name": "New Start",
+        "lang": "en",
+        "coords": "39.059283,-76.877007",
+        "address": "Queens Chapel United Methodist Church, 7410 Old Muirkirk Road, Beltsville, MD 20705 USA"
+      },
+      {
+        "id": 3,
+        "name": "Dealing With Feelings",
+        "lang": "en",
+        "coords": "38.564376,-76.078324",
+        "address": "New Way of Life Club, 742 Race St., Cambridge, MD 21613 USA"
+      },
     
-    <big><strong>&middot;</strong></big>
-    <big><strong>&middot;</strong></big>
-    <big><strong>&middot;</strong></big>
+        <big><strong>&middot;</strong></big>
+        <big><strong>&middot;</strong></big>
+        <big><strong>&middot;</strong></big>
     
-    {
-      "id": 1723,
-      "name": "Living Clean Group",
-      "lang": "en",
-      "coords": "39.301061,-75.608132",
-      "address": "Asbury Methodist Church, 20 West Mount Vernon Street, Smyrna, DE 19977 USA"
-    },
-    {
-      "id": 1724,
-      "name": "Recovery Through the Step Working Guides",
-      "lang": "en",
-      "coords": "38.728577,-75.129297",
-      "address": "Rehobeth Presbyterian, 4470 Highway 1, Rehobeth Beach, DE 19971 USA"
-    }
-]}</pre>
+          {
+        "id": 1723,
+        "name": "Living Clean Group",
+        "lang": "en",
+        "coords": "39.301061,-75.608132",
+        "address": "Asbury Methodist Church, 20 West Mount Vernon Street, Smyrna, DE 19977 USA"
+      },
+      {
+        "id": 1724,
+        "name": "Recovery Through the Step Working Guides",
+        "lang": "en",
+        "coords": "38.728577,-75.129297",
+        "address": "Rehobeth Presbyterian, 4470 Highway 1, Rehobeth Beach, DE 19971 USA"
+      }
+    ]
+  }
+}</pre>
         <h5 class="rest_api_doc-h5" id="01-places-structure-basic-uri-structure-direct-xml">XML</h5>
         <div class="uri_display-div">
             <code class="uri-code"><span class="uri_protocol-span">https://</span><span class="uri_server-span">example.com</span><span class="uri_response_type-span">/xml</span><span class="uri_plugin-span">/places</span></code>
@@ -123,39 +137,41 @@
 &lt;places xmlns="https://example.com"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="https://example.com https://example.com/xsd/places"&gt;
-  &lt;value sequence_index="0"&gt;
-    &lt;id&gt;2&lt;/id&gt;
-    &lt;name&gt;New Start&lt;/name&gt;
-    &lt;lang&gt;en&lt;/lang&gt;
-    &lt;coords&gt;39.059283,-76.877007&lt;/coords&gt;
-    &lt;address&gt;Queens Chapel United Methodist Church, 7410 Old Muirkirk Road, Beltsville, MD 20705 USA&lt;/address&gt;
-  &lt;/value&gt;
-  &lt;value sequence_index="1"&gt;
-    &lt;id&gt;3&lt;/id&gt;
-    &lt;name&gt;Dealing With Feelings&lt;/name&gt;
-    &lt;lang&gt;en&lt;/lang&gt;
-    &lt;coords&gt;38.564376,-76.078324&lt;/coords&gt;
-    &lt;address&gt;New Way of Life Club, 742 Race St., Cambridge, MD 21613 USA&lt;/address&gt;
-  &lt;/value&gt;
-    
+  &lt;results&gt;
+    &lt;value sequence_index="0"&gt;
+      &lt;id&gt;2&lt;/id&gt;
+      &lt;name&gt;New Start&lt;/name&gt;
+      &lt;lang&gt;en&lt;/lang&gt;
+      &lt;coords&gt;39.059283,-76.877007&lt;/coords&gt;
+      &lt;address&gt;Queens Chapel United Methodist Church, 7410 Old Muirkirk Road, Beltsville, MD 20705 USA&lt;/address&gt;
+    &lt;/value&gt;
+    &lt;value sequence_index="1"&gt;
+      &lt;id&gt;3&lt;/id&gt;
+      &lt;name&gt;Dealing With Feelings&lt;/name&gt;
+      &lt;lang&gt;en&lt;/lang&gt;
+      &lt;coords&gt;38.564376,-76.078324&lt;/coords&gt;
+      &lt;address&gt;New Way of Life Club, 742 Race St., Cambridge, MD 21613 USA&lt;/address&gt;
+    &lt;/value&gt;
+        
     <big><strong>&middot;</strong></big>
     <big><strong>&middot;</strong></big>
     <big><strong>&middot;</strong></big>
     
-  &lt;value sequence_index="1277"&gt;
-    &lt;id&gt;1723&lt;/id&gt;
-    &lt;name&gt;Living Clean Group&lt;/name&gt;
-    &lt;lang&gt;en&lt;/lang&gt;
-    &lt;coords&gt;39.301061,-75.608132&lt;/coords&gt;
-    &lt;address&gt;Asbury Methodist Church, 20 West Mount Vernon Street, Smyrna, DE 19977 USA&lt;/address&gt;
-  &lt;/value&gt;
-  &lt;value sequence_index="1278"&gt;
-    &lt;id&gt;1724&lt;/id&gt;
-    &lt;name&gt;Recovery Through the Step Working Guides&lt;/name&gt;
-    &lt;lang&gt;en&lt;/lang&gt;
-    &lt;coords&gt;38.728577,-75.129297&lt;/coords&gt;
-    &lt;address&gt;Rehobeth Presbyterian, 4470 Highway 1, Rehobeth Beach, DE 19971 USA&lt;/address&gt;
-  &lt;/value&gt;
+    &lt;value sequence_index="1277"&gt;
+      &lt;id&gt;1723&lt;/id&gt;
+      &lt;name&gt;Living Clean Group&lt;/name&gt;
+      &lt;lang&gt;en&lt;/lang&gt;
+      &lt;coords&gt;39.301061,-75.608132&lt;/coords&gt;
+      &lt;address&gt;Asbury Methodist Church, 20 West Mount Vernon Street, Smyrna, DE 19977 USA&lt;/address&gt;
+    &lt;/value&gt;
+    &lt;value sequence_index="1278"&gt;
+      &lt;id&gt;1724&lt;/id&gt;
+      &lt;name&gt;Recovery Through the Step Working Guides&lt;/name&gt;
+      &lt;lang&gt;en&lt;/lang&gt;
+      &lt;coords&gt;38.728577,-75.129297&lt;/coords&gt;
+      &lt;address&gt;Rehobeth Presbyterian, 4470 Highway 1, Rehobeth Beach, DE 19971 USA&lt;/address&gt;
+    &lt;/value&gt;
+  &lt;/results&gt;
 &lt;/places&gt;</pre>
     </header>
     
@@ -172,97 +188,100 @@
             <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/json</span><span class="uri_plugin_lite-span">/places</span><span class="uri_directory_lite-span">/2,3,...1723,1724</span><span class="uri_query-span">?show_details</span></code>
         </div>
         <pre class="code-dump-json">{
-  "places": [
-    {
-      "id": 2,
-      "name": "New Start",
-      "lang": "en",
-      "coords": "39.059283,-76.877007",
-      "address": "Queens Chapel United Methodist Church, 7410 Old Muirkirk Road, Beltsville, MD 20705 USA",
-      "last_access": "1970-01-02 00:00:00",
-      "owner_id": "7",
-      "latitude": 39.05928327,
-      "longitude": -76.87700701,
-      "address_elements": {
-        "venue": "Queens Chapel United Methodist Church",
-        "street_address": "7410 Old Muirkirk Road",
-        "extra_information": "",
-        "town": "Beltsville",
-        "county": "",
-        "state": "MD",
-        "postal_code": "20705",
-        "nation": "USA"
-      }
-    },
-    {
-      "id": 3,
-      "name": "Dealing With Feelings",
-      "lang": "en",
-      "coords": "38.564376,-76.078324",
-      "address": "New Way of Life Club, 742 Race St., Cambridge, MD 21613 USA",
-      "last_access": "1970-01-02 00:00:00",
-      "owner_id": "7",
-      "latitude": 38.5643758,
-      "longitude": -76.0783243,
-      "address_elements": {
-        "venue": "New Way of Life Club",
-        "street_address": "742 Race St.",
-        "extra_information": "",
-        "town": "Cambridge",
-        "county": "Dorchester",
-        "state": "MD",
-        "postal_code": "21613",
-        "nation": "USA"
-      }
-    },
+  "places": {
+    "results": [
+      {
+        "id": 2,
+        "name": "New Start",
+        "lang": "en",
+        "coords": "39.059283,-76.877007",
+        "address": "Queens Chapel United Methodist Church, 7410 Old Muirkirk Road, Beltsville, MD 20705 USA",
+        "last_access": "1970-01-02 00:00:00",
+        "owner_id": "7",
+        "latitude": 39.05928327,
+        "longitude": -76.87700701,
+        "address_elements": {
+          "venue": "Queens Chapel United Methodist Church",
+          "street_address": "7410 Old Muirkirk Road",
+          "extra_information": "",
+          "town": "Beltsville",
+          "county": "",
+          "state": "MD",
+          "postal_code": "20705",
+          "nation": "USA"
+        }
+      },
+      {
+        "id": 3,
+        "name": "Dealing With Feelings",
+        "lang": "en",
+        "coords": "38.564376,-76.078324",
+        "address": "New Way of Life Club, 742 Race St., Cambridge, MD 21613 USA",
+        "last_access": "1970-01-02 00:00:00",
+        "owner_id": "7",
+        "latitude": 38.5643758,
+        "longitude": -76.0783243,
+        "address_elements": {
+          "venue": "New Way of Life Club",
+          "street_address": "742 Race St.",
+          "extra_information": "",
+          "town": "Cambridge",
+          "county": "Dorchester",
+          "state": "MD",
+          "postal_code": "21613",
+          "nation": "USA"
+        }
+      },
     
-    <big><strong>&middot;</strong></big>
-    <big><strong>&middot;</strong></big>
-    <big><strong>&middot;</strong></big>
+        <big><strong>&middot;</strong></big>
+        <big><strong>&middot;</strong></big>
+        <big><strong>&middot;</strong></big>
     
     {
-      "id": 1723,
-      "name": "Living Clean Group",
-      "lang": "en",
-      "coords": "39.301061,-75.608132",
-      "address": "Asbury Methodist Church, 20 West Mount Vernon Street, Smyrna, DE 19977 USA",
-      "last_access": "1970-01-02 00:00:00",
-      "owner_id": "11",
-      "latitude": 39.3010606,
-      "longitude": -75.608132,
-      "address_elements": {
-        "venue": "Asbury Methodist Church",
-        "street_address": "20 West Mount Vernon Street",
-        "extra_information": "",
-        "town": "Smyrna",
-        "county": "Kent",
-        "state": "DE",
-        "postal_code": "19977",
-        "nation": "USA"
+        "id": 1723,
+        "name": "Living Clean Group",
+        "lang": "en",
+        "coords": "39.301061,-75.608132",
+        "address": "Asbury Methodist Church, 20 West Mount Vernon Street, Smyrna, DE 19977 USA",
+        "last_access": "1970-01-02 00:00:00",
+        "owner_id": "11",
+        "latitude": 39.3010606,
+        "longitude": -75.608132,
+        "address_elements": {
+          "venue": "Asbury Methodist Church",
+          "street_address": "20 West Mount Vernon Street",
+          "extra_information": "",
+          "town": "Smyrna",
+          "county": "Kent",
+          "state": "DE",
+          "postal_code": "19977",
+          "nation": "USA"
+        }
+      },
+      {
+        "id": 1724,
+        "name": "Recovery Through the Step Working Guides",
+        "lang": "en",
+        "coords": "38.728577,-75.129297",
+        "address": "Rehobeth Presbyterian, 4470 Highway 1, Rehobeth Beach, DE 19971 USA",
+        "last_access": "1970-01-02 00:00:00",
+        "owner_id": "11",
+        "latitude": 38.72857679,
+        "longitude": -75.12929678,
+        "address_elements": {
+          "venue": "Rehobeth Presbyterian",
+          "street_address": "4470 Highway 1",
+          "extra_information": "",
+          "town": "Rehobeth Beach",
+          "county": "Sussex",
+          "state": "DE",
+          "postal_code": "19971",
+          "nation": "USA"
+        }
       }
-    },
-    {
-      "id": 1724,
-      "name": "Recovery Through the Step Working Guides",
-      "lang": "en",
-      "coords": "38.728577,-75.129297",
-      "address": "Rehobeth Presbyterian, 4470 Highway 1, Rehobeth Beach, DE 19971 USA",
-      "last_access": "1970-01-02 00:00:00",
-      "owner_id": "11",
-      "latitude": 38.72857679,
-      "longitude": -75.12929678,
-      "address_elements": {
-        "venue": "Rehobeth Presbyterian",
-        "street_address": "4470 Highway 1",
-        "extra_information": "",
-        "town": "Rehobeth Beach",
-        "county": "Sussex",
-        "state": "DE",
-        "postal_code": "19971",
-        "nation": "USA"
-      }
-    }
-  ]}</pre>
+    ]
+  }
+}</pre>
         <h5 class="rest_api_doc-h5" id="02-places-queries-global-show_details-xml">XML</h5>
         <div class="uri_display-div">
             <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/xml</span><span class="uri_plugin_lite-span">/places</span><span class="uri_query-span">?show_details</span></code>
@@ -272,90 +291,92 @@
 &lt;places xmlns="https://example.com"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="https://example.com https://example.com/xsd/places"&gt;
-  &lt;value sequence_index="0"&gt;
-    &lt;id&gt;2&lt;/id&gt;
-    &lt;name&gt;New Start&lt;/name&gt;
-    &lt;lang&gt;en&lt;/lang&gt;
-    &lt;coords&gt;39.059283,-76.877007&lt;/coords&gt;
-    &lt;address&gt;Queens Chapel United Methodist Church, 7410 Old Muirkirk Road, Beltsville, MD 20705 USA&lt;/address&gt;
-    &lt;last_access&gt;1970-01-02 00:00:00&lt;/last_access&gt;
-    &lt;owner_id&gt;7&lt;/owner_id&gt;
-    &lt;latitude&gt;39.05928327&lt;/latitude&gt;
-    &lt;longitude&gt;-76.87700701&lt;/longitude&gt;
-    &lt;address_elements&gt;
-      &lt;venue&gt;Queens Chapel United Methodist Church&lt;/venue&gt;
-      &lt;street_address&gt;7410 Old Muirkirk Road&lt;/street_address&gt;
-      &lt;town&gt;Beltsville&lt;/town&gt;
-      &lt;state&gt;MD&lt;/state&gt;
-      &lt;postal_code&gt;20705&lt;/postal_code&gt;
-      &lt;nation&gt;USA&lt;/nation&gt;
-    &lt;/address_elements&gt;
-  &lt;/value&gt;
-  &lt;value sequence_index="1"&gt;
-    &lt;id&gt;3&lt;/id&gt;
-    &lt;name&gt;Dealing With Feelings&lt;/name&gt;
-    &lt;lang&gt;en&lt;/lang&gt;
-    &lt;coords&gt;38.564376,-76.078324&lt;/coords&gt;
-    &lt;address&gt;New Way of Life Club, 742 Race St., Cambridge, MD 21613 USA&lt;/address&gt;
-    &lt;last_access&gt;1970-01-02 00:00:00&lt;/last_access&gt;
-    &lt;owner_id&gt;7&lt;/owner_id&gt;
-    &lt;latitude&gt;38.5643758&lt;/latitude&gt;
-    &lt;longitude&gt;-76.0783243&lt;/longitude&gt;
-    &lt;address_elements&gt;
-      &lt;venue&gt;New Way of Life Club&lt;/venue&gt;
-      &lt;street_address&gt;742 Race St.&lt;/street_address&gt;
-      &lt;town&gt;Cambridge&lt;/town&gt;
-      &lt;county&gt;Dorchester&lt;/county&gt;
-      &lt;state&gt;MD&lt;/state&gt;
-      &lt;postal_code&gt;21613&lt;/postal_code&gt;
-      &lt;nation&gt;USA&lt;/nation&gt;
-    &lt;/address_elements&gt;
-  &lt;/value&gt;
+  &lt;results&gt;
+    &lt;value sequence_index="0"&gt;
+      &lt;id&gt;2&lt;/id&gt;
+      &lt;name&gt;New Start&lt;/name&gt;
+      &lt;lang&gt;en&lt;/lang&gt;
+      &lt;coords&gt;39.059283,-76.877007&lt;/coords&gt;
+      &lt;address&gt;Queens Chapel United Methodist Church, 7410 Old Muirkirk Road, Beltsville, MD 20705 USA&lt;/address&gt;
+      &lt;last_access&gt;1970-01-02 00:00:00&lt;/last_access&gt;
+      &lt;owner_id&gt;7&lt;/owner_id&gt;
+      &lt;latitude&gt;39.05928327&lt;/latitude&gt;
+      &lt;longitude&gt;-76.87700701&lt;/longitude&gt;
+      &lt;address_elements&gt;
+        &lt;venue&gt;Queens Chapel United Methodist Church&lt;/venue&gt;
+        &lt;street_address&gt;7410 Old Muirkirk Road&lt;/street_address&gt;
+        &lt;town&gt;Beltsville&lt;/town&gt;
+        &lt;state&gt;MD&lt;/state&gt;
+        &lt;postal_code&gt;20705&lt;/postal_code&gt;
+        &lt;nation&gt;USA&lt;/nation&gt;
+      &lt;/address_elements&gt;
+    &lt;/value&gt;
+    &lt;value sequence_index="1"&gt;
+      &lt;id&gt;3&lt;/id&gt;
+      &lt;name&gt;Dealing With Feelings&lt;/name&gt;
+      &lt;lang&gt;en&lt;/lang&gt;
+      &lt;coords&gt;38.564376,-76.078324&lt;/coords&gt;
+      &lt;address&gt;New Way of Life Club, 742 Race St., Cambridge, MD 21613 USA&lt;/address&gt;
+      &lt;last_access&gt;1970-01-02 00:00:00&lt;/last_access&gt;
+      &lt;owner_id&gt;7&lt;/owner_id&gt;
+      &lt;latitude&gt;38.5643758&lt;/latitude&gt;
+      &lt;longitude&gt;-76.0783243&lt;/longitude&gt;
+      &lt;address_elements&gt;
+        &lt;venue&gt;New Way of Life Club&lt;/venue&gt;
+        &lt;street_address&gt;742 Race St.&lt;/street_address&gt;
+        &lt;town&gt;Cambridge&lt;/town&gt;
+        &lt;county&gt;Dorchester&lt;/county&gt;
+        &lt;state&gt;MD&lt;/state&gt;
+        &lt;postal_code&gt;21613&lt;/postal_code&gt;
+        &lt;nation&gt;USA&lt;/nation&gt;
+      &lt;/address_elements&gt;
+    &lt;/value&gt;
     
     <big><strong>&middot;</strong></big>
     <big><strong>&middot;</strong></big>
     <big><strong>&middot;</strong></big>
     
-  &lt;value sequence_index="1721"&gt;
-    &lt;id&gt;1723&lt;/id&gt;
-    &lt;name&gt;Living Clean Group&lt;/name&gt;
-    &lt;lang&gt;en&lt;/lang&gt;
-    &lt;coords&gt;39.301061,-75.608132&lt;/coords&gt;
-    &lt;address&gt;Asbury Methodist Church, 20 West Mount Vernon Street, Smyrna, DE 19977 USA&lt;/address&gt;
-    &lt;last_access&gt;1970-01-02 00:00:00&lt;/last_access&gt;
-    &lt;owner_id&gt;11&lt;/owner_id&gt;
-    &lt;latitude&gt;39.3010606&lt;/latitude&gt;
-    &lt;longitude&gt;-75.608132&lt;/longitude&gt;
-    &lt;address_elements&gt;
-      &lt;venue&gt;Asbury Methodist Church&lt;/venue&gt;
-      &lt;street_address&gt;20 West Mount Vernon Street&lt;/street_address&gt;
-      &lt;town&gt;Smyrna&lt;/town&gt;
-      &lt;county&gt;Kent&lt;/county&gt;
-      &lt;state&gt;DE&lt;/state&gt;
-      &lt;postal_code&gt;19977&lt;/postal_code&gt;
-      &lt;nation&gt;USA&lt;/nation&gt;
-    &lt;/address_elements&gt;
-  &lt;/value&gt;
-  &lt;value sequence_index="1722"&gt;
-    &lt;id&gt;1724&lt;/id&gt;
-    &lt;name&gt;Recovery Through the Step Working Guides&lt;/name&gt;
-    &lt;lang&gt;en&lt;/lang&gt;
-    &lt;coords&gt;38.728577,-75.129297&lt;/coords&gt;
-    &lt;address&gt;Rehobeth Presbyterian, 4470 Highway 1, Rehobeth Beach, DE 19971 USA&lt;/address&gt;
-    &lt;last_access&gt;1970-01-02 00:00:00&lt;/last_access&gt;
-    &lt;owner_id&gt;11&lt;/owner_id&gt;
-    &lt;latitude&gt;38.72857679&lt;/latitude&gt;
-    &lt;longitude&gt;-75.12929678&lt;/longitude&gt;
-    &lt;address_elements&gt;
-      &lt;venue&gt;Rehobeth Presbyterian&lt;/venue&gt;
-      &lt;street_address&gt;4470 Highway 1&lt;/street_address&gt;
-      &lt;town&gt;Rehobeth Beach&lt;/town&gt;
-      &lt;county&gt;Sussex&lt;/county&gt;
-      &lt;state&gt;DE&lt;/state&gt;
-      &lt;postal_code&gt;19971&lt;/postal_code&gt;
-      &lt;nation&gt;USA&lt;/nation&gt;
-    &lt;/address_elements&gt;
-  &lt;/value&gt;
+    &lt;value sequence_index="1277"&gt;
+      &lt;id&gt;1723&lt;/id&gt;
+      &lt;name&gt;Living Clean Group&lt;/name&gt;
+      &lt;lang&gt;en&lt;/lang&gt;
+      &lt;coords&gt;39.301061,-75.608132&lt;/coords&gt;
+      &lt;address&gt;Asbury Methodist Church, 20 West Mount Vernon Street, Smyrna, DE 19977 USA&lt;/address&gt;
+      &lt;last_access&gt;1970-01-02 00:00:00&lt;/last_access&gt;
+      &lt;owner_id&gt;11&lt;/owner_id&gt;
+      &lt;latitude&gt;39.3010606&lt;/latitude&gt;
+      &lt;longitude&gt;-75.608132&lt;/longitude&gt;
+      &lt;address_elements&gt;
+        &lt;venue&gt;Asbury Methodist Church&lt;/venue&gt;
+        &lt;street_address&gt;20 West Mount Vernon Street&lt;/street_address&gt;
+        &lt;town&gt;Smyrna&lt;/town&gt;
+        &lt;county&gt;Kent&lt;/county&gt;
+        &lt;state&gt;DE&lt;/state&gt;
+        &lt;postal_code&gt;19977&lt;/postal_code&gt;
+        &lt;nation&gt;USA&lt;/nation&gt;
+      &lt;/address_elements&gt;
+    &lt;/value&gt;
+    &lt;value sequence_index="1278"&gt;
+      &lt;id&gt;1724&lt;/id&gt;
+      &lt;name&gt;Recovery Through the Step Working Guides&lt;/name&gt;
+      &lt;lang&gt;en&lt;/lang&gt;
+      &lt;coords&gt;38.728577,-75.129297&lt;/coords&gt;
+      &lt;address&gt;Rehobeth Presbyterian, 4470 Highway 1, Rehobeth Beach, DE 19971 USA&lt;/address&gt;
+      &lt;last_access&gt;1970-01-02 00:00:00&lt;/last_access&gt;
+      &lt;owner_id&gt;11&lt;/owner_id&gt;
+      &lt;latitude&gt;38.72857679&lt;/latitude&gt;
+      &lt;longitude&gt;-75.12929678&lt;/longitude&gt;
+      &lt;address_elements&gt;
+        &lt;venue&gt;Rehobeth Presbyterian&lt;/venue&gt;
+        &lt;street_address&gt;4470 Highway 1&lt;/street_address&gt;
+        &lt;town&gt;Rehobeth Beach&lt;/town&gt;
+        &lt;county&gt;Sussex&lt;/county&gt;
+        &lt;state&gt;DE&lt;/state&gt;
+        &lt;postal_code&gt;19971&lt;/postal_code&gt;
+        &lt;nation&gt;USA&lt;/nation&gt;
+      &lt;/address_elements&gt;
+    &lt;/value&gt;
+  &lt;/results&gt;
 &lt;/places&gt;</pre>
         <h5 class="rest_api_doc-h5" id="02-places-queries-global-writeable">writeable</h5>
         <p class="main_doc-p">This applies to GET, PUT and DELETE.</p>
@@ -376,7 +397,9 @@
         </div>
         <pre class="code-dump-json">{
   "places": {
-    "count": 1279
+    "results": {
+      "count": 1279
+    }
   }
 }</pre>
         <h5 class="rest_api_doc-h5" id="02-places-queries-search-search_count_only-xml">XML</h5>
@@ -387,7 +410,9 @@
 &lt;places xmlns="https://example.com"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="https://example.com https://example.com/xsd/places"&gt;
-  &lt;count&gt;1279&lt;/count&gt;
+  &lt;results&gt;
+        &lt;count&gt;1279&lt;/count&gt;
+    &lt;/results&gt;
 &lt;/places&gt;</pre>
 
         <h5 class="rest_api_doc-h5" id="02-places-queries-search-search_ids_only">search_ids_only</h5>
@@ -399,18 +424,20 @@
         </div>
         <pre class="code-dump-json">{
   "places": {
-    "ids": [
-      2,
-      3,
+    "results": {
+        "ids": [
+          2,
+          3,
     
-    <big><strong>&middot;</strong></big>
-    <big><strong>&middot;</strong></big>
-    <big><strong>&middot;</strong></big>
+        <big><strong>&middot;</strong></big>
+        <big><strong>&middot;</strong></big>
+        <big><strong>&middot;</strong></big>
     
-      1723,
-      1724
-    ]
-  }
+          1723,
+          1724
+        ]
+      }
+    }
 }</pre>
 
         <h5 class="rest_api_doc-h5" id="02-places-queries-search-search_ids_only-xml">XML</h5>
@@ -421,17 +448,19 @@
 &lt;places xmlns="https://example.com"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="https://example.com https://example.com/xsd/places"&gt;
+  &lt;results&gt;
     &lt;ids&gt;
-        &lt;value sequence_index="0"&gt;2&lt;/value&gt;
-        &lt;value sequence_index="1"&gt;3&lt;/value&gt;
-    
-        <big><strong>&middot;</strong></big>
-        <big><strong>&middot;</strong></big>
-        <big><strong>&middot;</strong></big>
-    
-        &lt;value sequence_index="1277"&gt;1723&lt;/value&gt;
-        &lt;value sequence_index="1278"&gt;1724&lt;/value&gt;
+      &lt;value sequence_index="0"&gt;2&lt;/value&gt;
+      &lt;value sequence_index="1"&gt;3&lt;/value&gt;
+
+      <big><strong>&middot;</strong></big>
+      <big><strong>&middot;</strong></big>
+      <big><strong>&middot;</strong></big>
+
+      &lt;value sequence_index="1277"&gt;1723&lt;/value&gt;
+      &lt;value sequence_index="1278"&gt;1724&lt;/value&gt;
     &lt;/ids&gt;
+  &lt;/results&gt;
 &lt;/places&gt;
 </pre>
 
@@ -457,6 +486,47 @@
             <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/places</span><span class="uri_query-span">?search_page_number=2</span></code>
         </div>
         <p class="main_doc-p">If this is not specified, but "<code>search_page_size=<em>n</em></code>" is, then the response will be the first page of results (the equivalent of "<code>search_page_number=0</code>").</p>
+
+        <h4 class="rest_api_doc-h4" id="03-places-queries-locality-searches">Locality Searches</h4>
+        <p class="main_doc-p">These queries apply to GET, PUT and DELETE.</p>
+        <p class="main_doc-p">It is possible to perform searches in the BAOBAB server for places near locations. These locations can be specified by a longitude/latitude pair, or, if the server is set up to allow it, an address that is looked up and resolved into a longitude/latitude pair.</p>
+        <p class="main_doc-p">You specify a search radius around the location, in Kilometers. The reults are returned with an element that describes the search location and radius, and each record is given a "straight line" distance from that point (also in Kilometers).</p>
+
+        <h5 class="rest_api_doc-h5" id="03-places-queries-locality-searches-search_radius">search_radius</h5>
+        <p class="main_doc-p">This query is required for both of the following queries. It is the radius from the search center, in Kilometers (as a floating-point number). The search will be in a circle around the center point. "Fuzzy" locations may appear outside the circle.</p>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/places</span><span class="uri_query-span">?search_radius=10.5</span></code>
+        </div>
+        
+        <h5 class="rest_api_doc-h5" id="03-places-queries-locality-searches-longlat">Direct Longitude/Latitude Searches</h5>
+        <p class="main_doc-p">Direct longitude/latitude searches do not require any special server configuration, and are applied immediately.</p>
+        <h5 class="rest_api_doc-h5" id="03-places-queries-locality-searches-search_longitude">search_longitude</h5>
+        <p class="main_doc-p">This is the longitude, in degrees, for the search center (as a floating-point number).</p>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/places</span><span class="uri_query-span">?search_longitude=-77.46723</span></code>
+        </div>
+        <h5 class="rest_api_doc-h5" id="03-places-queries-locality-searches-search_latitude">search_latitude</h5>
+        <p class="main_doc-p">This is the latitude, in degrees, for the search center (as a floating-point number).</p>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/places</span><span class="uri_query-span">?search_latitude=42.5678</span></code>
+        </div>
+        <h5 class="rest_api_doc-h5" id="03-places-queries-locality-searches-address">Address Lookup Searches</h5>
+        <p class="main_doc-p">The server can be set up to allow the REST client to supply a readable address, which is then looked up, and resolved (if possible) into a longitude/latitude pair.</p>
+        <p class="main_doc-p">This requires enabling in the server configuration, because it uses the server Google API key to do a geocode lookup. This is a service that could cost money, so the server administrator needs to control it.</p>
+        <p class="main_doc-p">It is possible to disable the feature, make it available only to logged-in users, or make it available to all vistors; whether or not they have a login. If it is disabled or restricted for the current visitor, the lookup (and the search) fails.</p>
+        <h5 class="rest_api_doc-h5" id="03-places-queries-locality-searches-search_address">search_address</h5>
+        <p class="main_doc-p">This is the address, as a readable string, for the search center.</p>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/places</span><span class="uri_query-span">?search_address=350+Fifth+Avenue,+New+York+City,+NY</span></code>
+        </div>
+        <h5 class="rest_api_doc-h5" id="03-places-queries-locality-searches-search_region_bias">search_region_bias</h5>
+        <p class="main_doc-p">This is "hint" or <a href="https://developers.google.com/maps/documentation/javascript/examples/geocoding-region-us">Region Bias</a>, to help Google determins where the address "fits" (For example, Toledo, Ohio vs. Toledo, Spain).</p>
+        <p class="main_doc-p">This is ignored if "<code>search_address=<em>xxx</em></code>" is not used.</p>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/places</span><span class="uri_query-span">?search_region_bias=us</span></code>
+        </div>
+        <h5 class="rest_api_doc-h5" id="03-places-queries-locality-searches-response">Response Data</h5>
+        <p class="main_doc-p">If you specify a center/radius search, the response data will have an extra "<code>search_location</code>" element, with the search center and radius. Additionally, each record will also have a "<code>distance_in_km</code>" element, with a floating-point number. This will denote the distance, in Kilometers, from the element's long/lat to the search center. It should be noted that "Fuzzy" location distance will be inaccurate by design.</p>
     </div>
 </div>
 

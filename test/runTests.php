@@ -122,6 +122,11 @@ if (isset($test_name_array) && is_array($test_name_array) && count($test_name_ar
             div.inner_closed h2.inner_header {
             }
             
+            div.inner_open h3.inner_header {
+                display:block;
+                text-align:left;
+            }
+            
             div.inner_open div.inner_container {
                 display: table;
                 margin:auto;

@@ -366,9 +366,19 @@ $start = microtime(true);
         
             $parameters = $this->_process_parameters($in_andisol_instance, $in_query);
             if (isset($parameters) && is_array($parameters) && count($parameters) && isset($in_object_list) && is_array($in_object_list) && count($in_object_list)) {
+                /*
+                What we are doing here, is using the "batch mode" for each record object to set the changes in place without doing a DB update.
+                We generate a change report, but don't add the report to the final report yet, as the change isn't "set" yet.
+                After we make all the changes, we cycle through the records, clearing the "batch mode" for each record object, which sends it to the DB.
+                If the clear works, then we set it into the final report.
+                This makes the process work much better in a multiuser environment, where other clients could be querying the DB.
+                */
+                $change_reports = [];   // We will keep our interin reports here.
+                
                 foreach ($in_object_list as $place) {
                     if ($place->user_can_write()) { // Belt and suspenders. Make sure we can write.
                         $place->set_batch_mode();
+                        // Take a "before" snapshot.
                         $changed_place = ['before' => $this->_get_long_place_description($place)];
                         $result = true;
                     
@@ -445,6 +455,7 @@ $start = microtime(true);
                             $result = $place->set_payload($parameters['payload']);
                         }
                     
+                        // We have previously split into "add" and "remove" lists (dictated by the sign of the integer).
                         if ($result && isset($parameters['child_ids'])) {
                             $add = $parameters['child_ids']['add'];
                             $remove = $parameters['child_ids']['remove'];
@@ -477,20 +488,27 @@ $start = microtime(true);
                                 }
                             }
                         }
-                    
-                        if ($result) {
-                            $changed_place['after'] = $this->_get_long_place_description($place);
-                            $ret['changed_places'][] = $changed_place;
-                        }
-                    
-                        // We unlock by setting the read ID.
+                        
+                        // We do this last, so we have the option of doing a "lock" (which isn't necessary in "batch mode").
                         if ($result && isset($parameters['read_token'])) {
                             $result = $place->set_read_security_id($parameters['read_token']);
                         }
                     
-                        $result = $place->clear_batch_mode();
-                        
-                        if (!$result) {
+                        if ($result) {  // Assuming all went well to this point, we take an "after" snapshot, and save the object and interim report in our "final clear" list.
+                            $changed_place['after'] = $this->_get_long_place_description($place);
+                            $change_reports[] = ['object' => $place, 'report' => $changed_place];
+                        }
+                    }
+                }
+                
+                // Here's where we actually set each record into the DB, and generate the full final report.
+                if ($result && count($change_reports)) {
+                    $ret['changed_places'] = [];
+                    foreach ($change_reports as $value) {
+                        $result = $value['object']->clear_batch_mode();
+                        if ($result) {  // We only report the ones that work.
+                            $ret['changed_places'][] = $value['report'];
+                        } else {
                             break;
                         }
                     }
@@ -621,6 +639,7 @@ $start = microtime(true);
                 
                 if ('GET' == $in_http_method) {
                     $ret = $this->_process_place_get($in_andisol_instance, $placelist, $show_details, $search_count_only, $search_ids_only, $in_path, $in_query);
+                    $ret = Array('results' => $ret);
                 } elseif ('PUT' == $in_http_method) {
                     $ret = $this->_process_place_put($in_andisol_instance, $placelist, $in_path, $in_query);
                 } elseif ('DELETE' == $in_http_method) {
@@ -656,6 +675,7 @@ $start = microtime(true);
                 
                     if ('GET' == $in_http_method) {
                         $ret = $this->_process_place_get($in_andisol_instance, $placelist, $show_details, $search_count_only, $search_ids_only, $in_path, $in_query);
+                        $ret = Array('results' => $ret);
                     } elseif ('PUT' == $in_http_method) {
                         $ret = $this->_process_place_put($in_andisol_instance, $placelist, $in_path, $in_query);
                     } elseif ('DELETE' == $in_http_method) {
