@@ -100,6 +100,12 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
         if ($in_place_object->is_fuzzy()) {
             $ret['fuzzy'] = true;
             
+            $cansee = intval($in_place_object->can_see_through_the_fuzz());
+            
+            if ($cansee) {
+                $ret['can_see_through_the_fuzz'] = $cansee;
+            }
+            
             // If this is a fuzzy location, but the logged-in user can see "the real," we show it to them.
             if ($in_place_object->i_can_see_clearly_now()) {
                 $ret['raw_latitude'] = floatval($in_place_object->raw_latitude());
@@ -214,6 +220,10 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
             
             if (isset($in_query['fuzz_factor'])) {
                 $ret['fuzz_factor'] = floatval($in_query['fuzz_factor']);
+            }
+            
+            if (isset($in_query['can_see_through_the_fuzz'])) {
+                $ret['can_see_through_the_fuzz'] = intval($in_query['can_see_through_the_fuzz']);
             }
             
             if (isset($in_query['address_venue'])) {
@@ -359,7 +369,6 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                             $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
                                             $in_query = []              ///< OPTIONAL: The query parameters, as an associative array.
                                         ) {
-$start = microtime(true);        
         if ($in_andisol_instance->logged_in()) {    // Must be logged in to PUT.
             $ret = ['changed_places' => []];
             $fuzz_factor = isset($in_query) && is_array($in_query) && isset($in_query['fuzz_factor']) ? floatval($in_query['fuzz_factor']) : 0; // Set any fuzz factor.
@@ -433,7 +442,11 @@ $start = microtime(true);
                         if ($result && isset($parameters['address_postal_code'])) {
                             $result = $place->set_address_element(6, $parameters['address_postal_code']);
                         }
-                    
+                        
+                        if ($result && isset($parameters['can_see_through_the_fuzz'])) {
+                            $result = $place->set_can_see_through_the_fuzz($parameters['can_see_through_the_fuzz']);
+                        }
+                        
                         if ($result && isset($parameters['address_nation'])) {  // This might fail, if it's a nation-specific one, so we don't test for the result.
                             $test = $place->set_address_element(7, $parameters['address_nation']);
                             if (!$test) {   // If so, we add a note to the change record.

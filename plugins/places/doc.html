@@ -41,9 +41,33 @@
                         <li><a href="#03-places-queries-locality-searches-longlat-search_latitude">search_latitude</a></li>
                     </ul></li>
                     <li><a href="#03-places-queries-locality-searches-address">Address Lookup Searches</a><ul class="toc-ul">
-                        <li><a href="#03-places-queries-locality-searches-address-search_address">search_address</a></li>
-                        <li><a href="#03-places-queries-locality-searches-address-search_address">search_region_bias</a></li>
+                        <li><a href="#03-places-queries-locality-searches-search_address">search_address</a></li>
+                        <li><a href="#03-places-queries-locality-searches-search_region_bias">search_region_bias</a></li>
                     </ul></li>
+                    <li><a href="#03-places-queries-locality-searches-response">Response Data</a><ul class="toc-ul">
+                        <li><a href="#03-places-queries-locality-searches-response-json">JSON</a></li>
+                        <li><a href="#03-places-queries-locality-searches-response-xml">XML</a></li>
+                    </ul></li>
+                </ul></li>
+                <li><a href="#04-places-queries-put-post-queries">POST and PUT Parameters</a><ul class="toc-ul">
+                    <li><a href="#04-places-queries-put-post-queries-name">name</a></li>
+                    <li><a href="#04-places-queries-put-post-queries-read_token">read_token</a></li>
+                    <li><a href="#04-places-queries-put-post-queries-write_token">write_token</a></li>
+                    <li><a href="#04-places-queries-put-post-queries-lang">lang</a></li>
+                    <li><a href="#04-places-queries-put-post-queries-owner_id">owner_id</a></li>
+                    <li><a href="#04-places-queries-put-post-queries-fuzz_factor">fuzz_factor</a></li>
+                    <li><a href="#04-places-queries-put-post-queries-fuzz_factor">can_see_through_the_fuzz</a></li>
+                    <li><a href="#04-places-queries-put-post-queries-address_venue">address_venue</a></li>
+                    <li><a href="#04-places-queries-put-post-queries-address_venue">address_street_address</a></li>
+                    <li><a href="#04-places-queries-put-post-queries-address_extra_information">address_extra_information</a></li>
+                    <li><a href="#04-places-queries-put-post-queries-address_town">address_town</a></li>
+                    <li><a href="#04-places-queries-put-post-queries-address_county">address_county</a></li>
+                    <li><a href="#04-places-queries-put-post-queries-address_state">address_state</a></li>
+                    <li><a href="#04-places-queries-put-post-queries-address_postal_code">address_postal_code</a></li>
+                    <li><a href="#04-places-queries-put-post-queries-address_nation">address_nation</a></li>
+                    <li><a href="#04-places-queries-put-post-queries-tag8">tag8</a></li>
+                    <li><a href="#04-places-queries-put-post-queries-tag9">tag9</a></li>
+                    <li><a href="#04-places-queries-put-post-queries-child_ids">child_ids</a></li>
                 </ul></li>
             </ul></li>
             <li><a href=""></a></li>
@@ -525,8 +549,193 @@
         <div class="uri_display-div">
             <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/[json|xml]</span><span class="uri_plugin_lite-span">/places</span><span class="uri_query-span">?search_region_bias=us</span></code>
         </div>
+        
         <h5 class="rest_api_doc-h5" id="03-places-queries-locality-searches-response">Response Data</h5>
         <p class="main_doc-p">If you specify a center/radius search, the response data will have an extra "<code>search_location</code>" element, with the search center and radius. Additionally, each record will also have a "<code>distance_in_km</code>" element, with a floating-point number. This will denote the distance, in Kilometers, from the element's long/lat to the search center. It should be noted that "Fuzzy" location distance will be inaccurate by design.</p>
+
+        <h5 class="rest_api_doc-h5" id="03-places-queries-locality-searches-response-json">JSON</h5>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/json</span><span class="uri_plugin_lite-span">/places</span><span class="uri_query-span">?search_radius=10&search_address=1600+Pennsylvania+Avenue,+Washington+DC</span></code>
+        </div>
+        <pre class="code-dump-json">{
+  "places": {
+    "results": [
+      {
+        "id": 1565,
+        "name": "Open Door To Freedom",
+        "lang": "en",
+        "coords": "38.898460,-77.030465",
+        "address": "Church of the Epiphany, 1317 G Street NW, Washington, DC 20005 USA",
+        "distance_in_km": 0.537
+      },
+      {
+        "id": 1517,
+        "name": "Foggy Bottom Step",
+        "lang": "en",
+        "coords": "38.898191,-77.044700",
+        "address": "United Church of Christ, 1920 G Street NW, Washington, DC 20006 USA",
+        "distance_in_km": 0.707
+      },
+    
+        <big><strong>&middot;</strong></big>
+        <big><strong>&middot;</strong></big>
+        <big><strong>&middot;</strong></big>
+    
+      {
+        "id": 415,
+        "name": "Beginning Miracles",
+        "lang": "en",
+        "coords": "38.980190,-77.076731",
+        "address": "Chevy Chase UMC, 7001 Connecticut Ave, Chevy Chase, MD 20815 USA",
+        "distance_in_km": 9.801
+      },
+      {
+        "id": 997,
+        "name": "Glad To Be Back",
+        "lang": "en",
+        "coords": "38.808974,-77.049364",
+        "address": "Third Baptist Church, 917 Princess St, Alexandria, VA 22309 USA",
+        "distance_in_km": 9.908
+      }
+    ],
+    "search_location": {
+      "radius": 10,
+      "longitude": -77.0365739,
+      "latitude": 38.8976633
+    }
+  }
+}</pre>
+        <p class="main_doc-p">Note the new "<code>search_location</code>" element at the end of the response. This is the resolved address (in the case of the given example. If a "<code>search_latitude=</code>/<code>search_longitude=</code>" pair were entered directly, then that would be used).</p>
+        <p class="main_doc-p">Also note that each response element now has a "<code>distance_in_km</code>" element. This is the distance from the record's displayed longitude/latitude, and the search center longitude/latitude.</p>
+
+        <h5 class="rest_api_doc-h5" id="03-places-queries-locality-searches-response-xml">XML</h5>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/xml</span><span class="uri_plugin_lite-span">/places</span><span class="uri_query-span">?search_radius=10&search_address=1600+Pennsylvania+Avenue,+Washington+DC</span></code>
+        </div>
+        <pre class="code-dump-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;places xmlns="https://example.com"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://example.com https://example.com/xsd/places"&gt;
+  &lt;results&gt;
+    &lt;value sequence_index="0"&gt;
+      &lt;id&gt;1565&lt;/id&gt;
+      &lt;name&gt;Open Door To Freedom&lt;/name&gt;
+      &lt;lang&gt;en&lt;/lang&gt;
+      &lt;coords&gt;38.898460,-77.030465&lt;/coords&gt;
+      &lt;address&gt;Church of the Epiphany, 1317 G Street NW, Washington, DC 20005 USA&lt;/address&gt;
+      &lt;distance_in_km&gt;0.537&lt;/distance_in_km&gt;
+    &lt;/value&gt;
+    &lt;value sequence_index="1"&gt;
+      &lt;id&gt;1517&lt;/id&gt;
+      &lt;name&gt;Foggy Bottom Step&lt;/name&gt;
+      &lt;lang&gt;en&lt;/lang&gt;
+      &lt;coords&gt;38.898191,-77.044700&lt;/coords&gt;
+      &lt;address&gt;United Church of Christ, 1920 G Street NW, Washington, DC 20006 USA&lt;/address&gt;
+      &lt;distance_in_km&gt;0.707&lt;/distance_in_km&gt;
+    &lt;/value&gt;
+    
+        <big><strong>&middot;</strong></big>
+        <big><strong>&middot;</strong></big>
+        <big><strong>&middot;</strong></big>
+    
+    &lt;value sequence_index="127"&gt;
+      &lt;id&gt;415&lt;/id&gt;
+      &lt;name&gt;Beginning Miracles&lt;/name&gt;
+      &lt;lang&gt;en&lt;/lang&gt;
+      &lt;coords&gt;38.980190,-77.076731&lt;/coords&gt;
+      &lt;address&gt;Chevy Chase UMC, 7001 Connecticut Ave, Chevy Chase, MD 20815 USA&lt;/address&gt;
+      &lt;distance_in_km&gt;9.801&lt;/distance_in_km&gt;
+    &lt;/value&gt;
+    &lt;value sequence_index="128"&gt;
+      &lt;id&gt;997&lt;/id&gt;
+      &lt;name&gt;Glad To Be Back&lt;/name&gt;
+      &lt;lang&gt;en&lt;/lang&gt;
+      &lt;coords&gt;38.808974,-77.049364&lt;/coords&gt;
+      &lt;address&gt;Third Baptist Church, 917 Princess St, Alexandria, VA 22309 USA&lt;/address&gt;
+      &lt;distance_in_km&gt;9.908&lt;/distance_in_km&gt;
+    &lt;/value&gt;
+  &lt;/results&gt;
+  &lt;search_location&gt;
+    &lt;radius&gt;10&lt;/radius&gt;
+    &lt;longitude&gt;-77.0365739&lt;/longitude&gt;
+    &lt;latitude&gt;38.8976633&lt;/latitude&gt;
+  &lt;/search_location&gt;
+&lt;/places&gt;</pre>
+
+        <h4 class="rest_api_doc-h4" id="04-places-queries-put-post-queries">POST and PUT Parameters</h4>
+        <p class="main_doc-p">DELETE simply uses the resource URI, and does not use any query arguments.</p>
+        <p class="main_doc-p">However, POST and PUT allow you to selectively set fields using URI queries. These queries apply to PUT and POST, and your logged-in user must have modification (write) permissions on the record(s) being modified:</p>
+        
+        <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-name">name</h5>
+        <p class="main_doc-p">This is simply the record name.</p>
+        
+        <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-read_token">read_token</h5>
+        <p class="main_doc-p">This is a new integer read token for the record. It must be one that is available to you.</p>
+        
+        <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-write_token">write_token</h5>
+        <p class="main_doc-p">This is a new integer write token for the record. It must be one that is available to you.</p>
+
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-people-lang">lang</h5>
+        <p class="main_doc-p">This is the language code for the user and/or login. It should be the 2-letter abbreviation for the code.</p>
+
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-people-owner_id">owner_id</h5>
+        <p class="main_doc-p">This is the integer ID of an "owner" record for this object. This is not a particularly useful field. It is mostly used for "triaging" large datasets.</p>
+        
+        <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-longitude">longitude</h5>
+        <p class="main_doc-p">This is the new longitude for the place. It is a floating-point number. Note that for "fuzzy" records, this will set the "raw" longitude, but checking it subsequently will give a different result. In order to check this, you should query for the "raw_longitude."</p>
+        
+        <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-latitude">latitude</h5>
+        <p class="main_doc-p">This is the new latitude for the place. It is a floating-point number. Note that for "fuzzy" records, this will set the "raw" latitude, but checking it subsequently will give a different result. In order to check this, you should query for the "raw_latitude."</p>
+        
+        <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-fuzz_factor">fuzz_factor</h5>
+        <p class="main_doc-p">This is how you set (or clear) the "fuzziness" of a location-obfuscated record. If you set this to 0, then the record will no longer be "fuzzy." Otherwise, set it to a floating-point number that will describe a square, twice the given number of Kilometers to a side, surrounding the true location. Subsequent "blind" queries will give random locations within this square.</p>
+        
+        <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-can_see_through_the_fuzz">can_see_through_the_fuzz</h5>
+        <p class="main_doc-p">This is an integer (specifying this empty will clear the field in the record). This is an ID, other than the write permission ID, that can view the "raw_*" versions of the longitude and latitude of "fuzzy" records. This is a way to allow users to view the "real" location without giving the user full write permission to the place record.</p>
+        
+        <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-address_venue">address_venue</h5>
+        <p class="main_doc-p">This is the "building name" of the place. It's usually something like "St. Mark's Episcopalian Church", or "Orchard Grove Middle School."</p>
+        
+        <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-address_street_address">address_street_address</h5>
+        <p class="main_doc-p">This is the street number/road address/PO Box of the place address, like "123 Main Street, Suite 1234," or "Pepe Street At LePew," or "PO Box 1234."</p>
+        
+        <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-address_extra_information">address_extra_information</h5>
+        <p class="main_doc-p">This is "extra information" about the address. It can be things like directions, or descriptions of the venue ("Red Brick Building On the Northeast Corner").</p>
+        
+        <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-address_town">address_town</h5>
+        <p class="main_doc-p">This is the city/town of the address. It can also be a borough.</p>
+        
+        <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-address_county">address_county</h5>
+        <p class="main_doc-p">This is the county/sub-province of the address.</p>
+        
+        <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-address_state">address_state</h5>
+        <p class="main_doc-p">This is the state/province of the address.</p>
+        
+        <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-address_postal_code">address_postal_code</h5>
+        <p class="main_doc-p">This is the postal/ZIP code for the address of the place.</p>
+        
+        <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-tag8">tag8</h5>
+        <p class="main_doc-p">This is an arbitrary string to attach to an easily-searched part of the record.</p>
+        
+        <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-tag9">tag9</h5>
+        <p class="main_doc-p">This is another arbitrary string to attach to an easily-searched part of the record.</p>
+        
+        <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-address_nation">address_nation</h5>
+        <p class="main_doc-p">This is the nation for the place. It should be the two- or three-letter designation for the nation.</p>
+        
+        <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-child_ids">child_ids</h5>
+        <p class="main_doc-p">Places are actually "collection" records. This means that they can have attached "child" records (of any type). You associate these records by providing their integer IDs as a CSV list in this query.</p>
+        <p class="main_doc-p">You specify IDs to be added by indicating them as positive integers, and to be removed, by specifying them as negative integers (prefixed by "-").</p>
+        <p class="main_doc-p">For example:</p>
+        <div class="uri_display-div">
+            <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/xml</span><span class="uri_plugin_lite-span">/places</span><span class="uri_directory_lite-span">/1234</span><span class="uri_query-span">?child_ids=134,2,-3,-4,5,674,-32</span></code>
+        </div>
+        <p class="main_doc-p">Would add IDs 134, 2, 5, and 674, and would remove IDs 3, 4, and 32 to the place with the ID of 1234 (if the record originally had them). If the record does not have the IDs, or the records indicated by the IDs are not visible to the current user, the IDs are ignored.</p>
+        <p class="main_doc-p">Order does not matter, but your login ID must have at least read permissions for the resource indicated by the child ID. If you do not have that, that child ID will be ignored; even if the record has it.</p>
+        
+        <p class="main_doc-p">You can apply a PUT command to multiple records. Anything in the PUT URI that does not apply to a specific record is simply ignored for that record.</p>
+        <h4 class="rest_api_doc-h4" id="04-people-post-queries-upload">Uploading Binary Data</h4>
+        <p class="main_doc-p">You can upload binary data (such as a place image) with the POST or PUT command. <a href="#main_overview_header-sending_payload_data">The main description</a> discusses the exact mechanism for doing this.</p>
     </div>
 </div>
 

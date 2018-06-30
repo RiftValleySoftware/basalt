@@ -35,6 +35,10 @@
                 <li><a href="#04-people-post-queries-people">Query Arguments (People)</a><ul class="toc-ul">
                     <li><a href="#04-people-post-queries-people-login-user">login_user</a></li>
                     <li><a href="#04-people-post-queries-people-name">name</a></li>
+                    <li><a href="#04-people-post-queries-people-read_token">read_token</a></li>
+                    <li><a href="#04-people-post-queries-people-write_token">write_token</a></li>
+                    <li><a href="#04-people-post-queries-people-lang">lang</a></li>
+                    <li><a href="#04-people-post-queries-people-owner_id">owner_id</a></li>
                     <li><a href="#04-people-post-queries-people-surname">surname</a></li>
                     <li><a href="#04-people-post-queries-people-given_name">given_name</a></li>
                     <li><a href="#04-people-post-queries-people-middle_name">middle_name</a></li>
@@ -498,6 +502,14 @@
         <p class="main_doc-p">If you are specifying a new login (specifying the <a href="#02-people-directories-logins">logins subdirectory</a>), or you are also attaching the <a href="#03-people-query-login-user">login_user</a> query parameter, you are required to provide a "login_string" parameter with the POST command. This should be a string, and will be the login ID of the new user. This is not allowed in the PUT method (you can't change a user ID), unless you are the "God" login.</p>
         <h5 class="rest_api_doc-h5" id="04-people-post-queries-password">password</h5>
         <p class="main_doc-p">If you are specifying a new login (specifying the <a href="#02-people-directories-logins">logins subdirectory</a>), or you are also attaching the <a href="#03-people-query-login-user">login_user</a> query parameter, you have the option of providing your own password in the "password" query parameter. This should be a string, and should be the minimum length (or greater) required by the BAOBAB installation. Leaving this out, or providing too short of a password, will result in a random password being generated (and returned in the request response).</p>
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-people-lang">lang</h5>
+        <p class="main_doc-p">This is the language code for the user and/or login. It should be the 2-letter abbreviation for the code.</p>
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-people-owner_id">owner_id</h5>
+        <p class="main_doc-p">This is the integer ID of an "owner" record for this object. This is not a particularly useful field. It is mostly used for "triaging" large datasets.</p>
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-people-read_token">read_token</h5>
+        <p class="main_doc-p">This is a new integer read token for the record. It must be one that is available to you.</p>
+        <h5 class="rest_api_doc-h5" id="04-people-post-queries-people-write_token">write_token</h5>
+        <p class="main_doc-p">This is a new integer write token for the record. It must be one that is available to you.</p>
         <h5 class="rest_api_doc-h5" id="04-people-post-queries-name">name</h5>
         <p class="main_doc-p">You can optionally specify a name parameter. This is a string, and is put in the "object_name" record column in the new login.</p>
         <h5 class="rest_api_doc-h5" id="04-people-post-queries-name">tokens</h5>
