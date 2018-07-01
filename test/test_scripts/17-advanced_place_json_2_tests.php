@@ -20,7 +20,7 @@ basalt_run_tests(135, 'ADVANCED JSON PLACES TESTS PART 2', 'Verify POST, DELETE 
 // -------------------------- DEFINITIONS AND TESTS -----------------------------------
 
 function basalt_test_define_0135() {
-//     basalt_run_single_direct_test(135, 'PASS: Create A New Location', 'Log in, and create a new simple location with no data at all.', 'dc_area_tests', 'MDAdmin', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(135, 'PASS: Create A New Location', 'Log in, and create a new simple location with no data at all.', 'dc_area_tests', 'MDAdmin', '', 'CoreysGoryStory');
 }
 
 function basalt_test_0135($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -45,7 +45,7 @@ function basalt_test_0135($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // --------------------
 
 function basalt_test_define_0136() {
-//     basalt_run_single_direct_test(136, 'PASS: Create A New Location At the Lincoln Memorial', 'Log in, and create a new location, loaded up as the Lincoln Memorial.', 'dc_area_tests', 'DCAdmin', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(136, 'PASS: Create A New Location At the Lincoln Memorial', 'Log in, and create a new location, loaded up as the Lincoln Memorial.', 'dc_area_tests', 'DCAdmin', '', 'CoreysGoryStory');
 }
 
 function basalt_test_0136($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -70,7 +70,7 @@ function basalt_test_0136($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // --------------------
 
 function basalt_test_define_0137() {
-//     basalt_run_single_direct_test(137, 'PASS: Delete One Single Place.', 'Log in, and delete one single location.', 'dc_area_tests', 'MDAdmin', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(137, 'PASS: Delete One Single Place.', 'Log in, and delete one single location.', 'dc_area_tests', 'MDAdmin', '', 'CoreysGoryStory');
 }
 
 function basalt_test_0137($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -95,7 +95,7 @@ function basalt_test_0137($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // --------------------
 
 function basalt_test_define_0138() {
-//     basalt_run_single_direct_test(138, 'PASS: Delete Three Places.', 'Log in, and delete three individual locations.', 'dc_area_tests', 'MDAdmin', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(138, 'PASS: Delete Three Places.', 'Log in, and delete three individual locations.', 'dc_area_tests', 'MDAdmin', '', 'CoreysGoryStory');
 }
 
 function basalt_test_0138($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -120,7 +120,7 @@ function basalt_test_0138($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // --------------------
 
 function basalt_test_define_0139() {
-//     basalt_run_single_direct_test(139, 'PASS: Delete Every Place We Can See.', 'Log in, and delete all the places that we can see.', 'dc_area_tests', 'MDAdmin', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(139, 'PASS: Delete Every Place We Can See.', 'Log in, and delete all the places that we can see.', 'dc_area_tests', 'MDAdmin', '', 'CoreysGoryStory');
 }
 
 function basalt_test_0139($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -171,7 +171,7 @@ function basalt_test_0139($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // --------------------
 
 function basalt_test_define_0140() {
-//     basalt_run_single_direct_test(140, 'PASS: Delete Some Places In A Radius Search.', 'Log in, and delete a few of the places returned in a radius search.', 'dc_area_tests', 'VAAdmin', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(140, 'PASS: Delete Some Places In A Radius Search.', 'Log in, and delete a few of the places returned in a radius search.', 'dc_area_tests', 'VAAdmin', '', 'CoreysGoryStory');
 }
 
 function basalt_test_0140($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -214,7 +214,7 @@ function basalt_test_0140($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // --------------------
 
 function basalt_test_define_0141() {
-//     basalt_run_single_direct_test(141, 'PASS: Test Pagination.', 'Do not log in, and do a big search, looking for various pages.', 'dc_area_tests');
+    basalt_run_single_direct_test(141, 'PASS: Test Pagination.', 'Do not log in, and do a big search, looking for various pages.', 'dc_area_tests');
 }
 
 function basalt_test_0141($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -285,7 +285,7 @@ function basalt_test_0141($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // --------------------
 
 function basalt_test_define_0142() {
-//     basalt_run_single_direct_test(142, 'PASS: Test Count', 'Don\'t log in, and get back just a count.', 'dc_area_tests');
+    basalt_run_single_direct_test(142, 'PASS: Test Count', 'Don\'t log in, and get back just a count.', 'dc_area_tests');
 }
 
 function basalt_test_0142($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -340,7 +340,7 @@ function basalt_test_0142($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // --------------------
 
 function basalt_test_define_0143() {
-//     basalt_run_single_direct_test(143, 'PASS: Get Just The IDs', 'We don\'t log in, and do the same searches as above.', 'dc_area_tests');
+    basalt_run_single_direct_test(143, 'PASS: Get Just The IDs', 'We don\'t log in, and do the same searches as above.', 'dc_area_tests');
 }
 
 function basalt_test_0143($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -375,8 +375,8 @@ function basalt_test_0143($in_login = NULL, $in_hashed_password = NULL, $in_pass
             if (!isset($places) || !is_array($places) || !count($places)) {
                 break;
             } else {
-                echo('<div  style="text-align:left;display:table"><div id="test_0143_results_1_'.$current_page.'div" class="inner_closed">');
-                    echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0143_results_1_'.$current_page.'div\')" style="font-weight:bold">Page '.($current_page + 1).' ('.count($places).'):</a></h3>');
+                echo('<div  style="text-align:left;display:table"><div id="test_0143_results_2_'.$current_page.'div" class="inner_closed">');
+                    echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0143_results_2_'.$current_page.'div\')" style="font-weight:bold">Page '.($current_page + 1).' ('.count($places).'):</a></h3>');
                     echo('<div class="main_div inner_container">');
                         echo('<pre style="color:green">'.prettify_json($result).'</pre>');
                     echo('</div>');
@@ -402,8 +402,8 @@ function basalt_test_0143($in_login = NULL, $in_hashed_password = NULL, $in_pass
             if (!isset($places) || !is_array($places) || !count($places)) {
                 break;
             } else {
-                echo('<div  style="text-align:left;display:table"><div id="test_0143_results_2_'.$current_page.'div" class="inner_closed">');
-                    echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0143_results_2_'.$current_page.'div\')" style="font-weight:bold">Page '.($current_page + 1).' ('.count($places).'):</a></h3>');
+                echo('<div  style="text-align:left;display:table"><div id="test_0143_results_3_'.$current_page.'div" class="inner_closed">');
+                    echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0143_results_3_'.$current_page.'div\')" style="font-weight:bold">Page '.($current_page + 1).' ('.count($places).'):</a></h3>');
                     echo('<div class="main_div inner_container">');
                         echo('<pre style="color:green">'.prettify_json($result).'</pre>');
                     echo('</div>');
@@ -417,7 +417,7 @@ function basalt_test_0143($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // --------------------
 
 function basalt_test_define_0144() {
-//     basalt_run_single_direct_test(144, 'PASS: Do An Address Lookup Radius Search', 'We don\'t log in, and do a search, based on a string address (the White House).', 'dc_area_tests');
+    basalt_run_single_direct_test(144, 'PASS: Do An Address Lookup Radius Search', 'We don\'t log in, and do a search, based on a string address (the White House).', 'dc_area_tests');
 }
 
 function basalt_test_0144($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -602,6 +602,40 @@ function basalt_test_0149($in_login = NULL, $in_hashed_password = NULL, $in_pass
     } else {
         echo('<div  style="text-align:left;display:table"><div id="test_0149_results_2_div" class="inner_closed">');
             echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0149_results_2_div\')" style="font-weight:bold">See the Results:</a></h3>');
+            echo('<div class="main_div inner_container">');
+            echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+}
+
+// --------------------
+
+function basalt_test_define_0150() {
+    basalt_run_single_direct_test(150, 'PASS: Do A Town and State String Search', 'We don\'t log in, and do a search, based on a string search for a town and a state (Wilmington, DE); then, use a wildcard (W%, D%), and see what happens.', 'dc_area_tests');
+}
+
+function basalt_test_0150($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    echo('<h3>Log In.</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_town=Wilmington&search_state=DE&show_details', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<div  style="text-align:left;display:table"><div id="test_0150_results_1_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0150_results_1_div\')" style="font-weight:bold">See the Results:</a></h3>');
+            echo('<div class="main_div inner_container">');
+            echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+    
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_town=W%&search_state=D%&show_details', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<div  style="text-align:left;display:table"><div id="test_0150_results_2_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0150_results_2_div\')" style="font-weight:bold">See the Results:</a></h3>');
             echo('<div class="main_div inner_container">');
             echo('<pre style="color:green">'.prettify_json($result).'</pre>');
             echo('</div>');
