@@ -290,9 +290,12 @@ function display_record($in_record_object, $in_hierarchy_level = 0, $shorty = fa
             
                 if (method_exists($in_record_object, 'tags')) {
                     if ($in_record_object instanceof CO_Place) {
-                        foreach ($in_record_object->address_elements as $key => $value) {
-                            if (trim($value)) {
-                                echo("<p>$key: \"$value\"</p>");
+                        $address_elements = $in_record_object->get_address_elements();
+                        if (isset($address_elements) && is_array($address_elements) && (0 < count($address_elements))) {
+                            foreach ($address_elements as $key => $value) {
+                                if (trim($value)) {
+                                    echo("<p>$key: \"$value\"</p>");
+                                }
                             }
                         }
                         if (($in_record_object instanceof CO_US_Place) && isset($in_record_object->tags()[7])) {

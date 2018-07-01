@@ -116,7 +116,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
         $address_elements = $in_place_object->get_address_elements();
         
-        if (0 < count($address_elements)) {
+        if (isset($address_elements) && is_array($address_elements) && (0 < count($address_elements))) {
             $ret['address_elements'] = $address_elements;
         }
         

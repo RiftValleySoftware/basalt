@@ -1768,7 +1768,14 @@ INSERT INTO co_data_nodes (id, access_class, last_access, read_security_id, writ
 (1721, 'CO_Place_Collection', '1/2/70 0:00', 0, 11, 'Recovery in the AM', NULL, 11, -75.5516151, 39.7463522, 'Grace United Methosist Church', '900 North Washington Street', '', 'Wilmington', 'New Castle', 'DE', '19801', 'USA', '7:30:00', '', NULL),
 (1722, 'CO_Place_Collection', '1/2/70 0:00', 0, 11, 'Stop the Insanity Group', NULL, 11, -75.520318, 39.173771, 'St. Andrews Lutheran', '425 N. Dupont Hwy.', '', 'Dover', 'Kent', 'DE', '19901', 'USA', '12:15:00', '', NULL),
 (1723, 'CO_Place_Collection', '1/2/70 0:00', 0, 11, 'Living Clean Group', NULL, 11, -75.608132, 39.3010606, 'Asbury Methodist Church', '20 West Mount Vernon Street', '', 'Smyrna', 'Kent', 'DE', '19977', 'USA', '12:30:00', '', NULL),
-(1724, 'CO_Place_Collection', '1/2/70 0:00', 0, 11, 'Recovery Through the Step Working Guides', NULL, 11, -75.12929678, 38.72857679, 'Rehobeth Presbyterian', '4470 Highway 1', '', 'Rehobeth Beach', 'Sussex', 'DE', '19971', 'USA', '3', '18:00:00', NULL);
+(1724, 'CO_Place_Collection', '1/2/70 0:00', 0, 11, 'Recovery Through the Step Working Guides', NULL, 11, -75.12929678, 38.72857679, 'Rehobeth Presbyterian', '4470 Highway 1', '', 'Rehobeth Beach', 'Sussex', 'DE', '19971', 'USA', '3', '18:00:00', NULL),
+(1725, 'CO_User_Collection', '1970-01-02 00:00:00', 1, 7, 'MDAdmin', NULL, NULL, NULL, NULL, '7', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(1726, 'CO_User_Collection', '1970-01-02 00:00:00', 1, 8, 'VAAdmin', NULL, NULL, NULL, NULL, '8', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(1727, 'CO_User_Collection', '1970-01-02 00:00:00', 1, 9, 'DCAdmin', NULL, NULL, NULL, NULL, '9', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(1728, 'CO_User_Collection', '1970-01-02 00:00:00', 1, 10, 'WVAdmin', NULL, NULL, NULL, NULL, '10', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(1729, 'CO_User_Collection', '1970-01-02 00:00:00', 1, 11, 'DEAdmin', NULL, NULL, NULL, NULL, '11', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(1730, 'CO_User_Collection', '1970-01-02 00:00:00', 1, 12, 'Main Admin', NULL, NULL, NULL, NULL, '12', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(1731, 'CO_User_Collection', '1970-01-02 00:00:00', 1, 2, 'God Admin', NULL, NULL, NULL, NULL, '2', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 ALTER TABLE co_data_nodes
-  MODIFY id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1725;
+  MODIFY id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1732;

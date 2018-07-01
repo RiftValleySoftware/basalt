@@ -150,7 +150,7 @@ function basalt_test_0052($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // --------------------
 
 function basalt_test_define_0053() {
-    basalt_run_single_direct_test(53, 'PASS: Do A Radius Search (No Login)', 'Do not log in, and saerch for meetings within 5Km of the Lincoln Memorial', 'dc_area_tests');
+    basalt_run_single_direct_test(53, 'PASS: Do A Radius Search (No Login)', 'Do not log in, and search for meetings within 5Km of the Lincoln Memorial', 'dc_area_tests');
 }
 
 function basalt_test_0053($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -182,7 +182,7 @@ function basalt_test_0054($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // --------------------
 
 function basalt_test_define_0055() {
-    basalt_run_single_direct_test(55, 'PASS: Do A Radius Search (With Login)', 'Log in, and saerch for meetings within 5Km of the Lincoln Memorial', 'dc_area_tests', 'MDAdmin', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(55, 'PASS: Do A Radius Search (With Login)', 'Log in, and search for meetings within 5Km of the Lincoln Memorial', 'dc_area_tests', 'MDAdmin', '', 'CoreysGoryStory');
 }
 
 function basalt_test_0055($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
