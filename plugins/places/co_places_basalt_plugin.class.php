@@ -200,6 +200,15 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
             
             if (isset($in_query['name'])) {
                 $ret['name'] = trim($in_query['name']);
+            }    
+            
+            // See if we are to geocode, reverse geocode, or do nothing (This depends on the Google API Key being enabled).
+            if (isset($in_query['geocode'])) {
+                $ret['geocode'] = 1;
+            } elseif (isset($in_query['reverse-geocode'])) {
+                $ret['geocode'] = -1;
+            } else {
+                $ret['geocode'] = 0;
             }
             
             if (isset($in_query['read_token'])) {
@@ -390,6 +399,23 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         // Take a "before" snapshot.
                         $changed_place = ['before' => $this->_get_long_place_description($place)];
                         $result = true;
+                        
+                        if ($result && isset($parameters['geocode']) && (0 != intval($parameters['geocode']))) {
+                            if (1 == intval($parameters['geocode'])) {
+                                $long_lat = $place->lookup_address();
+                                
+                                if (isset($long_lat) && is_array($long_lat) && 1 < count($long_lat)) {
+                                    $parameters['longitude'] = floatval($long_lat['longitude']);
+                                    $parameters['latitude'] = floatval($long_lat['latitude']);
+                                }
+                            } else {
+                                $address_elements = $place->geocode_long_lat();
+                                
+                                if (isset($address_elements) && is_array($address_elements) && count($address_elements)) {
+                                    $result = $place->set_address_elements($address_elements);
+                                }
+                            }
+                        }
                     
                         if ($result && isset($parameters['name'])) {
                             $result = $place->set_name($parameters['name']);
@@ -610,14 +636,14 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $search_ids_only = isset($in_query) && is_array($in_query) && isset($in_query['search_ids_only']);      // Ignored for discrete IDs. If true, then the response will be an array of integers, denoting resource IDs.
             $search_page_size = isset($in_query) && is_array($in_query) && isset($in_query['search_page_size']) ? abs(intval($in_query['search_page_size'])) : 0;           // Ignored for discrete IDs. This is the size of a page of results (1-based result count. 0 is no page size).
             $search_page_number = isset($in_query) && is_array($in_query) && isset($in_query['search_page_number']) ? abs(intval($in_query['search_page_number'])) : 0;  // Ignored for discrete IDs, or if search_page_size is 0. The page we are interested in (0-based. 0 is the first page).
-
-            // For the default (no place ID), we simply act on a list of all available places (or ones selected by a radius/long lat search).
+            
+            // For the default (no place ID), we simply act on a list of all available places (or filtered by some search criteria).
             if (0 == count($in_path)) {
                 $radius = isset($in_query) && is_array($in_query) && isset($in_query['search_radius']) && (0.0 < floatval($in_query['search_radius'])) ? floatval($in_query['search_radius']) : NULL;
                 $longitude = isset($in_query) && is_array($in_query) && isset($in_query['search_longitude']) ? floatval($in_query['search_longitude']) : NULL;
                 $latitude = isset($in_query) && is_array($in_query) && isset($in_query['search_latitude']) ? floatval($in_query['search_latitude']) : NULL;
                 $search_region_bias = isset($in_query) && is_array($in_query) && isset($in_query['search_region_bias']) ? strtolower(trim($search_region_bias)) : CO_Config::$default_region_bias;  // This is a region bias for an address lookup. Ignored if search_address is not specified.
-                
+
                 // Long/lat trumps an address.
                 // If we have an address, and no long/lat, we see if we can do a lookup.
                 if (isset(CO_Config::$allow_address_lookup) && CO_Config::$allow_address_lookup && CO_Config::$google_api_key) {
