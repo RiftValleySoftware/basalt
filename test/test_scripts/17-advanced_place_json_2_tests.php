@@ -446,14 +446,14 @@ function basalt_test_0145($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
     }
 
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_venue=Good+Samaritan+Hospital', NULL, $api_result, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_venue=Good+Samaritan+Hospital&show_details', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<pre style="color:green">'.prettify_json($result).'</pre>');
     }
 
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_venue=%Hospital', NULL, $api_result, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_venue=%Hospital&show_details', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -464,13 +464,13 @@ function basalt_test_0145($in_login = NULL, $in_hashed_password = NULL, $in_pass
 // --------------------
 
 function basalt_test_define_0146() {
-    basalt_run_single_direct_test(146, 'PASS: Do A Town String Search', 'We don\'t log in, and do a search, based on a string search for a town (Rockville); then, use a wildcard (Ro%), and see what happens.', 'dc_area_tests');
+    basalt_run_single_direct_test(146, 'PASS: Do A Street Address String Search', 'We don\'t log in, and do a search, based on a string search for a street address (1496 S. Main Street); then, use a couple of wildcards (%Main St% and 149%), and see what happens.', 'dc_area_tests');
 }
 
 function basalt_test_0146($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     echo('<h3>Log In.</h3>');
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_town=Rockville', NULL, NULL, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_street_address=1496+S.+Main+Street&show_details', NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -482,7 +482,7 @@ function basalt_test_0146($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('</div></div>');
     }
     
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_town=Ro%', NULL, NULL, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_street_address=%Main+St%&show_details', NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -493,18 +493,30 @@ function basalt_test_0146($in_login = NULL, $in_hashed_password = NULL, $in_pass
             echo('</div>');
         echo('</div></div>');
     }
+    
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_street_address=149%&show_details', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<div  style="text-align:left;display:table"><div id="test_0146_results_3_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0146_results_3_div\')" style="font-weight:bold">See the Results:</a></h3>');
+            echo('<div class="main_div inner_container">');
+            echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
 }
 
 // --------------------
 
 function basalt_test_define_0147() {
-    basalt_run_single_direct_test(147, 'PASS: Do A State String Search', 'We don\'t log in, and do a search, based on a string search for a state (DE); then, use a wildcard (D%), and see what happens.', 'dc_area_tests');
+    basalt_run_single_direct_test(147, 'PASS: Do A Town String Search', 'We don\'t log in, and do a search, based on a string search for a town (Rockville); then, use a wildcard (Ro%), and see what happens.', 'dc_area_tests');
 }
 
 function basalt_test_0147($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     echo('<h3>Log In.</h3>');
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_state=DE', NULL, NULL, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_town=Rockville&show_details', NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -516,7 +528,7 @@ function basalt_test_0147($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('</div></div>');
     }
     
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_state=D%', NULL, NULL, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_town=Ro%&show_details', NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
@@ -529,4 +541,71 @@ function basalt_test_0147($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
 }
 
+// --------------------
+
+function basalt_test_define_0148() {
+    basalt_run_single_direct_test(148, 'PASS: Do A State String Search', 'We don\'t log in, and do a search, based on a string search for a state (DE); then, use a wildcard (D%), and see what happens.', 'dc_area_tests');
+}
+
+function basalt_test_0148($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    echo('<h3>Log In.</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_state=DE&show_details', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<div  style="text-align:left;display:table"><div id="test_0148_results_1_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0148_results_1_div\')" style="font-weight:bold">See the Results:</a></h3>');
+            echo('<div class="main_div inner_container">');
+            echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+    
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_state=D%&show_details', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<div  style="text-align:left;display:table"><div id="test_0148_results_2_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0148_results_2_div\')" style="font-weight:bold">See the Results:</a></h3>');
+            echo('<div class="main_div inner_container">');
+            echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+}
+
+// --------------------
+
+function basalt_test_define_0149() {
+    basalt_run_single_direct_test(149, 'PASS: Do A County String Search', 'We don\'t log in, and do a search, based on a string search for a county (Montgomery); then, use a wildcard (Montgomery%), and see what happens.', 'dc_area_tests');
+}
+
+function basalt_test_0149($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    echo('<h3>Log In.</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_county=Montgomery&show_details', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<div  style="text-align:left;display:table"><div id="test_0149_results_1_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0149_results_1_div\')" style="font-weight:bold">See the Results:</a></h3>');
+            echo('<div class="main_div inner_container">');
+            echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+    
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_county=Montgomery%&show_details', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<div  style="text-align:left;display:table"><div id="test_0149_results_2_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0149_results_2_div\')" style="font-weight:bold">See the Results:</a></h3>');
+            echo('<div class="main_div inner_container">');
+            echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+}
 ?>

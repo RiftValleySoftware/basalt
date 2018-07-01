@@ -431,4 +431,183 @@ function basalt_test_0159($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
     }
 }
+
+// --------------------
+
+function basalt_test_define_0160() {
+    basalt_run_single_direct_test(160, 'PASS: Do An Address Venue String Search', 'We log in, and do a search, based on a string search for an explicit venue name, then we try with wildcards.', 'dc_area_tests', 'MDAdmin', '', 'CoreysGoryStory');
+}
+
+function basalt_test_0160($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    echo('<h3>Log In.</h3>');
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/places/?search_venue=Good+Samaritan+Hospital&show_details', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/places/?search_venue=%Hospital&show_details', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+}
+
+// --------------------
+
+function basalt_test_define_0161() {
+    basalt_run_single_direct_test(161, 'PASS: Do A Street Address String Search', 'We don\'t log in, and do a search, based on a string search for a street address (1496 S. Main Street); then, use a couple of wildcards (%Main St% and 149%), and see what happens.', 'dc_area_tests');
+}
+
+function basalt_test_0161($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    echo('<h3>Log In.</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/places/?search_street_address=1496+S.+Main+Street&show_details', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<div  style="text-align:left;display:table"><div id="test_0161_results_1_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0161_results_1_div\')" style="font-weight:bold">See the Results:</a></h3>');
+            echo('<div class="main_div inner_container">');
+            echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+    
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/places/?search_street_address=%Main+St%&show_details', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<div  style="text-align:left;display:table"><div id="test_0161_results_2_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0161_results_2_div\')" style="font-weight:bold">See the Results:</a></h3>');
+            echo('<div class="main_div inner_container">');
+            echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+    
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/places/?search_street_address=149%&show_details', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<div  style="text-align:left;display:table"><div id="test_0161_results_3_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0161_results_3_div\')" style="font-weight:bold">See the Results:</a></h3>');
+            echo('<div class="main_div inner_container">');
+            echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+}
+
+// --------------------
+
+function basalt_test_define_0162() {
+    basalt_run_single_direct_test(162, 'PASS: Do A Town String Search', 'We don\'t log in, and do a search, based on a string search for a town (Rockville); then, use a wildcard (Ro%), and see what happens.', 'dc_area_tests');
+}
+
+function basalt_test_0162($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    echo('<h3>Log In.</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/places/?search_town=Rockville&show_details', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<div  style="text-align:left;display:table"><div id="test_0162_results_1_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0162_results_1_div\')" style="font-weight:bold">See the Results:</a></h3>');
+            echo('<div class="main_div inner_container">');
+            echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+    
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/places/?search_town=Ro%&show_details', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<div  style="text-align:left;display:table"><div id="test_0162_results_2_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0162_results_2_div\')" style="font-weight:bold">See the Results:</a></h3>');
+            echo('<div class="main_div inner_container">');
+            echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+}
+
+// --------------------
+
+function basalt_test_define_0163() {
+    basalt_run_single_direct_test(163, 'PASS: Do A State String Search', 'We don\'t log in, and do a search, based on a string search for a state (DE); then, use a wildcard (D%), and see what happens.', 'dc_area_tests');
+}
+
+function basalt_test_0163($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    echo('<h3>Log In.</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/places/?search_state=DE&show_details', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<div  style="text-align:left;display:table"><div id="test_0163_results_1_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0163_results_1_div\')" style="font-weight:bold">See the Results:</a></h3>');
+            echo('<div class="main_div inner_container">');
+            echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+    
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/places/?search_state=D%&show_details', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<div  style="text-align:left;display:table"><div id="test_0163_results_2_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0163_results_2_div\')" style="font-weight:bold">See the Results:</a></h3>');
+            echo('<div class="main_div inner_container">');
+            echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+}
+
+// --------------------
+
+function basalt_test_define_0164() {
+    basalt_run_single_direct_test(164, 'PASS: Do A County String Search', 'We don\'t log in, and do a search, based on a string search for a county (Montgomery); then, use a wildcard (Montgomery%), and see what happens.', 'dc_area_tests');
+}
+
+function basalt_test_0164($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    echo('<h3>Log In.</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/places/?search_county=Montgomery&show_details', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<div  style="text-align:left;display:table"><div id="test_0164_results_1_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0164_results_1_div\')" style="font-weight:bold">See the Results:</a></h3>');
+            echo('<div class="main_div inner_container">');
+            echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+    
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/places/?search_county=Montgomery%&show_details', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<div  style="text-align:left;display:table"><div id="test_0164_results_2_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0164_results_2_div\')" style="font-weight:bold">See the Results:</a></h3>');
+            echo('<div class="main_div inner_container">');
+            echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+}
 ?>
