@@ -643,7 +643,28 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $longitude = isset($in_query) && is_array($in_query) && isset($in_query['search_longitude']) ? floatval($in_query['search_longitude']) : NULL;
                 $latitude = isset($in_query) && is_array($in_query) && isset($in_query['search_latitude']) ? floatval($in_query['search_latitude']) : NULL;
                 $search_region_bias = isset($in_query) && is_array($in_query) && isset($in_query['search_region_bias']) ? strtolower(trim($search_region_bias)) : CO_Config::$default_region_bias;  // This is a region bias for an address lookup. Ignored if search_address is not specified.
-
+                $use_like = isset($in_query) && is_array($in_query) && isset($search_query['search_use_like']);
+                
+                $tags = [];
+                $tags_temp = [];
+                
+                // This mess allows us to use the field names set up in the CHAMELEON class as search query bases.
+                for ($count = 0; $count < 8; $count++) {
+                    $eval_line = '$parameter_name = CO_CHAMELEON_Lang_Common::$chameleon_co_place_tag_'.$count.';';
+                    eval($eval_line);
+                    $parameter_name = 'search_'.$parameter_name;
+                    if (isset($in_query) && is_array($in_query) && isset($in_query[$parameter_name])) {
+                        $parameter_value = trim($in_query[$parameter_name]);
+                        $tags_temp[] = $parameter_value;
+                    } else {
+                        $tags_temp[] = NULL;
+                    }
+                }
+                
+                // See if we will even be looking at our tags.
+                if(array_reduce($tags_temp, function($prev, $current) { return $prev || (NULL != $current) ? true : $prev; }, false)) {
+                    $tags = $tags_temp;
+                }
                 // Long/lat trumps an address.
                 // If we have an address, and no long/lat, we see if we can do a lookup.
                 if (isset(CO_Config::$allow_address_lookup) && CO_Config::$allow_address_lookup && CO_Config::$google_api_key) {
@@ -670,6 +691,13 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
             
                 $search_array['access_class'] = $class_search;
                 
+                // Now, I had initially considered doing a cool recursive-descent parser in the directories for a value search, but realized that could be a security vector. So instead, I am implementing a rather primitive, AND-connected query-based lookup.
+                // If you set "search_use_like", you can put SQL wildcards ('%') into the values.
+                if (count($tags)) {
+                    $tags['use_like'] = 1;
+                    $search_array['tags'] = $tags;
+                }
+                
                 if (isset($location_search)) {
                     $search_array['location'] = $location_search;
                 }
@@ -689,14 +717,14 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     $ret['search_location'] = $location_search;
                 }
             } else {
-                $main_command = $in_path[0];    // Get the main command.
+                $first_directory = $in_path[0];    // Get the first directory.
         
                 // This tests to see if we only got one single digit as our "command."
-                $single_place_id = (ctype_digit($main_command) && (1 < intval($main_command))) ? intval($main_command) : NULL;    // This will be for if we are looking only one single place.
+                $single_place_id = (ctype_digit($first_directory) && (1 < intval($first_directory))) ? intval($first_directory) : NULL;    // This will be for if we are looking only one single place.
         
                 // The first thing that we'll do, is look for a list of place IDs. If that is the case, we split them into an array of int.
         
-                $place_id_list = explode(',', $main_command);
+                $place_id_list = explode(',', $first_directory);
         
                 // If we do, indeed, have a list, we will force them to be ints, and cycle through them.
                 if ($single_place_id || (1 < count($place_id_list))) {
@@ -711,7 +739,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                             }
                         }
                     }
-                
+                    
                     if ('GET' == $in_http_method) {
                         $ret = $this->_process_place_get($in_andisol_instance, $placelist, $show_details, $search_count_only, $search_ids_only, $in_path, $in_query);
                         $ret = Array('results' => $ret);
@@ -719,9 +747,6 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         $ret = $this->_process_place_put($in_andisol_instance, $placelist, $in_path, $in_query);
                     } elseif ('DELETE' == $in_http_method) {
                         $ret = $this->_process_place_delete($in_andisol_instance, $placelist, $in_path, $in_query);
-                    }
-                } else {    // Otherwise, let's see what they want to do...
-                    switch ($main_command) {
                     }
                 }
             }

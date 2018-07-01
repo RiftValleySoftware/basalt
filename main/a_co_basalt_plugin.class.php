@@ -19,6 +19,33 @@ defined( 'LGV_BASALT_CATCHER' ) or die ( 'Cannot Execute Directly' );	// Makes s
 abstract class A_CO_Basalt_Plugin {
     /***********************/
     /**
+    This returns any handler for the presented class.
+    
+    \returns a string, with the plugin name that handles the given class.
+     */
+    static protected function _get_handler( $in_classname   ///< REQUIRED: The name of the class we are querying for a handler.
+                                            ) {
+        $plugin_dirs = CO_Config::plugin_dirs();
+        
+        foreach ($plugin_dirs as $plugin_dir) {
+            if (isset($plugin_dir) && is_dir($plugin_dir)) {
+                $plugin_name = basename($plugin_dir);
+                $plugin_classname = 'CO_'.$plugin_name.'_Basalt_Plugin';
+                $plugin_filename = strtolower($plugin_classname).'.class.php';
+                $plugin_file = $plugin_dir.'/'.$plugin_filename;
+                include_once($plugin_file);
+                $class_list = $plugin_classname::classes_managed();
+                if (in_array($in_classname, $class_list)) {
+                    return $plugin_name;
+                }
+            }
+        }
+        
+        return NULL;
+    }
+
+    /***********************/
+    /**
     \returns the server base URI, including any custom port and/or SSL prefix.
     */
     protected static function _server_url() {
@@ -228,33 +255,6 @@ abstract class A_CO_Basalt_Plugin {
         }
         
         return $ret;
-    }
-    
-    /***********************/
-    /**
-    This returns any handler for the presented class.
-    
-    \returns a string, with the plugin name that handles the given class.
-     */
-    static protected function _get_handler( $in_classname   ///< REQUIRED: The name of the class we are querying for a handler.
-                                            ) {
-        $plugin_dirs = CO_Config::plugin_dirs();
-        
-        foreach ($plugin_dirs as $plugin_dir) {
-            if (isset($plugin_dir) && is_dir($plugin_dir)) {
-                $plugin_name = basename($plugin_dir);
-                $plugin_classname = 'CO_'.$plugin_name.'_Basalt_Plugin';
-                $plugin_filename = strtolower($plugin_classname).'.class.php';
-                $plugin_file = $plugin_dir.'/'.$plugin_filename;
-                include_once($plugin_file);
-                $class_list = $plugin_classname::classes_managed();
-                if (in_array($in_classname, $class_list)) {
-                    return $plugin_name;
-                }
-            }
-        }
-        
-        return NULL;
     }
     
     /***********************/
