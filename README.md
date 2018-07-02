@@ -45,9 +45,9 @@ BASALT will include a few "built in" plugins, but the implementor of the server 
 
 REST API
 ========
-BASALT expresses true [RESTful](https://restfulapi.net) API access to the Rift Valley BAOBAB server.
+BASALT expresses a pseudo-[REST](https://restfulapi.net) API access to the Rift Valley BAOBAB server. It is not a "true" REST API, in that the PUT and POST methods are handled differently than "true" REST.
 
-The server can be configured to require that all [REST](https://restfulapi.net) access be done as [TLS (SSL/HTTPS)](https://en.wikipedia.org/wiki/Transport_Layer_Security).
+The server can be configured to require that all [REST](https://restfulapi.net) access be done as [TLS (SSL/HTTPS)](https://en.wikipedia.org/wiki/Transport_Layer_Security), and uses a "server secret/API Key" method of authentication.
 
 REST METHODS
 ------------
@@ -63,7 +63,7 @@ BASALT's [REST](https://restfulapi.net) API implements the following [methods](h
     
 - [`PUT`](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6)
 
-    This is used to update/modify resources. It can be used in a fashion like [the `PATCH` method](https://tools.ietf.org/html/rfc5789), where only the changed portion of a resource is provided. You must have an authenticated login to use this.
+    This is used to update/modify resources. It can be used where only the changed portion of a resource is provided. You must have an authenticated login to use this.
     
 - [`DELETE`](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7)
 
