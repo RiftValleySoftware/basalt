@@ -642,4 +642,69 @@ function basalt_test_0150($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('</div></div>');
     }
 }
+
+// --------------------
+
+function basalt_test_define_0151() {
+    basalt_run_single_direct_test(151, 'PASS: Do A Tag String Search', 'We log in, and do a search, based on a string search for an explicit venue name, add tags to those records, then search for the tags.', 'dc_area_tests', 'MDAdmin', '', 'CoreysGoryStory');
+}
+
+function basalt_test_0151($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    echo('<h3>Log In.</h3>');
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_venue=Good+Samaritan+Hospital&show_details', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+
+    $result = call_REST_API('PUT', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_venue=Good+Samaritan+Hospital&tag8=I+Like&tag9=Ike', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_tag8=I+Like', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_tag9=Ike', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_tag9=Ike&search_tag8=I+Like', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+    
+    echo('<h3>EXTRA CREDIT: This string is in quite a few records:</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/?search_tag8=20:00:00&show_details', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<div  style="text-align:left;display:table"><div id="test_0151_results_1_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0151_results_1_div\')" style="font-weight:bold">See the Results:</a></h3>');
+            echo('<div class="main_div inner_container">');
+            echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+            echo('</div>');
+        echo('</div></div>');
+    }
+}
 ?>

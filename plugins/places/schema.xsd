@@ -18,6 +18,7 @@
                             <xs:element minOccurs='0' name='radius' type='xs:float'/>
                             <xs:element minOccurs='0' name='longitude' type='xs:float'/>
                             <xs:element minOccurs='0' name='latitude' type='xs:float'/>
+                            <xs:element minOccurs='0' name='address' type='xs:string'/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
@@ -159,6 +160,8 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element minOccurs='0' name='tag8' type='xs:string'/>
+            <xs:element minOccurs='0' name='tag9' type='xs:string'/>
             <xs:element minOccurs="0" name="payload" type="xs:base64Binary"/>
             <xs:element minOccurs="0" name="payload_type" type="xs:string"/>
         </xs:sequence>

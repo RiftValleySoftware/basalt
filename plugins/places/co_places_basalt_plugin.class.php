@@ -120,6 +120,14 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $ret['address_elements'] = $address_elements;
         }
         
+        if (isset($in_place_object->tags()[8]) && trim($in_place_object->tags()[8])) {
+            $ret['tag8'] = trim($in_place_object->tags()[8]);
+        }
+        
+        if (isset($in_place_object->tags()[9]) && trim($in_place_object->tags()[9])) {
+            $ret['tag9'] = trim($in_place_object->tags()[9]);
+        }
+        
         $payload = $in_place_object->get_payload();
         
         if ($payload) {
@@ -643,7 +651,6 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $longitude = isset($in_query) && is_array($in_query) && isset($in_query['search_longitude']) ? floatval($in_query['search_longitude']) : NULL;
                 $latitude = isset($in_query) && is_array($in_query) && isset($in_query['search_latitude']) ? floatval($in_query['search_latitude']) : NULL;
                 $search_region_bias = isset($in_query) && is_array($in_query) && isset($in_query['search_region_bias']) ? strtolower(trim($search_region_bias)) : CO_Config::$default_region_bias;  // This is a region bias for an address lookup. Ignored if search_address is not specified.
-                $use_like = isset($in_query) && is_array($in_query) && isset($search_query['search_use_like']);
                 
                 $tags = [];
                 $tags_temp = [];
@@ -661,14 +668,30 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     }
                 }
                 
+                // These two tags are available for whatever we want them for.
+                if (isset($in_query) && is_array($in_query) && isset($in_query['search_tag8'])) {
+                    $tags_temp[] = trim($in_query['search_tag8']);
+                } else {
+                    $tags_temp[] = NULL;
+                }
+                
+                if (isset($in_query) && is_array($in_query) && isset($in_query['search_tag9'])) {
+                    $tags_temp[] = trim($in_query['search_tag9']);
+                } else {
+                    $tags_temp[] = NULL;
+                }
+                
                 // See if we will even be looking at our tags.
                 if(array_reduce($tags_temp, function($prev, $current) { return $prev || (NULL != $current) ? true : $prev; }, false)) {
                     $tags = $tags_temp;
                 }
+                
+                $address = NULL;
+                
                 // Long/lat trumps an address.
                 // If we have an address, and no long/lat, we see if we can do a lookup.
                 if (isset(CO_Config::$allow_address_lookup) && CO_Config::$allow_address_lookup && CO_Config::$google_api_key) {
-                    $address =  isset($in_query) && is_array($in_query) && isset($in_query['search_address']) && trim($in_query['search_address']) ? trim($in_query['search_address']) : NULL;
+                    $address = isset($in_query) && is_array($in_query) && isset($in_query['search_address']) && trim($in_query['search_address']) ? trim($in_query['search_address']) : NULL;
                     if (isset($address) && $address && !(isset($longitude) && isset($latitude))) {
                         if (CO_Config::$allow_general_address_lookup || $in_andisol_instance->logged_in()) {
                             $result = self::_lookup_address($address, $search_region_bias);
@@ -692,7 +715,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $search_array['access_class'] = $class_search;
                 
                 // Now, I had initially considered doing a cool recursive-descent parser in the directories for a value search, but realized that could be a security vector. So instead, I am implementing a rather primitive, AND-connected query-based lookup.
-                // If you set "search_use_like", you can put SQL wildcards ('%') into the values.
+                // You can put SQL wildcards ('%') into the values, and specifying multiple values will act as an AND search.
                 if (count($tags)) {
                     $tags['use_like'] = 1;
                     $search_array['tags'] = $tags;
@@ -700,6 +723,9 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 
                 if (isset($location_search)) {
                     $search_array['location'] = $location_search;
+                    if (isset($address) && $address && !(isset($longitude) && isset($latitude))) {
+                        $search_array['location']['address'] = $address;
+                    }
                 }
                 
                 $placelist = $in_andisol_instance->generic_search($search_array, false, $search_page_size, $search_page_number, $writeable, $search_count_only, $search_ids_only);
