@@ -1400,56 +1400,11 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         // <rubs hands/> Now, let's get to work...
         // First, build up a list of the items that we want to change.
     
-        $ret = [];   // We will build up an associative array of changes we want to make.
+        $ret = parent::_process_parameters($in_andisol_instance, $in_query);
         
         if (isset($in_query) && is_array($in_query) && count($in_query)) {
             // See if they want to add new child data items to each user, or remove existing ones.
             // We indicate adding ones via positive integers (the item IDs), and removing via negative integers (minus the item ID).
-            if (isset($in_query['child_ids'])) {
-                $ret['child_ids'] = Array('add' => [], 'remove' => []);
-                $child_item_list = [];          // If we are adding new child items, their IDs go in this list.
-                $delete_child_item_list = [];   // If we are removing items, we indicate that with negative IDs, and put those in a different list (absvaled).
-            
-                $child_id_list = array_map('intval', explode(',', $in_query['child_ids']));
-        
-                // Child IDs are a CSV list of integers, with IDs of data records.
-                if (isset($child_id_list) && is_array($child_id_list) && count($child_id_list)) {
-                    // Check for ones we can't see (we don't need write permission, but we do need read permission).
-                    foreach ($child_id_list as $id) {
-                        if (0 < $id) {  // See if we are adding to the list
-                            $item = $in_andisol_instance->get_single_data_record_by_id($id);
-                            // If we got the item, then it exists, and we can see it. Add its ID to our list.
-                            $child_item_list[] = $id;
-                        } else {    // If we are removing it, we still need read permission, but it goes in a different list.
-                            $item = $in_andisol_instance->get_single_data_record_by_id(-$id);
-                            $delete_child_item_list[] = -$id;
-                        }
-                    }
-            
-                    // Make sure there's no repeats.
-                    $child_item_list = array_unique($child_item_list);
-                    $delete_child_item_list = array_unique($delete_child_item_list);
-                
-                    // Because we're anal.
-                    sort($child_item_list);
-                    sort($delete_child_item_list);
-                
-                    // At this point, we have a list of IDs that we want to add, and IDs that we want to remove, from the various (or single) users.
-                }
-            
-                // If we have items we want to add, we add them to our TO DO list.
-                if (isset($child_item_list) && is_array($child_item_list) && count($child_item_list)) {
-                    $ret['child_ids']['add'] = $child_item_list;
-                }
-            
-                // If we have items we want to remove, we add those to our TO DO list.
-                if (isset($delete_child_item_list) && is_array($delete_child_item_list) && count($delete_child_item_list)) {
-                    $ret['child_ids']['remove'] = $delete_child_item_list;
-                }
-            
-                unset($in_query['child_ids']);
-            }
-            
             if (isset($in_query['tokens'])) {
                 $tokens_temp = array_map('intval', explode(',', $in_query['tokens']));
                 $tokens = [];
@@ -1473,21 +1428,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             // Next, we see if we want to change the password.
             if (isset($in_query['password']) && (strlen(trim($in_query['password'])) >= CO_Config::$min_pw_len)) {
                 $ret['password'] = trim($in_query['password']);
-            }
-        
-            // Next, we see if we want to change the read security.
-            if (isset($in_query['read_token'])) {
-                $ret['read_token'] = intval($in_query['read_token']);
-            }
-        
-            // Next, we see if we want to change the write security.
-            if (isset($in_query['write_token'])) {
-                $ret['write_token'] = intval($in_query['write_token']);
-            }
-        
-            // Next, we see if we want to change the name.
-            if (isset($in_query['name'])) {
-                $ret['name'] = trim(strval($in_query['name']));
             }
         
             // Next, we see if we want to change the surname.
@@ -1528,23 +1468,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             // Next, we see if we want to change/set the login object asociated with this. You can remove an associated login object by passing in NULL or 0, here.
             if (isset($in_query['login_string']) && $in_andisol_instance->god()) {  // Only God can change login strings (unless we are creating a new user).
                 $ret['login_string'] = trim($in_query['login_string']);
-            }
-            
-            // Next, we see if we want to change/set the "owner" object asociated with this. You can remove an associated owner object by passing in NULL or 0, here.
-            if (isset($in_query['owner_id'])) {
-                $ret['owner_id'] = abs(intval(trim($in_query['owner_id'])));
-            }
-        
-            // Next, look for the language.
-            if (isset($in_query['lang'])) {
-                $ret['lang'] = trim(strval($in_query['lang']));
-            }
-        
-            // Next, we see if we the user is supplying a payload to be stored, or removing the existing one.
-            if (isset($in_query['remove_payload'])) { // If they did not specify a payload, maybe they want one removed?
-                $ret['remove_payload'] = true;
-            } elseif (isset($in_query['payload'])) {
-                $ret['payload'] = $in_query['payload'];
             }
                 
             // Next, look for the last two tags (the only ones we're allowed to change).

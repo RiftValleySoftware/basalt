@@ -162,7 +162,6 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
         $ret = parent::_process_parameters($in_andisol_instance, $in_query);
         
         if (isset($in_query) && is_array($in_query)) {
-            
             // See if we are to geocode, reverse geocode, or do nothing (This depends on the Google API Key being enabled).
             if (isset($in_query['geocode'])) {
                 $ret['geocode'] = 1;
