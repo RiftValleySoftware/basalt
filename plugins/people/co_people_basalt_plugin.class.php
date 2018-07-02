@@ -1298,6 +1298,22 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                             }
                             break;
                                 
+                        case 'longitude':
+                            $result = $user->set_longitude($value);
+                            break;
+                                
+                        case 'latitude':
+                            $result = $user->set_latitude($value);
+                            break;
+                            
+                        case 'fuzz_factor':
+                            $result = $user->set_fuzz_factor($value);
+                            break;
+                            
+                        case 'can_see_through_the_fuzz':
+                            $result = $user->set_can_see_through_the_fuzz($value);
+                            break;
+                            
                         case 'lang':
                             $result = $user->set_lang($value);
                             

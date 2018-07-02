@@ -29,6 +29,19 @@
                         <li><a href="#02-places-queries-search-search_ids_only-json">JSON</a></li>
                         <li><a href="#02-places-queries-search-search_ids_only-xml">XML</a></li>
                     </ul></li>
+                    <li><a href="#02-places-queries-search-string_searches">String Search Parameters</a><ul class="toc-ul">
+                        <li><a href="#02-places-queries-search-string_searches-search_name">search_name</a></li>
+                        <li><a href="#02-places-queries-search-string_searches-search_venue_name">search_venue_name</a></li>
+                        <li><a href="#02-places-queries-search-string_searches-search_street_address">search_street_address</a></li>
+                        <li><a href="#02-places-queries-search-string_searches-search_extra_information">search_extra_information</a></li>
+                        <li><a href="#02-places-queries-search-string_searches-search_extra_information">search_town</a></li>
+                        <li><a href="#02-places-queries-search-string_searches-search_county">search_county</a></li>
+                        <li><a href="#02-places-queries-search-string_searches-search_state">search_state</a></li>
+                        <li><a href="#02-places-queries-search-string_searches-search_postal_code">search_postal_code</a></li>
+                        <li><a href="#02-places-queries-search-string_searches-search_nation">search_nation</a></li>
+                        <li><a href="#02-places-queries-search-string_searches-search_tag8">search_tag8</a></li>
+                        <li><a href="#02-places-queries-search-string_searches-search_tag9">search_tag9</a></li>
+                    </ul></li>
                 </ul></li>
                 <li><a href="#02-places-queries-pagination">Pagination</a><ul class="toc-ul">
                     <li><a href="#02-places-queries-pagination-search_page_size">search_page_size</a></li>
@@ -488,6 +501,33 @@
 &lt;/places&gt;
 </pre>
 
+        <h4 class="rest_api_doc-h5" id="02-places-queries-search-string_searches">String Search Parameters</h4>
+        <p class="main_doc-p">These apply to GET, PUT and POST.</p>
+        <p class="main_doc-p">There are a number of parameters that can be applied to perform a string search (not a long/lat or location radius search).</p>
+        <p class="main_doc-p">You can use SQL-style wildcards in these searches ("%" -percent sign).</p>
+        <p class="main_doc-p">These are case-insensitive.</p>
+        <h5 class="rest_api_doc-h5" id="02-places-queries-search-string_searches-search_name">search_name</h5>
+        <p class="main_doc-p">This is the object name (not the venue name).</p>
+        <h5 class="rest_api_doc-h5" id="02-places-queries-search-string_searches-search_venue_name">search_venue_name</h5>
+        <p class="main_doc-p">This is the venue name.</p>
+        <h5 class="rest_api_doc-h5" id="02-places-queries-search-string_searches-search_street_address">search_street_address</h5>
+        <p class="main_doc-p">This is the street address.</p>
+        <h5 class="rest_api_doc-h5" id="02-places-queries-search-string_searches-search_extra_information">search_extra_information</h5>
+        <p class="main_doc-p">This is the "extra information" column.</p>
+        <h5 class="rest_api_doc-h5" id="02-places-queries-search-string_searches-search_town">search_town</h5>
+        <p class="main_doc-p">This is the city or town.</p>
+        <h5 class="rest_api_doc-h5" id="02-places-queries-search-string_searches-search_county">search_county</h5>
+        <p class="main_doc-p">This is the county or sub-province.</p>
+        <h5 class="rest_api_doc-h5" id="02-places-queries-search-string_searches-search_state">search_state</h5>
+        <p class="main_doc-p">This is the state or province.</p>
+        <h5 class="rest_api_doc-h5" id="02-places-queries-search-string_searches-search_postal_code">search_postal_code</h5>
+        <p class="main_doc-p">This is the ZIP code or postal code. It is a string (not an integer).</p>
+        <h5 class="rest_api_doc-h5" id="02-places-queries-search-string_searches-search_nation">search_nation</h5>
+        <p class="main_doc-p">This is the nation.</p>
+        <h5 class="rest_api_doc-h5" id="02-places-queries-search-string_searches-search_tag8">search_tag8</h5>
+        <h5 class="rest_api_doc-h5" id="02-places-queries-search-string_searches-search_tag9">search_tag9</h5>
+        <p class="main_doc-p">These are two "arbitrary string" values that can be used to store pretty much anything (up to 256 characters long).</p>
+        
         <h4 class="rest_api_doc-h4" id="02-places-queries-pagination">Pagination</h4>
         <p class="main_doc-p">These queries apply to GET, PUT and DELETE.</p>
         <p class="main_doc-p">You can get the search results back in "pages" of a specific number of items (or less) per page; specifying each of these "pages."</p>
@@ -714,14 +754,14 @@
         <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-address_postal_code">address_postal_code</h5>
         <p class="main_doc-p">This is the postal/ZIP code for the address of the place.</p>
         
+        <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-address_nation">address_nation</h5>
+        <p class="main_doc-p">This is the nation for the place. It should be the two- or three-letter designation for the nation.</p>
+        
         <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-tag8">tag8</h5>
         <p class="main_doc-p">This is an arbitrary string to attach to an easily-searched part of the record.</p>
         
         <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-tag9">tag9</h5>
         <p class="main_doc-p">This is another arbitrary string to attach to an easily-searched part of the record.</p>
-        
-        <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-address_nation">address_nation</h5>
-        <p class="main_doc-p">This is the nation for the place. It should be the two- or three-letter designation for the nation.</p>
         
         <h5 class="rest_api_doc-h5" id="04-places-queries-put-post-queries-child_ids">child_ids</h5>
         <p class="main_doc-p">Places are actually "collection" records. This means that they can have attached "child" records (of any type). You associate these records by providing their integer IDs as a CSV list in this query.</p>
