@@ -65,7 +65,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
     If provided, the query array will be an associative array, with the key being the query element key, and the value being its value.
     If a query element is provided only as a key, then its value will be set to true.
      */
-    protected function _process_parameters() {
+    protected function _process_basalt_parameters() {
         $paths = isset($_SERVER['PATH_INFO']) ? explode("/", substr($_SERVER['PATH_INFO'], 1)) : [];
         $query = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : NULL;
         $path_final = [];
@@ -372,7 +372,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         // IIS puts "off" in the HTTPS field, so we need to test for that.
         $https = ((!empty ( $_SERVER['HTTPS'] ) && (($_SERVER['HTTPS'] !== 'off') || ($port == 443)))) ? true : false;
         if ((CO_CONFIG_HTTPS_ALL > CO_Config::$ssl_requirement_level) || $https) {
-            $this->_process_parameters();
+            $this->_process_basalt_parameters();
 
             // If this is a login, we do nothing else. We simply handle the login.
             if ((1 == count($this->_path)) && ('login' == $this->_path[0])) {

@@ -287,6 +287,111 @@ abstract class A_CO_Basalt_Plugin {
         
         return $ret;
     }
+        
+    /***********************/
+    /**
+    Parses the query parameters and cleans them for the database.
+    
+    \returns an associative array of the parameters, parsed for submission to the database.
+     */
+    protected function _process_parameters( $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                            $in_query               ///< REQUIRED: The query string to be parsed.
+                                        ) {
+        $ret = [];
+        if (isset($in_query) && is_array($in_query)) {
+            // See if they want to add new child data items to each user, or remove existing ones.
+            // We indicate adding ones via positive integers (the item IDs), and removing via negative integers (minus the item ID).
+            if (isset($in_query['child_ids'])) {
+                $ret['child_ids'] = Array('add' => [], 'remove' => []);
+                $child_item_list = [];          // If we are adding new child items, their IDs go in this list.
+                $delete_child_item_list = [];   // If we are removing items, we indicate that with negative IDs, and put those in a different list (absvaled).
+            
+                $child_id_list = array_map('intval', explode(',', $in_query['child_ids']));
+        
+                // Child IDs are a CSV list of integers, with IDs of data records.
+                if (isset($child_id_list) && is_array($child_id_list) && count($child_id_list)) {
+                    // Check for ones we can't see (we don't need write permission, but we do need read permission).
+                    foreach ($child_id_list as $id) {
+                        if (0 < $id) {  // See if we are adding to the list
+                            $item = $in_andisol_instance->get_single_data_record_by_id($id);
+                            // If we got the item, then it exists, and we can see it. Add its ID to our list.
+                            $child_item_list[] = $id;
+                        } else {    // If we are removing it, we still need read permission, but it goes in a different list.
+                            $item = $in_andisol_instance->get_single_data_record_by_id(-$id);
+                            $delete_child_item_list[] = -$id;
+                        }
+                    }
+            
+                    // Make sure there's no repeats.
+                    $child_item_list = array_unique($child_item_list);
+                    $delete_child_item_list = array_unique($delete_child_item_list);
+                
+                    // Because we're anal.
+                    sort($child_item_list);
+                    sort($delete_child_item_list);
+                
+                    // At this point, we have a list of IDs that we want to add, and IDs that we want to remove, from the various (or single) users.
+                }
+            
+                // If we have items we want to add, we add them to our TO DO list.
+                if (isset($child_item_list) && is_array($child_item_list) && count($child_item_list)) {
+                    $ret['child_ids']['add'] = $child_item_list;
+                }
+            
+                // If we have items we want to remove, we add those to our TO DO list.
+                if (isset($delete_child_item_list) && is_array($delete_child_item_list) && count($delete_child_item_list)) {
+                    $ret['child_ids']['remove'] = $delete_child_item_list;
+                }
+            }
+            
+            if (isset($in_query['name'])) {
+                $ret['name'] = trim($in_query['name']);
+            }    
+            
+            if (isset($in_query['read_token'])) {
+                $ret['read_token'] = intval($in_query['read_token']);
+            }
+            
+            if (isset($in_query['write_token'])) {
+                $ret['write_token'] = intval($in_query['write_token']);
+            }
+            
+            if (isset($in_query['longitude'])) {
+                $ret['longitude'] = floatval($in_query['longitude']);
+            }
+            
+            if (isset($in_query['latitude'])) {
+                $ret['latitude'] = floatval($in_query['latitude']);
+            }
+            
+            if (isset($in_query['fuzz_factor'])) {
+                $ret['fuzz_factor'] = floatval($in_query['fuzz_factor']);
+            }
+            
+            if (isset($in_query['can_see_through_the_fuzz'])) {
+                $ret['can_see_through_the_fuzz'] = intval($in_query['can_see_through_the_fuzz']);
+            }
+            
+            // Next, we see if we want to change/set the "owner" object asociated with this. You can remove an associated owner object by passing in NULL or 0, here.
+            if (isset($in_query['owner_id'])) {
+                $ret['owner_id'] = abs(intval(trim($in_query['owner_id'])));
+            }
+        
+            // Next, look for the language.
+            if (isset($in_query['lang'])) {
+                $ret['lang'] = trim(strval($in_query['lang']));
+            }
+        
+            // Next, we see if we the user is supplying a payload to be stored, or removing the existing one.
+            if (isset($in_query['remove_payload'])) { // If they did not specify a payload, maybe they want one removed?
+                $ret['remove_payload'] = true;
+            } elseif (isset($in_query['payload'])) {
+                $ret['payload'] = $in_query['payload'];
+            }
+        }
+        
+        return $ret;
+    }
     
     /************************************************************************************************************************/    
     /*#################################################### ABSTRACT METHODS ################################################*/
