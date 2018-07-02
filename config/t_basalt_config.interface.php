@@ -70,7 +70,7 @@ trait tCO_Basalt_Config {
     static function call_log_handler_function(  $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance at the time of the call.
                                                 $in_server_vars         ///< REQUIRED: The $_SERVER array, at the time of the call.
                                                 ) {   
-        $log_handler = self::$_log_handler_function;
+        $log_handler = isset(self::$_log_handler_function) ? self::$_log_handler_function : NULL;
         
         if (isset($log_handler) && is_array($log_handler) && (1 < count($log_handler)) && is_object($log_handler[0]) && method_exists($log_handler[0], $log_handler[1])) {
             $log_handler[0]->$log_handler[1]($in_andisol_instance, $in_server_vars);
