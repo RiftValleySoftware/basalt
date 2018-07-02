@@ -1395,7 +1395,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
      */
     protected function _build_user_mod_list(    $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
                                                 $in_http_method,        ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
-                                                &$in_query = NULL       ///< OPTIONAL: The query parameters, as an associative array, passed by reference. If left empty, this method is worthless.
+                                                $in_query = NULL        ///< OPTIONAL: The query parameters, as an associative array. If left empty, this method is worthless.
                                                 ) {
         // <rubs hands/> Now, let's get to work...
         // First, build up a list of the items that we want to change.
