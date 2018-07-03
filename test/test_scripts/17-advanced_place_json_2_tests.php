@@ -84,7 +84,7 @@ function basalt_test_0137($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     
     echo('<h3>Delete the first record:</h3>');
-    $result = call_REST_API('DELETE', 'http://localhost/basalt/test/basalt_runner.php/json/places/2', NULL, $api_result, $result_code);
+    $result = call_REST_API('DELETE', 'http://localhost/basalt/test/basalt_runner.php/json/places/2?show_parents', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {

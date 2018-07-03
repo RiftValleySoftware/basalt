@@ -233,10 +233,11 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     \returns an array, with the results.
      */
-    protected function _handle_edit_logins( $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
-                                            $in_http_method,        ///< REQUIRED: 'POST', 'PUT' or 'DELETE'
-                                            $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
-                                            $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
+    protected function _handle_edit_logins( $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                            $in_http_method,            ///< REQUIRED: 'POST', 'PUT' or 'DELETE'
+                                            $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
+                                            $in_query = [],             ///< OPTIONAL: The query parameters, as an associative array.
+                                            $in_show_parents = false    ///< OPTIONAL: (Default is false). If true, then the parents will be shown. This can be a time-consuming operation, so it needs to be explicitly requested.
                                         ) {
         $ret = [];
         
@@ -298,7 +299,10 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             if ('POST' == $in_http_method) {
                 $ret = $this->_handle_edit_logins_post($in_andisol_instance, $logins_to_edit, $in_query);
             } elseif ('DELETE' == $in_http_method) {
-                $ret = $this->_handle_edit_logins_delete($in_andisol_instance, $logins_to_edit, $in_query, $also_delete_user);
+                if (!$also_delete_user) {
+                    $in_show_parents = false;   // Doesn't count, unless we are deleting a user. Logins can't have parents.
+                }
+                $ret = $this->_handle_edit_logins_delete($in_andisol_instance, $logins_to_edit, $in_query, $also_delete_user, $in_show_parents);
             } elseif ('PUT' == $in_http_method) {   // Of course, there's always an exception. People can edit their own users.;
                 $ret = $this->_handle_edit_logins_put($in_andisol_instance, $logins_to_edit, $in_query);
             }
@@ -359,7 +363,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $password = isset($params['password']) ? $params['password'] : NULL;
                 
                 if (!$password || (strlen($password) < CO_Config::$min_pw_len)) {
-                    $password = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*~_-=+;:,.!?"), 0, CO_Config::$min_pw_len);
+                    $password = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*~_-=+;:,.!?"), 0, CO_Config::$min_pw_len + 2);
                 }
                 
                 $tokens = isset($params['tokens']) ? $params['tokens'] : NULL;
@@ -409,10 +413,11 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     \returns an array, with the results.
      */
-    protected function _handle_edit_logins_delete(  $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
-                                                    $in_logins_to_edit,     ///< REQUIRED: An array of login objects to be affected.
-                                                    $in_query = [],         ///< OPTIONAL: The query parameters, as an associative array.
-                                                    $in_also_delete_user    ///< OPTIONAL: If true, then we also want the user to be deleted. Default is false.
+    protected function _handle_edit_logins_delete(  $in_andisol_instance,           ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                                    $in_logins_to_edit,             ///< REQUIRED: An array of login objects to be affected.
+                                                    $in_query = [],                 ///< OPTIONAL: The query parameters, as an associative array.
+                                                    $in_also_delete_user = false,   ///< OPTIONAL: (Default is false). If true, then we also want the user to be deleted.
+                                                    $in_show_parents = false        ///< OPTIONAL: (Default is false). If true, then the parents will be shown. This can be a time-consuming operation, so it needs to be explicitly requested.
                                                 ) {
         $ret = [];
         
@@ -633,10 +638,11 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     \returns an associative array, with the resulting data.
      */
-    protected function _handle_edit_people( $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
-                                            $in_http_method,        ///< REQUIRED: 'POST', 'PUT' or 'DELETE'
-                                            $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
-                                            $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
+    protected function _handle_edit_people( $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                            $in_http_method,            ///< REQUIRED: 'POST', 'PUT' or 'DELETE'
+                                            $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
+                                            $in_query = [],             ///< OPTIONAL: The query parameters, as an associative array.
+                                            $in_show_parents = false    ///< OPTIONAL: (Default is false). If true, then the parents will be shown. This can be a time-consuming operation, so it needs to be explicitly requested.
                                         ) {
         $ret = NULL;
         
@@ -646,7 +652,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         if (('POST' == $in_http_method) && $in_andisol_instance->manager()) {
             $ret = $this->_handle_edit_people_post($in_andisol_instance, $login_user, $in_path, $in_query);
         } elseif (('DELETE' == $in_http_method) && $in_andisol_instance->manager()) {
-            $ret = $this->_handle_edit_people_delete($in_andisol_instance, $login_user, $in_path, $in_query);
+            $ret = $this->_handle_edit_people_delete($in_andisol_instance, $login_user, $in_path, $in_query, $in_show_parents);
         } elseif ('PUT' == $in_http_method) {   // Of course, there's always an exception. People can edit their own users.
             $ret = $this->_handle_edit_people_put($in_andisol_instance, $login_user, $in_path, $in_query);
         } else {
@@ -862,6 +868,16 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                     }
                                 }
                                 break;
+                        
+                            case 'fuzz_factor':
+                                $result = $place->set_fuzz_factor($value);
+                                $user_changed = true;
+                                break;
+                        
+                            case 'can_see_through_the_fuzz':
+                                $result = $place->set_can_see_through_the_fuzz($value);
+                                $user_changed = true;
+                                break;
                             
                             case 'tokens':
                                 if ($in_login_user) {  // Can only do this, if the caller explicitly requested a login user.
@@ -1006,10 +1022,11 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     \returns an associative array, with the resulting data.
      */
-    protected function _handle_edit_people_delete ( $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
-                                                    $in_login_user,         ///< REQUIRED: True, if the user is associated with a login.
-                                                    $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
-                                                    $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
+    protected function _handle_edit_people_delete ( $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                                    $in_login_user,             ///< REQUIRED: True, if the user is associated with a login.
+                                                    $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
+                                                    $in_query = [],             ///< OPTIONAL: The query parameters, as an associative array.
+                                                    $in_show_parents = false    ///< OPTIONAL: (Default is false). If true, then the parents will be shown. This can be a time-consuming operation, so it needs to be explicitly requested.
                                                 ) {
         $ret = NULL;
         
@@ -1128,7 +1145,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             
             // Now, we have a full list of users that we have permission to delete.
             foreach ($user_object_list as $user) {
-                $user_dump = $this->_get_long_user_description($user, $in_login_user);
+                $user_dump = $this->_get_long_user_description($user, $in_login_user, $in_show_parents);
                 $login_dump = NULL;
                 
                 $ok = true;
@@ -1526,7 +1543,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         if (isset($my_info) && $my_info) {  // If we are just asking after our own info, then we just send that back.
             $user = $in_andisol_instance->current_user();
             if ($user instanceof CO_User_Collection) {
-                $ret['my_info'] = $this->_get_long_user_description($user, $login_user);
+                $ret['my_info'] = $this->_get_long_user_description($user, $login_user, $show_parents);
             } else {
                 header('HTTP/1.1 400 No Logged-In User');
                 exit();
@@ -1603,7 +1620,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                 }
                             }
                             if ($show_details) {
-                                $ret[] = $this->_get_long_user_description($user, $login_user);
+                                $ret[] = $this->_get_long_user_description($user, $login_user, $show_parents);
                             } else {
                                 $ret[] = $this->_get_short_description($user);
                             }
@@ -1640,13 +1657,14 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     \returns the HTTP response string, as either JSON or XML.
      */
-    public function process_command(    $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
-                                        $in_http_method,        ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
-                                        $in_response_type,      ///< REQUIRED: Either 'json' or 'xml' -the response type.
-                                        $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
-                                        $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
+    public function process_command(    $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                        $in_http_method,            ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
+                                        $in_response_type,          ///< REQUIRED: Either 'json' or 'xml' -the response type.
+                                        $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
+                                        $in_query = []             ///< OPTIONAL: The query parameters, as an associative array.
                                     ) {
         $ret = [];
+        $show_parents = isset($in_query) && is_array($in_query) && isset($in_query['show_parents']);    // Show all places in detail, as well as the parents (applies only to GET or DELETE).
         
         // For the default (no user ID), we simply return a list of commands. We also only allow GET to do this.
         if (0 == count($in_path)) {
@@ -1664,7 +1682,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     if ('GET' == $in_http_method) {
                         $ret['people'] = $this->_handle_people($in_andisol_instance, $in_path, $in_query);
                     } elseif ($in_andisol_instance->logged_in()) {  // Must be logged in to be non-GET.
-                        $ret['people'] = $this->_handle_edit_people($in_andisol_instance, $in_http_method, $in_path, $in_query);
+                        $ret['people'] = $this->_handle_edit_people($in_andisol_instance, $in_http_method, $in_path, $in_query, $show_parents);
                     } else {
                         header('HTTP/1.1 400 Incorrect HTTP Request Method');
                         exit();
@@ -1674,7 +1692,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     if ('GET' == $in_http_method) {
                         $ret['logins'] = $this->_handle_logins($in_andisol_instance, $in_path, $in_query);
                     } else {
-                        $ret['logins'] = $this->_handle_edit_logins($in_andisol_instance, $in_http_method, $in_path, $in_query);
+                        $ret['logins'] = $this->_handle_edit_logins($in_andisol_instance, $in_http_method, $in_path, $in_query, $show_parents);
                     }
                     break;
             }

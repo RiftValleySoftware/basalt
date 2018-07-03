@@ -223,19 +223,20 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
     /**
     Handles the POST operation (new).
     
-    \returns an associative array, with the "raw" response.
+    \returns an associative array, with the "raw" response. This will always show the parents.
      */
-    protected function _process_place_delete(   $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
-                                                $in_object_list = [],   ///< OPTIONAL: This function is worthless without at least one object. This will be an array of place objects, holding the places to delete.
-                                                $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
-                                                $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
+    protected function _process_place_delete(   $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                                $in_object_list = [],       ///< OPTIONAL: This function is worthless without at least one object. This will be an array of place objects, holding the places to delete.
+                                                $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
+                                                $in_query = [],             ///< OPTIONAL: The query parameters, as an associative array.
+                                                $in_show_parents = false    ///< OPTIONAL: (Default is false). If true, then the parents will be shown. This can be a time-consuming operation, so it needs to be explicitly requested.
                                             ) {
         $ret = [];
         
         if ($in_andisol_instance->logged_in()) {    // Must be logged in to DELETE.
             if (isset($in_object_list) && is_array($in_object_list) && (0 < count($in_object_list))) {
                 foreach ($in_object_list as $place) {
-                    $to_be_deleted = $this->_get_long_place_description($place, true);
+                    $to_be_deleted = $this->_get_long_place_description($place, $in_show_parents);
                     if ($place->user_can_write() && $place->delete_from_db()) {
                         $ret['deleted_places'][] = $to_be_deleted;
                     }
@@ -275,7 +276,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         exit();
                     }
                 } else {
-                    $ret['new_place'] = $this->_get_long_place_description($new_record, true);
+                    $ret['new_place'] = $this->_get_long_place_description($new_record);
                 }
             } else {
                 header('HTTP/1.1 400 Resource Not Created');
@@ -319,7 +320,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     if ($place->user_can_write()) { // Belt and suspenders. Make sure we can write.
                         $place->set_batch_mode();
                         // Take a "before" snapshot.
-                        $changed_place = ['before' => $this->_get_long_place_description($place, true)];
+                        $changed_place = ['before' => $this->_get_long_place_description($place)];
                         $result = true;
                         
                         if ($result && isset($parameters['geocode']) && (0 != intval($parameters['geocode']))) {
@@ -456,7 +457,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         }
                     
                         if ($result) {  // Assuming all went well to this point, we take an "after" snapshot, and save the object and interim report in our "final clear" list.
-                            $changed_place['after'] = $this->_get_long_place_description($place, true);
+                            $changed_place['after'] = $this->_get_long_place_description($place);
                             $change_reports[] = ['object' => $place, 'report' => $changed_place];
                         }
                     }
@@ -553,7 +554,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
         if ('POST' == $in_http_method) {    // We handle POST directly.
             $ret = $this->_process_place_post($in_andisol_instance, $in_path, $in_query);
         } else {
-            $show_parents = isset($in_query) && is_array($in_query) && isset($in_query['show_parents']);    // Show all places in detail, as well as the parents (applies only to GET).
+            $show_parents = isset($in_query) && is_array($in_query) && isset($in_query['show_parents']);    // Show all places in detail, as well as the parents (applies only to GET or DELETE).
             $show_details = $show_parents || (isset($in_query) && is_array($in_query) && isset($in_query['show_details']));    // Show all places in detail (applies only to GET).
             $writeable = isset($in_query) && is_array($in_query) && isset($in_query['writeable']);          // Show/list only places this user can modify.
             $search_count_only = isset($in_query) && is_array($in_query) && isset($in_query['search_count_only']);  // Ignored for discrete IDs. If true, then a simple "count" result is returned as an integer.
@@ -652,7 +653,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 } elseif ('PUT' == $in_http_method) {
                     $ret = $this->_process_place_put($in_andisol_instance, $placelist, $in_path, $in_query);
                 } elseif ('DELETE' == $in_http_method) {
-                    $ret = $this->_process_place_delete($in_andisol_instance, $placelist, $in_path, $in_query);
+                    $ret = $this->_process_place_delete($in_andisol_instance, $placelist, $in_path, $in_query, $show_parents);
                 }
                 
                 if ($location_search && !$search_count_only) {
@@ -688,7 +689,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     } elseif ('PUT' == $in_http_method) {
                         $ret = $this->_process_place_put($in_andisol_instance, $placelist, $in_path, $in_query);
                     } elseif ('DELETE' == $in_http_method) {
-                        $ret = $this->_process_place_delete($in_andisol_instance, $placelist, $in_path, $in_query);
+                        $ret = $this->_process_place_delete($in_andisol_instance, $placelist, $in_path, $in_query, $show_parents);
                     }
                 }
             }
