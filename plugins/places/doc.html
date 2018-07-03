@@ -18,6 +18,7 @@
                         <li><a href="#02-places-queries-global-show_details-json">JSON</a></li>
                         <li><a href="#02-places-queries-global-show_details-xml">XML</a></li>
                     </ul></li>
+                    <li><a href="#02-places-queries-global-show_parents">show_parents</a></li>
                     <li><a href="#02-places-queries-global-writeable">writeable</a></li>
                 </ul></li>
                 <li><a href="#02-places-queries-search">Search Parameters</a><ul class="toc-ul">
@@ -319,6 +320,10 @@
     ]
   }
 }</pre>
+        <h5 class="rest_api_doc-h5" id="02-places-queries-global-show_parents">show_parents</h5>
+        <p class="main_doc-p">This applies only to GET.</p>
+        <p class="main_doc-p">If you specify this (no value required), then the resulting list will display the places in "detailed" form, and will also display any "parent" records, using the same format as the "children" element. This can be a time-consuming process, and is not necessarily that useful, so we have it as an option.</p>
+
         <h5 class="rest_api_doc-h5" id="02-places-queries-global-show_details-xml">XML</h5>
         <div class="uri_display-div">
             <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/xml</span><span class="uri_plugin_lite-span">/places</span><span class="uri_query-span">?show_details</span></code>

@@ -13,7 +13,9 @@
 */
 defined( 'LGV_BASALT_CATCHER' ) or die ( 'Cannot Execute Directly' );	// Makes sure that this file is in the correct context.
 
-define('LGV_CHAMELEON_UTILS_CATCHER', 1);
+if (!defined('LGV_CHAMELEON_UTILS_CATCHER')) {
+    define('LGV_CHAMELEON_UTILS_CATCHER', 1);
+}
 
 require_once(CO_Config::chameleon_main_class_dir().'/co_chameleon_utils.class.php');
 
@@ -86,9 +88,10 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     \returns an associative array of strings and integers.
      */
-    protected function _get_long_place_description( $in_place_object
+    protected function _get_long_place_description( $in_place_object,           ///< REQUIRED: The object to display.
+                                                    $in_show_parents = false    ///< OPTIONAL: (Default is false). If true, then the parents will be shown. This can be a time-consuming operation, so it needs to be explicitly requested.
                                                     ) {
-        $ret = parent::_get_long_description($in_place_object);
+        $ret = parent::_get_long_description($in_place_object, $in_show_parents);
         $longitude = $in_place_object->longitude();
         $latitude = $in_place_object->latitude();
 
@@ -232,7 +235,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
         if ($in_andisol_instance->logged_in()) {    // Must be logged in to DELETE.
             if (isset($in_object_list) && is_array($in_object_list) && (0 < count($in_object_list))) {
                 foreach ($in_object_list as $place) {
-                    $to_be_deleted = $this->_get_long_place_description($place);
+                    $to_be_deleted = $this->_get_long_place_description($place, true);
                     if ($place->user_can_write() && $place->delete_from_db()) {
                         $ret['deleted_places'][] = $to_be_deleted;
                     }
@@ -272,7 +275,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         exit();
                     }
                 } else {
-                    $ret['new_place'] = $this->_get_long_place_description($new_record);
+                    $ret['new_place'] = $this->_get_long_place_description($new_record, true);
                 }
             } else {
                 header('HTTP/1.1 400 Resource Not Created');
@@ -316,7 +319,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     if ($place->user_can_write()) { // Belt and suspenders. Make sure we can write.
                         $place->set_batch_mode();
                         // Take a "before" snapshot.
-                        $changed_place = ['before' => $this->_get_long_place_description($place)];
+                        $changed_place = ['before' => $this->_get_long_place_description($place, true)];
                         $result = true;
                         
                         if ($result && isset($parameters['geocode']) && (0 != intval($parameters['geocode']))) {
@@ -453,7 +456,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         }
                     
                         if ($result) {  // Assuming all went well to this point, we take an "after" snapshot, and save the object and interim report in our "final clear" list.
-                            $changed_place['after'] = $this->_get_long_place_description($place);
+                            $changed_place['after'] = $this->_get_long_place_description($place, true);
                             $change_reports[] = ['object' => $place, 'report' => $changed_place];
                         }
                     }
@@ -488,6 +491,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
     protected function _process_place_get(  $in_andisol_instance,           ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
                                             $in_object_list = [],           ///< OPTIONAL: This function is worthless without at least one object. This will be an array of place objects, holding the places to examine.
                                             $in_show_details = false,       ///< OPTIONAL: If true (default is false), then the resulting record will be returned in "detailed" format.
+                                            $in_show_parents = false,       ///< OPTIONAL: (Default is false). If true, then the parents will be shown. This can be a time-consuming operation, so it needs to be explicitly requested.
                                             $in_search_count_only = false,  ///< OPTIONAL: If true, then we are only looking for a single integer count.
                                             $in_search_ids_only = false,    ///< OPTIONAL: If true, then we are going to return just an array of int (the IDs of the resources).
                                             $in_path = [],                  ///< OPTIONAL: The REST path, as an array of strings.
@@ -503,7 +507,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
             } else {
                 foreach ($in_object_list as $place) {
                     if ($in_show_details) {
-                        $ret[] = $this->_get_long_place_description($place);
+                        $ret[] = $this->_get_long_place_description($place, $in_show_parents);
                     } else {
                         $ret[] = $this->_get_short_description($place);
                     }
@@ -549,7 +553,8 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
         if ('POST' == $in_http_method) {    // We handle POST directly.
             $ret = $this->_process_place_post($in_andisol_instance, $in_path, $in_query);
         } else {
-            $show_details = isset($in_query) && is_array($in_query) && isset($in_query['show_details']);    // Show all places in detail (applies only to GET).
+            $show_parents = isset($in_query) && is_array($in_query) && isset($in_query['show_parents']);    // Show all places in detail, as well as the parents (applies only to GET).
+            $show_details = $show_parents || (isset($in_query) && is_array($in_query) && isset($in_query['show_details']));    // Show all places in detail (applies only to GET).
             $writeable = isset($in_query) && is_array($in_query) && isset($in_query['writeable']);          // Show/list only places this user can modify.
             $search_count_only = isset($in_query) && is_array($in_query) && isset($in_query['search_count_only']);  // Ignored for discrete IDs. If true, then a simple "count" result is returned as an integer.
             $search_ids_only = isset($in_query) && is_array($in_query) && isset($in_query['search_ids_only']);      // Ignored for discrete IDs. If true, then the response will be an array of integers, denoting resource IDs.
@@ -642,7 +647,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $placelist = $in_andisol_instance->generic_search($search_array, false, $search_page_size, $search_page_number, $writeable, $search_count_only, $search_ids_only);
                 
                 if ('GET' == $in_http_method) {
-                    $ret = $this->_process_place_get($in_andisol_instance, $placelist, $show_details, $search_count_only, $search_ids_only, $in_path, $in_query);
+                    $ret = $this->_process_place_get($in_andisol_instance, $placelist, $show_details, $show_parents, $search_count_only, $search_ids_only, $in_path, $in_query);
                     $ret = Array('results' => $ret);
                 } elseif ('PUT' == $in_http_method) {
                     $ret = $this->_process_place_put($in_andisol_instance, $placelist, $in_path, $in_query);
@@ -678,7 +683,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     }
                     
                     if ('GET' == $in_http_method) {
-                        $ret = $this->_process_place_get($in_andisol_instance, $placelist, $show_details, $search_count_only, $search_ids_only, $in_path, $in_query);
+                        $ret = $this->_process_place_get($in_andisol_instance, $placelist, $show_details, $show_parents, $search_count_only, $search_ids_only, $in_path, $in_query);
                         $ret = Array('results' => $ret);
                     } elseif ('PUT' == $in_http_method) {
                         $ret = $this->_process_place_put($in_andisol_instance, $placelist, $in_path, $in_query);

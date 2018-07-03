@@ -42,7 +42,8 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     \returns an associative array of strings and integers.
      */
-    protected function _get_long_description( $in_login_object    ///< REQUIRED: The login object to extract information from.
+    protected function _get_long_description( $in_login_object, ///< REQUIRED: The login object to extract information from.
+                                              $ignored = false  ///< This is ignored for logins.
                                             ) {
         $ret = parent::_get_long_description($in_login_object);
         
@@ -84,10 +85,11 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     \returns an associative array of strings, integers and nested associative arrays.
      */
-    protected function _get_long_user_description(  $in_user_object,            ///< REQUIRED: The user object to extract information from.
-                                                    $in_with_login_info = false ///< OPTIONAL: Default is false. If true, then the login information is appended.
+    protected function _get_long_user_description(  $in_user_object,                ///< REQUIRED: The user object to extract information from.
+                                                    $in_with_login_info = false,    ///< OPTIONAL: Default is false. If true, then the login information is appended.
+                                                    $in_show_parents = false        ///< OPTIONAL: (Default is false). If true, then the parents will be shown. This can be a time-consuming operation, so it needs to be explicitly requested.
                                                     ) {
-        $ret = parent::_get_long_description($in_user_object);
+        $ret = parent::_get_long_description($in_user_object, $in_show_parents);
         
         $test_string = $in_user_object->get_surname();
         if (isset($test_string) && trim($test_string)) {
@@ -1511,7 +1513,8 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                     ) {
         $ret = [];
         $login_user = isset($in_query) && is_array($in_query) && isset($in_query['login_user']);                    // Flag saying they are only looking for login people.
-        $show_details = isset($in_query) && is_array($in_query) && isset($in_query['show_details']);                // Flag that indicates that all people be shown in detail.
+        $show_parents = isset($in_query) && is_array($in_query) && isset($in_query['show_parents']);    // Show all places in detail, as well as the parents (applies only to GET).
+        $show_details = $show_parents || (isset($in_query) && is_array($in_query) && isset($in_query['show_details']));    // Show all places in detail (applies only to GET).
         $logged_in = isset($in_query) && is_array($in_query) && isset($in_query['logged_in']) && $in_andisol_instance->manager();   // Flag that filters for only users that are logged in.
         $my_info = isset($in_path) && is_array($in_path) && (0 < count($in_path) && ('my_info' == $in_path[0]));    // Directory that specifies we are only looking for our own info.
         $writeable = isset($in_query) && is_array($in_query) && isset($in_query['writeable']);                      // Show/list only people this user can modify.
@@ -1545,7 +1548,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         $user = $in_andisol_instance->get_user_from_login_string($id_string);
                         if (isset($user) && ($user instanceof CO_User_Collection) && (!$writeable || $user->user_can_write())) {
                             if ($show_details) {
-                                $ret[] = $this->_get_long_user_description($user, $login_user);
+                                $ret[] = $this->_get_long_user_description($user, $login_user, $show_parents);
                             } else {
                                 $ret[] = $this->_get_short_description($user);
                             }
@@ -1577,7 +1580,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                     }
                                 }
                                 if ($show_details) {
-                                    $ret[] = $this->_get_long_user_description($user, $login_user);
+                                    $ret[] = $this->_get_long_user_description($user, $login_user, $show_parents);
                                 } else {
                                     $ret[] = $this->_get_short_description($user);
                                 }

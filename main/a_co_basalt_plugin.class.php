@@ -130,7 +130,8 @@ abstract class A_CO_Basalt_Plugin {
     
     \returns an associative array of strings and integers.
      */
-    protected function _get_long_description(   $in_object  ///< REQUIRED: The object to parse.
+    protected function _get_long_description(   $in_object,                 ///< REQUIRED: The object to parse.
+                                                $in_show_parents = false    ///< OPTIONAL: (Default is false). If true, then the parents will be shown. This can be a time-consuming operation, so it needs to be explicitly requested.
                                             ) {
         $ret = $this->_get_short_description($in_object);
         
@@ -163,6 +164,20 @@ abstract class A_CO_Basalt_Plugin {
         $child_objects = $this->_get_child_ids($in_object);
         if (0 < count($child_objects)) {
             $ret['children'] = $this->_get_child_handler_data($in_object);
+        }
+        
+        if ($in_show_parents && method_exists($in_object, 'who_are_my_parents')) {
+            $parent_objects = $in_object->who_are_my_parents();
+            if (isset($parent_objects) && is_array($parent_objects) && count($parent_objects)) {
+                foreach ($parent_objects as $instance) {
+                    $class_name = get_class($instance);
+                
+                    if ($class_name) {
+                        $handler = self::_get_handler($class_name);
+                        $ret['parents'][$handler][] = $instance->id();
+                    }
+                }
+            }
         }
         
         return $ret;

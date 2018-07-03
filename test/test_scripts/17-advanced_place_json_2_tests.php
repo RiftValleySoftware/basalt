@@ -707,4 +707,179 @@ function basalt_test_0151($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('</div></div>');
     }
 }
+
+// --------------------
+
+function basalt_test_define_0152() {
+    basalt_run_single_direct_test(152, 'PASS: Test Hierarchy', 'We log in, and create a small hierarchy. We then make sure that the child and parent objects are reported correctly', 'dc_area_tests');
+}
+
+function basalt_test_0152($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    function set_up_hierarchy(  $in_current_id,
+                                $in_hierarchy_list
+                                ) {
+        if ($in_current_id && isset($in_hierarchy_list) && is_array($in_hierarchy_list) && count($in_hierarchy_list)) {
+            echo('<h3>Setting up the hierarchy for ID '.intval($in_current_id).'</h3>');
+            $result_code = '';
+            echo('<h3>Log In As the "God" Admin</h3>');
+            $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=admin&password='.CO_Config::god_mode_password(), NULL, NULL, $result_code);
+            if (isset($result_code) && $result_code && (200 != $result_code)) {
+                echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+            } else {
+                echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+                if (1724 < intval($in_current_id)) {
+                    $result = call_REST_API('PUT', 'http://localhost/basalt/test/basalt_runner.php/json/people/people/'.intval($in_current_id).'/?child_ids='.implode(',', array_map('intval', array_keys($in_hierarchy_list))), NULL, $api_result, $result_code);
+                } else {
+                    $result = call_REST_API('PUT', 'http://localhost/basalt/test/basalt_runner.php/json/places/'.intval($in_current_id).'/?child_ids='.implode(',', array_map('intval', array_keys($in_hierarchy_list))), NULL, $api_result, $result_code);
+                }
+                if (isset($result_code) && $result_code && (200 != $result_code)) {
+                    echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+                    return;
+                } else {
+                    echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+                    $extra_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
+                }
+            }
+        }
+        
+        if (isset($in_hierarchy_list) && is_array($in_hierarchy_list) && count($in_hierarchy_list)) {
+            foreach ($in_hierarchy_list as $id => $child) {
+                set_up_hierarchy(intval($id), $child);
+            }
+        }
+    }
+    
+    $hierarchy_list =   [
+                            1730 => [           // MainAdmin
+                                1725 => [       // MDAdmin
+                                    2 => [
+                                        3 => 0,
+                                        4 => 0,
+                                        5 => 0
+                                    ],
+                                    6 => [
+                                        7 => 0,
+                                        8 => 0,
+                                        9 => 0
+                                    ],
+                                    10 => [
+                                        11 => 0,
+                                        12 => 0,
+                                        13 => 0
+                                    ]
+                                ],
+                                860 => 0    // Keep an eye on this one.
+                            ],
+                            [
+                                1726 => [       // VAAdmin
+                                    855 => [
+                                        856 => 0,
+                                        857 => 0,
+                                        858 => 0,
+                                        860 => 0
+                                    ],
+                                    859 => [
+                                        860 => 0,
+                                        861 => 0,
+                                        862 => 0
+                                    ],
+                                    863 => [
+                                        864 => 0,
+                                        865 => 0,
+                                        866 => 0
+                                    ]
+                                ]
+                            ]
+                        ];
+    
+    echo('<div  style="text-align:left;display:table"><div id="test_0152_results_1_div" class="inner_closed">');
+        echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0152_results_1_div\')" style="font-weight:bold">See the Hierarchy Setup Process:</a></h3>');
+        echo('<div class="main_div inner_container">');
+            $st1 = microtime(true);
+            set_up_hierarchy(0, $hierarchy_list, $api_result);
+            $fetchTime = sprintf('%01.4f', microtime(true) - $st1);
+            echo("<h4>The test took $fetchTime seconds to complete.</h4>");
+        echo('</div>');
+    echo('</div></div>');
+    
+    $result_code = '';
+    echo('<h3>Log In As "God." Again</h3>');
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=admin&password='.CO_Config::god_mode_password(), NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+    
+    $st1 = microtime(true);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/2,3,4,5,6,7,8,9,10,11,12,13,855,856,857,858,859,860,861,862,863,864,865,866/?show_details', NULL, $api_result, $result_code);
+    $fetchTime = sprintf('%01.4f', microtime(true) - $st1);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<div  style="text-align:left;display:table"><div id="test_0152_results_2_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0152_results_2_div\')" style="font-weight:bold">See the Hierarchy Setup Results (Places -Without show_parents):</a></h3>');
+            echo('<div class="main_div inner_container">');
+                echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+                echo("<h4>The test took $fetchTime seconds to complete.</h4>");
+            echo('</div>');
+        echo('</div></div>');
+    }
+    
+    $st1 = microtime(true);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/places/2,3,4,5,6,7,8,9,10,11,12,13,855,856,857,858,859,860,861,862,863,864,865,866/?show_parents', NULL, $api_result, $result_code);
+    $fetchTime = sprintf('%01.4f', microtime(true) - $st1);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<div  style="text-align:left;display:table"><div id="test_0152_results_3_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0152_results_3_div\')" style="font-weight:bold">See the Hierarchy Setup Results (Places -With show_parents):</a></h3>');
+            echo('<div class="main_div inner_container">');
+                echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+                echo("<h4>The test took $fetchTime seconds to complete.</h4>");
+            echo('</div>');
+        echo('</div></div>');
+    }
+   
+    $extra_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
+        
+    $result_code = '';
+    echo('<h3>Log In As "God." Again</h3>');
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=admin&password='.CO_Config::god_mode_password(), NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+    
+    $st1 = microtime(true);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/people/1725,1726,1727,1728,1729,1730,1731/?show_details', NULL, $api_result, $result_code);
+    $fetchTime = sprintf('%01.4f', microtime(true) - $st1);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<div  style="text-align:left;display:table"><div id="test_0152_results_4_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0152_results_4_div\')" style="font-weight:bold">See the Hierarchy Setup Results (People -Without show_parents):</a></h3>');
+            echo('<div class="main_div inner_container">');
+                echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+                echo("<h4>The test took $fetchTime seconds to complete.</h4>");
+            echo('</div>');
+        echo('</div></div>');
+    }
+    
+    $st1 = microtime(true);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/people/1725,1726,1727,1728,1729,1730,1731/?show_parents', NULL, $api_result, $result_code);
+    $fetchTime = sprintf('%01.4f', microtime(true) - $st1);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<div  style="text-align:left;display:table"><div id="test_0152_results_5_div" class="inner_closed">');
+            echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0152_results_5_div\')" style="font-weight:bold">See the Hierarchy Setup Results (People -With show_parents):</a></h3>');
+            echo('<div class="main_div inner_container">');
+                echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+                echo("<h4>The test took $fetchTime seconds to complete.</h4>");
+            echo('</div>');
+        echo('</div></div>');
+    }
+}
 ?>

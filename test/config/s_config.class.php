@@ -24,7 +24,6 @@ require_once(dirname(dirname(dirname(__FILE__))).'/config/t_basalt_config.interf
 
 class CO_Config {
     use tCO_Basalt_Config; // These are the built-in config methods.
-    
     static private $_god_mode_id = 2;               ///< God Login Security DB ID. This is private, so it can't be programmatically changed.
     static private $_god_mode_password = 'BWU-HA-HAAAA-HA!'; ///< Plaintext password for the God Mode ID login. This overrides anything in the ID row.
     static private $_login_validation_callback = 'global_scope_basalt_login_validation_function';

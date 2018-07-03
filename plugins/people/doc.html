@@ -20,6 +20,7 @@
                     <li><a href="#03-people-query-show-details-json">JSON</a></li>
                     <li><a href="#03-people-query-show_details-xml">XML</a></li>
                 </ul></li>
+                <li><a href="#03-people-query-show_parents">show_parents</a></li>
                 <li><a href="#03-people-query-login-user">login_user</a><ul class="toc-ul">
                     <li><a href="#03-people-query-login-user-json">JSON</a></li>
                     <li><a href="#03-people-query-login-user-xml">XML</a></li>
@@ -359,6 +360,10 @@
           &lt;/logins&gt;
         &lt;/people&gt;
         </pre>
+        <h5 class="rest_api_doc-h5" id="03-people-query-show_parents">show_parents</h5>
+        <p class="main_doc-p">This applies only to GET.</p>
+        <p class="main_doc-p">If you specify this (no value required), then the resulting list will display the places in "detailed" form, and will also display any "parent" records, using the same format as the "children" element. This can be a time-consuming process, and is not necessarily that useful, so we have it as an option.</p>
+
         <h5 class="rest_api_doc-h5" id="03-people-query-login-user">login_user</h5>
         <p class="main_doc-p">If "login_user" is applied to the URI, then the response will be the "expanded" (show_details) version, and it will include a detailed description of the associated login user. Users without associated login users will not be displayed.</p>
         <p class="main_doc-p">This query parameter is only valid for the "people" directory. It is not necessary for the "logins" directory.</p>
