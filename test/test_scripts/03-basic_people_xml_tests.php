@@ -92,7 +92,7 @@ function basalt_test_0019($in_login = NULL, $in_hashed_password = NULL, $in_pass
     } else {
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
     }
-    echo('<h4>See if we can see any currently logged-in users</h4>');
+    echo('<h4>See if we can see any currently logged-in users (We expect the "logged_in" query to be ignored, returning all users)</h4>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people?logged_in', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
@@ -135,7 +135,7 @@ function basalt_test_0020($in_login = NULL, $in_hashed_password = NULL, $in_pass
     } else {
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
     }
-    echo('<h4>See if we can see any currently logged-in users</h4>');
+    echo('<h4>See if we can see any currently logged-in users (We expect this to work, and only show our user)</h4>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people?logged_in', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');

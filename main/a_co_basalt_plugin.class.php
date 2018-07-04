@@ -157,63 +157,65 @@ abstract class A_CO_Basalt_Plugin {
             $ret['writeable'] = true;
         }
         
-        if (method_exists($in_object, 'owner_id') && (0 < $in_object->owner_id())) {
-            $ret['owner_id'] = $in_object->owner_id();
-        }
-        
-        $longitude = $in_object->longitude();
-        $latitude = $in_object->latitude();
-
-        if (isset($longitude) && is_float($longitude) && isset($latitude) && is_float($latitude)) {
-            $ret['latitude'] = floatval($latitude);
-            $ret['longitude'] = floatval($longitude);
-        }
-        
-        if ($in_object->is_fuzzy()) {
-            $ret['fuzzy'] = true;
-            
-            $cansee = intval($in_object->can_see_through_the_fuzz());
-            
-            if ($cansee) {
-                $ret['can_see_through_the_fuzz'] = $cansee;
+        if (method_exists($in_object, 'longitude')) {   // Cheap test to figure out if we can look at these things.
+            if (0 < $in_object->owner_id()) {
+                $ret['owner_id'] = $in_object->owner_id();
             }
-            
-            // If this is a fuzzy location, but the logged-in user can see "the real," we show it to them.
-            if ($in_object->i_can_see_clearly_now()) {
-                $ret['raw_latitude'] = floatval($in_object->raw_latitude());
-                $ret['raw_longitude'] = floatval($in_object->raw_longitude());
-                $ret['fuzz_factor'] = $in_object->fuzz_factor();
-            }
-        }
-
-        $child_objects = $this->_get_child_ids($in_object);
-        if (0 < count($child_objects)) {
-            $ret['children'] = $this->_get_child_handler_data($in_object);
-        }
         
-        if ($in_show_parents && method_exists($in_object, 'who_are_my_parents')) {
-            $parent_objects = $in_object->who_are_my_parents();
-            if (isset($parent_objects) && is_array($parent_objects) && count($parent_objects)) {
-                foreach ($parent_objects as $instance) {
-                    $class_name = get_class($instance);
+            $longitude = $in_object->longitude();
+            $latitude = $in_object->latitude();
+
+            if (isset($longitude) && is_float($longitude) && isset($latitude) && is_float($latitude)) {
+                $ret['latitude'] = floatval($latitude);
+                $ret['longitude'] = floatval($longitude);
+            }
+        
+            if ($in_object->is_fuzzy()) {
+                $ret['fuzzy'] = true;
+            
+                $cansee = intval($in_object->can_see_through_the_fuzz());
+            
+                if ($cansee) {
+                    $ret['can_see_through_the_fuzz'] = $cansee;
+                }
+            
+                // If this is a fuzzy location, but the logged-in user can see "the real," we show it to them.
+                if ($in_object->i_can_see_clearly_now()) {
+                    $ret['raw_latitude'] = floatval($in_object->raw_latitude());
+                    $ret['raw_longitude'] = floatval($in_object->raw_longitude());
+                    $ret['fuzz_factor'] = $in_object->fuzz_factor();
+                }
+            }
+        
+            $child_objects = $this->_get_child_ids($in_object);
+            if (0 < count($child_objects)) {
+                $ret['children'] = $this->_get_child_handler_data($in_object);
+            }
+        
+            if ($in_show_parents && method_exists($in_object, 'who_are_my_parents')) {
+                $parent_objects = $in_object->who_are_my_parents();
+                if (isset($parent_objects) && is_array($parent_objects) && count($parent_objects)) {
+                    foreach ($parent_objects as $instance) {
+                        $class_name = get_class($instance);
                 
-                    if ($class_name) {
-                        $handler = self::_get_handler($class_name);
-                        $ret['parents'][$handler][] = $instance->id();
+                        if ($class_name) {
+                            $handler = self::_get_handler($class_name);
+                            $ret['parents'][$handler][] = $instance->id();
+                        }
                     }
                 }
             }
-        }
         
-        $payload = $in_object->get_payload();
+            $payload = $in_object->get_payload();
         
-        if ($payload) {
-            $ret['payload'] = base64_encode($payload);
-            $temp_file = tempnam(sys_get_temp_dir(), 'RVP');  
-            file_put_contents($temp_file , $payload);
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);  
-            $content_type = finfo_file($finfo, $temp_file);
-            $ret['payload_type'] = $content_type.';base64';
+            if ($payload) {
+                $ret['payload'] = base64_encode($payload);
+                $temp_file = tempnam(sys_get_temp_dir(), 'RVP');  
+                file_put_contents($temp_file , $payload);
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);  
+                $content_type = finfo_file($finfo, $temp_file);
+                $ret['payload_type'] = $content_type.';base64';
+            }
         }
         
         return $ret;
