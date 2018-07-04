@@ -270,7 +270,22 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $radius = isset($in_query) && is_array($in_query) && isset($in_query['search_radius']) && (0.0 < floatval($in_query['search_radius'])) ? floatval($in_query['search_radius']) : NULL;
                 $longitude = isset($in_query) && is_array($in_query) && isset($in_query['search_longitude']) ? floatval($in_query['search_longitude']) : NULL;
                 $latitude = isset($in_query) && is_array($in_query) && isset($in_query['search_latitude']) ? floatval($in_query['search_latitude']) : NULL;
-                $search_region_bias = isset($in_query) && is_array($in_query) && isset($in_query['search_region_bias']) ? strtolower(trim($search_region_bias)) : CO_Config::$default_region_bias;  // This is a region bias for an address lookup. Ignored if search_address is not specified.
+                
+                $location_search = NULL;
+            
+                if (isset($radius) && isset($longitude) && isset($latitude)) {
+                    $location_search = Array('radius' => $radius, 'longitude' => $longitude, 'latitude' => $latitude);
+                }
+                
+                $class_search = Array('%_KeyValue_CO_Collection', 'use_like' => 1);
+            
+                $search_array['access_class'] = $class_search;
+                
+                if (isset($location_search)) {
+                    $search_array['location'] = $location_search;
+                }
+                
+                $placelist = $in_andisol_instance->generic_search($search_array, false, $search_page_size, $search_page_number, $writeable, $search_count_only, $search_ids_only);
             } else {
                 $first_directory = $in_path[0];    // Get the first directory.
         
@@ -286,7 +301,7 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     $thing_id_list = ($single_thing_id ? [$single_thing_id] : array_unique(array_map('intval', $thing_id_list)));
                     $thinglist = [];
                 
-                    foreach ($thinglist as $id) {
+                    foreach ($thing_id_list as $id) {
                         if (0 < $id) {
                             $thing = $in_andisol_instance->get_single_data_record_by_id($id);
                             if (isset($thing) && ($thing instanceof CO_Collection)) {
