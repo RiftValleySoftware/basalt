@@ -114,6 +114,12 @@
             <xs:element minOccurs="0" name="write_token" type="xs:integer"/>
             <xs:element minOccurs="0" name="writeable" type="xs:integer"/>
             <xs:element minOccurs="0" name="owner_id" type="xs:integer"/>
+            <xs:element minOccurs='0' name='latitude' type='xs:float'/>
+            <xs:element minOccurs='0' name='longitude' type='xs:float'/>
+            <xs:element minOccurs='0' name='fuzzy' type='xs:integer'/>
+            <xs:element minOccurs='0' name='raw_latitude' type='xs:float'/>
+            <xs:element minOccurs='0' name='raw_longitude' type='xs:float'/>
+            <xs:element minOccurs='0' name='fuzz_factor' type='xs:float'/>
             <xs:element minOccurs="0" name="children">
                 <xs:complexType>
                     <xs:sequence>
@@ -229,6 +235,8 @@
                 </xs:complexType>
             </xs:element>
             <xs:element minOccurs="0" name="last_access" type="xs:string"/>
+            <xs:element name="payload" type="xs:base64Binary"/>
+            <xs:element name="payload_type" type="xs:string"/>
             <xs:element minOccurs="0" name="surname" type="xs:string"/>
             <xs:element minOccurs="0" name="middle_name" type="xs:string"/>
             <xs:element minOccurs="0" name="given_name" type="xs:string"/>
@@ -238,8 +246,6 @@
             <xs:element minOccurs="0" name="current_login" type="xs:integer"/>
             <xs:element minOccurs="0" name="associated_login" type="b:login_structure"/>
             <xs:element minOccurs="0" name="associated_login_id" type="xs:integer"/>
-            <xs:element name="payload" type="xs:base64Binary"/>
-            <xs:element name="payload_type" type="xs:string"/>
         </xs:choice>
         <xs:attribute name="sequence_index" type="xs:integer"/>
     </xs:complexType>

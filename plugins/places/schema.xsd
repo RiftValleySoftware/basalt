@@ -83,6 +83,12 @@
             <xs:element minOccurs="0" name="last_access" type="xs:string"/>
             <xs:element minOccurs="0" name="writeable" type="xs:integer"/>
             <xs:element minOccurs="0" name="owner_id" type="xs:integer"/>
+            <xs:element minOccurs='0' name='latitude' type='xs:float'/>
+            <xs:element minOccurs='0' name='longitude' type='xs:float'/>
+            <xs:element minOccurs='0' name='fuzzy' type='xs:integer'/>
+            <xs:element minOccurs='0' name='raw_latitude' type='xs:float'/>
+            <xs:element minOccurs='0' name='raw_longitude' type='xs:float'/>
+            <xs:element minOccurs='0' name='fuzz_factor' type='xs:float'/>
             <xs:element minOccurs="0" name="children">
                 <xs:complexType>
                     <xs:sequence>
@@ -197,12 +203,8 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element minOccurs='0' name='latitude' type='xs:float'/>
-            <xs:element minOccurs='0' name='longitude' type='xs:float'/>
-            <xs:element minOccurs='0' name='fuzzy' type='xs:integer'/>
-            <xs:element minOccurs='0' name='raw_latitude' type='xs:float'/>
-            <xs:element minOccurs='0' name='raw_longitude' type='xs:float'/>
-            <xs:element minOccurs='0' name='fuzz_factor' type='xs:float'/>
+            <xs:element minOccurs="0" name="payload" type="xs:base64Binary"/>
+            <xs:element minOccurs="0" name="payload_type" type="xs:string"/>
             <xs:element minOccurs="0" name="address_elements">
                 <xs:complexType>
                     <xs:sequence>
@@ -219,8 +221,6 @@
             </xs:element>
             <xs:element minOccurs='0' name='tag8' type='xs:string'/>
             <xs:element minOccurs='0' name='tag9' type='xs:string'/>
-            <xs:element minOccurs="0" name="payload" type="xs:base64Binary"/>
-            <xs:element minOccurs="0" name="payload_type" type="xs:string"/>
         </xs:sequence>
         <xs:attribute name='sequence_index' type='xs:integer'/>
     </xs:complexType>

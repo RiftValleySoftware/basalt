@@ -121,17 +121,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $ret['nickname'] = $test_string;
         }
         
-        $payload = $in_user_object->get_payload();
-        
-        if ($payload) {
-            $ret['payload'] = base64_encode($payload);
-            $temp_file = tempnam(sys_get_temp_dir(), 'RVP');  
-            file_put_contents($temp_file , $payload);
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);  
-            $content_type = finfo_file($finfo, $temp_file);
-            $ret['payload_type'] = $content_type.';base64';
-        }
-        
         if ($in_with_login_info) {
             $login_instance = $in_user_object->get_login_instance();
             if (isset($login_instance) && ($login_instance instanceof CO_Security_Login)) {

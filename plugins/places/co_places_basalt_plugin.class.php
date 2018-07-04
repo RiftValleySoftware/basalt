@@ -92,30 +92,6 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                                     $in_show_parents = false    ///< OPTIONAL: (Default is false). If true, then the parents will be shown. This can be a time-consuming operation, so it needs to be explicitly requested.
                                                     ) {
         $ret = parent::_get_long_description($in_place_object, $in_show_parents);
-        $longitude = $in_place_object->longitude();
-        $latitude = $in_place_object->latitude();
-
-        if (isset($longitude) && is_float($longitude) && isset($latitude) && is_float($latitude)) {
-            $ret['latitude'] = floatval($latitude);
-            $ret['longitude'] = floatval($longitude);
-        }
-        
-        if ($in_place_object->is_fuzzy()) {
-            $ret['fuzzy'] = true;
-            
-            $cansee = intval($in_place_object->can_see_through_the_fuzz());
-            
-            if ($cansee) {
-                $ret['can_see_through_the_fuzz'] = $cansee;
-            }
-            
-            // If this is a fuzzy location, but the logged-in user can see "the real," we show it to them.
-            if ($in_place_object->i_can_see_clearly_now()) {
-                $ret['raw_latitude'] = floatval($in_place_object->raw_latitude());
-                $ret['raw_longitude'] = floatval($in_place_object->raw_longitude());
-                $ret['fuzz_factor'] = $in_place_object->fuzz_factor();
-            }
-        }
         
         $address_elements = $in_place_object->get_address_elements();
         
@@ -129,17 +105,6 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
         if (isset($in_place_object->tags()[9]) && trim($in_place_object->tags()[9])) {
             $ret['tag9'] = trim($in_place_object->tags()[9]);
-        }
-        
-        $payload = $in_place_object->get_payload();
-        
-        if ($payload) {
-            $ret['payload'] = base64_encode($payload);
-            $temp_file = tempnam(sys_get_temp_dir(), 'RVP');  
-            file_put_contents($temp_file , $payload);
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);  
-            $content_type = finfo_file($finfo, $temp_file);
-            $ret['payload_type'] = $content_type.';base64';
         }
         
         return $ret;

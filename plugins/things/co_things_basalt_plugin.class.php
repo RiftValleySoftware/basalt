@@ -28,6 +28,166 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
     /***********************/
     /**
+    Parses the query parameters and cleans them for the database.
+    
+    \returns an associative array of the parameters, parsed for submission to the database.
+     */
+    protected function _process_parameters( $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                            $in_query               ///< REQUIRED: The query string to be parsed.
+                                        ) {
+        $ret = parent::_process_parameters($in_andisol_instance, $in_query);
+        
+        if (isset($in_query) && is_array($in_query)) {
+            if (isset($in_query['key'])) {
+                $ret['key'] = trim(strval($in_query['key']));
+            }
+            if (isset($in_query['tag9'])) {
+                $ret['tag9'] = trim(strval($in_query['tag9']));
+            }
+        }
+        
+        return $ret;
+    }
+        
+    /***********************/
+    /**
+    Handle the PUT operation (modify).
+    
+    \returns an associative array, with the "raw" response.
+     */
+    protected function _process_thing_put(  $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                            $in_object_list = [],       ///< OPTIONAL: This function is worthless without at least one object. This will be an array of thing objects, holding the things to modify.
+                                            $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
+                                            $in_query = []              ///< OPTIONAL: The query parameters, as an associative array.
+                                        ) {
+        if ($in_andisol_instance->logged_in()) {    // Must be logged in to PUT.
+            $ret = ['changed_things' => []];
+            $fuzz_factor = isset($in_query) && is_array($in_query) && isset($in_query['fuzz_factor']) ? floatval($in_query['fuzz_factor']) : 0; // Set any fuzz factor.
+        
+            $parameters = $this->_process_parameters($in_andisol_instance, $in_query);
+            if (isset($parameters) && is_array($parameters) && count($parameters) && isset($in_object_list) && is_array($in_object_list) && count($in_object_list)) {
+                /*
+                What we are doing here, is using the "batch mode" for each record object to set the changes in thing without doing a DB update.
+                We generate a change report, but don't add the report to the final report yet, as the change isn't "set" yet.
+                After we make all the changes, we cycle through the records, clearing the "batch mode" for each record object, which sends it to the DB.
+                If the clear works, then we set it into the final report.
+                This makes the process work much better in a multiuser environment, where other clients could be querying the DB.
+                */
+                $change_reports = [];   // We will keep our interin reports here.
+                
+                foreach ($in_object_list as $thing) {
+                    if ($thing->user_can_write()) { // Belt and suspenders. Make sure we can write.
+                        $thing->set_batch_mode();
+                        // Take a "before" snapshot.
+                        $changed_thing = ['before' => $this->_get_long_description($thing)];
+                        $result = true;
+                    
+                        if ($result && isset($parameters['key'])) {
+                            $result = $thing->set_key($parameters['key']);
+                        }
+                    
+                        if ($result && isset($parameters['name'])) {
+                            $result = $thing->set_name($parameters['name']);
+                        }
+             
+                        if ($result && isset($parameters['write_token'])) {
+                            $result = $thing->set_write_security_id($parameters['write_token']);
+                        }
+             
+                        if ($result && isset($parameters['lang'])) {
+                            $result = $thing->set_lang($parameters['lang']);
+                        }
+                    
+                        if ($result && isset($parameters['longitude'])) {
+                            $result = $thing->set_longitude($parameters['longitude']);
+                        }
+                    
+                        if ($result && isset($parameters['latitude'])) {
+                            $result = $thing->set_latitude($parameters['latitude']);
+                        }
+                    
+                        if ($result && isset($parameters['fuzz_factor'])) {
+                            $result = $thing->set_fuzz_factor($parameters['fuzz_factor']);
+                        }
+                        
+                        if ($result && isset($parameters['can_see_through_the_fuzz'])) {
+                            $result = $thing->set_can_see_through_the_fuzz($parameters['can_see_through_the_fuzz']);
+                        }
+                    
+                        if ($result && isset($parameters['remove_payload'])) {
+                            $result = $thing->set_payload(NULL);
+                        } elseif ($result && isset($parameters['payload'])) {
+                            $result = $thing->set_payload($parameters['payload']);
+                        }
+                        
+                        // We have previously split into "add" and "remove" lists (dictated by the sign of the integer).
+                        if ($result && isset($parameters['child_ids'])) {
+                            $add = $parameters['child_ids']['add'];
+                            $remove = $parameters['child_ids']['remove'];
+                    
+                            foreach ($remove as $id) {
+                                if ($id != $thing->id()) {
+                                    $child = $in_andisol_instance->get_single_data_record_by_id($id);
+                                    if (isset($child)) {
+                                        $result = $thing->deleteThisElement($child);
+                                    }
+                        
+                                    if (!$result) {
+                                        break;
+                                    }
+                                }
+                            }
+                        
+                            if ($result) {
+                                foreach ($add as $id) {
+                                    if ($id != $thing->id()) {
+                                        $child = $in_andisol_instance->get_single_data_record_by_id($id);
+                                        if (isset($child)) {
+                                            $result = $thing->appendElement($child);
+                                        
+                                            if (!$result) {
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // We do this last, so we have the option of doing a "lock" (which isn't necessary in "batch mode").
+                        if ($result && isset($parameters['read_token'])) {
+                            $result = $thing->set_read_security_id($parameters['read_token']);
+                        }
+                    
+                        if ($result) {  // Assuming all went well to this point, we take an "after" snapshot, and save the object and interim report in our "final clear" list.
+                            $changed_thing['after'] = $this->_get_long_description($thing);
+                            $change_reports[] = ['object' => $thing, 'report' => $changed_thing];
+                        }
+                    }
+                }
+                
+                // Here's where we actually set each record into the DB, and generate the full final report.
+                if ($result && count($change_reports)) {
+                    $ret['changed_things'] = [];
+                    foreach ($change_reports as $value) {
+                        $result = $value['object']->clear_batch_mode();
+                        if ($result) {  // We only report the ones that work.
+                            $ret['changed_things'][] = $value['report'];
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+        } else {
+            header('HTTP/1.1 403 Forbidden');
+            exit();
+        }
+        return $ret;
+    }
+        
+    /***********************/
+    /**
     \returns a string, with our plugin name.
      */
     public function plugin_name() {
@@ -46,6 +206,42 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     /***********************/
     /**
+    Handles the POST operation (new).
+    
+    \returns an associative array, with the "raw" response.
+     */
+    protected function _process_thing_post( $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                            $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
+                                            $in_query = []              ///< OPTIONAL: The query parameters, as an associative array.
+                                            ) {
+        $ret = [];
+        $parameters = $this->_process_parameters($in_andisol_instance, $in_query);
+        if ($in_andisol_instance->logged_in()) {    // Must be logged in to POST.
+            if ($in_andisol_instance->set_value_for_key($parameters['key'], $parameters['payload'])) {
+                $new_record = $in_andisol_instance->get_object_for_key($parameters['key']);
+                if ($new_record instanceof CO_KeyValue_CO_Collection) {
+                    unset($parameters['payload']);
+                    $result = $this->_process_thing_put($in_andisol_instance, [$new_record], $in_path, $in_query);
+                    
+                    $ret['new_thing'] = $result['changed_things'][0]['after'];
+                } else {
+                    header('HTTP/1.1 400 Resource Not Created');
+                    exit();
+                }
+            } else {
+                header('HTTP/1.1 400 Resource Not Created');
+                exit();
+            }
+        } else {
+            header('HTTP/1.1 403 Forbidden');
+            exit();
+        }
+        
+        return $ret;
+    }
+    
+    /***********************/
+    /**
     This runs our plugin command.
     
     \returns the HTTP response string, as either JSON or XML.
@@ -57,13 +253,13 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                         $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                     ) {
         $ret = [];
-        
+
         if ('POST' == $in_http_method) {    // We handle POST directly.
-            $ret = $this->_process_place_post($in_andisol_instance, $in_path, $in_query);
+            $ret = $this->_process_thing_post($in_andisol_instance, $in_path, $in_query);
         } else {
-            $show_parents = isset($in_query) && is_array($in_query) && isset($in_query['show_parents']);    // Show all places in detail, as well as the parents (applies only to GET).
-            $show_details = $show_parents || (isset($in_query) && is_array($in_query) && isset($in_query['show_details']));    // Show all places in detail (applies only to GET).
-            $writeable = isset($in_query) && is_array($in_query) && isset($in_query['writeable']);          // Show/list only places this user can modify.
+            $show_parents = isset($in_query) && is_array($in_query) && isset($in_query['show_parents']);    // Show all things in detail, as well as the parents (applies only to GET).
+            $show_details = $show_parents || (isset($in_query) && is_array($in_query) && isset($in_query['show_details']));    // Show all things in detail (applies only to GET).
+            $writeable = isset($in_query) && is_array($in_query) && isset($in_query['writeable']);          // Show/list only things this user can modify.
             $search_count_only = isset($in_query) && is_array($in_query) && isset($in_query['search_count_only']);  // Ignored for discrete IDs. If true, then a simple "count" result is returned as an integer.
             $search_ids_only = isset($in_query) && is_array($in_query) && isset($in_query['search_ids_only']);      // Ignored for discrete IDs. If true, then the response will be an array of integers, denoting resource IDs.
             $search_page_size = isset($in_query) && is_array($in_query) && isset($in_query['search_page_size']) ? abs(intval($in_query['search_page_size'])) : 0;           // Ignored for discrete IDs. This is the size of a page of results (1-based result count. 0 is no page size).
@@ -81,7 +277,7 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 // This tests to see if we only got one single digit as our "command."
                 $single_thing_id = (ctype_digit($first_directory) && (1 < intval($first_directory))) ? intval($first_directory) : NULL;    // This will be for if we are looking only one single thing.
         
-                // The first thing that we'll do, is look for a list of place IDs. If that is the case, we split them into an array of int.
+                // The first thing that we'll do, is look for a list of thing IDs. If that is the case, we split them into an array of int.
         
                 $thing_id_list = explode(',', $first_directory);
         
