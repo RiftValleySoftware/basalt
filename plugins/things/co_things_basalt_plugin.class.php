@@ -242,6 +242,42 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     /***********************/
     /**
+    Handles the GET operation (list records).
+    
+    \returns an associative array, with the "raw" response.
+     */
+    protected function _process_thing_get(  $in_andisol_instance,           ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                            $in_object_list = [],           ///< OPTIONAL: This function is worthless without at least one object. This will be an array of place objects, holding the places to examine.
+                                            $in_show_details = false,       ///< OPTIONAL: If true (default is false), then the resulting record will be returned in "detailed" format.
+                                            $in_show_parents = false,       ///< OPTIONAL: (Default is false). If true, then the parents will be shown. This can be a time-consuming operation, so it needs to be explicitly requested.
+                                            $in_search_count_only = false,  ///< OPTIONAL: If true, then we are only looking for a single integer count.
+                                            $in_search_ids_only = false,    ///< OPTIONAL: If true, then we are going to return just an array of int (the IDs of the resources).
+                                            $in_path = [],                  ///< OPTIONAL: The REST path, as an array of strings.
+                                            $in_query = []                  ///< OPTIONAL: The query parameters, as an associative array.
+                                        ) {
+        $ret = [];
+    
+        if ($in_search_count_only) {
+            $ret['count'] = intval($in_object_list);
+        } elseif (isset($in_object_list) && is_array($in_object_list) && (0 < count($in_object_list))) {
+            if ($in_search_ids_only) {
+                $ret['ids'] = $in_object_list;
+            } else {
+                foreach ($in_object_list as $thing) {
+                    if ($in_show_details) {
+                        $ret[] = $this->_get_long_description($thing, $in_show_parents);
+                    } else {
+                        $ret[] = $this->_get_short_description($thing);
+                    }
+                }
+            }
+        }
+        
+        return $ret;
+    }
+    
+    /***********************/
+    /**
     This runs our plugin command.
     
     \returns the HTTP response string, as either JSON or XML.
@@ -309,6 +345,8 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
                             }
                         }
                     }
+                    
+                    $ret = $this->_process_thing_get($in_andisol_instance, $thinglist, $show_details, $show_parents, $search_count_only, $search_ids_only, $in_path, $in_query);
                 }
             }
         }
