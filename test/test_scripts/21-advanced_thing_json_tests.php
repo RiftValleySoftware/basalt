@@ -1,0 +1,222 @@
+<?php
+/***************************************************************************************************************************/
+/**
+    BASALT Extension Layer
+    
+    © Copyright 2018, Little Green Viper Software Development LLC.
+    
+    This code is proprietary and confidential code, 
+    It is NOT to be reused or combined into any application,
+    unless done so, specifically under written license from Little Green Viper Software Development LLC.
+
+    Little Green Viper Software Development: https://littlegreenviper.com
+*/
+// ------------------------------ MAIN CODE -------------------------------------------
+
+require_once(dirname(dirname(__FILE__)).'/run_basalt_tests.php');
+
+set_time_limit(3600);
+
+function basalt_tests_read_things() {
+    $things_files = [];
+
+    foreach (new DirectoryIterator(dirname(dirname(__FILE__)).'/things') as $fileInfo) {
+        if ('.' != substr($fileInfo->getBasename(), 0, 1)) {
+            $file['index'] = intval(substr($fileInfo->getBasename(), 0, 2));
+            $file['filepath'] = $fileInfo->getPathname();
+            $file['name'] = ucwords(str_replace('-', ' ', substr($fileInfo->getBasename(), 3, -4)));
+            $file['key'] = 'basalt-test-0171:+'.urlencode($file['name']);
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $file['type'] = finfo_file($finfo, $file['filepath']);
+            
+            $things_files[] = $file;
+        }
+    }
+    
+    usort($things_files, function ($a, $b){ return ($a['index'] < $b['index']) ? -1 : (($a['index'] > $b['index']) ? 1 : 0); });
+    
+    for ($i = 0; $i < count($things_files); $i++) {
+        $things_files[$i]['db_index'] = 1732 + $i;
+    }
+    
+    return $things_files;
+}
+
+function basalt_tests_display_things_result_raw($in_result) {
+    $payload_pair = explode(',', $in_result);
+    $type = $payload_pair[0];
+    $payload = $payload_pair[1];
+
+    $type_header = explode('/', $type);
+    $type_trailer = explode(';', $type_header[1]);
+    switch ($type_header[0]) {
+        case 'image':
+            if ('tiff' != $type_trailer[0]) {
+                echo('<div style="text-align:center;margin:1em"><img src="data:'.$type.','.$payload.'" title="Some Image" alt="Some Image" style="width:256px" /></div>');
+            } else {
+                echo('<h4 style="color:green">'.$type.'</h3>');
+            }
+            break;
+        
+        default:
+            echo('<h4 style="color:green">'.$type.'</h3>');
+            break;
+    }
+}
+
+function basalt_tests_display_things_result_json($in_result) {
+    $json_object = json_decode($in_result);
+    foreach ($json_object->things as $thing) {
+        $payload = $thing->payload;
+        $type = $thing->payload_type;
+        $thing->payload = '[LARGE PAYLOAD]';
+        $json_object2 = json_encode($thing);
+        echo('<pre style="color:green">'.prettify_json($json_object2).'</pre>');
+        $type_header = explode('/', $type);
+        $type_trailer = explode(';', $type_header[1]);
+        switch ($type_header[0]) {
+            case 'image':
+                if ('tiff' != $type_trailer[0]) {
+                    echo('<div style="text-align:center;margin:1em"><img src="data:'.$type.','.$payload.'" title="'.$thing->name.'" alt="'.$thing->name.'" style="width:256px" /></div>');
+                } else {
+                    echo('<h4 style="color:green">'.$thing->name.' ('.$type.')</h3>');
+                }
+                break;
+        
+            default:
+                echo('<h4 style="color:green">'.$thing->name.' ('.$type.')</h3>');
+                break;
+        }
+    }
+}
+
+basalt_run_tests(171, 'BASIC JSON THING TESTS', 'NOTE: These tests may give you problems in MySQL! The big data items seem to stress MySQL. It may be necessary to run them with Postgres.');
+
+// -------------------------- DEFINITIONS AND TESTS -----------------------------------
+
+function basalt_test_define_0171() {
+//     basalt_run_single_direct_test(171, 'LOAD UP', 'Log in as "God," and create a set of "things" to be tested.', 'dc_area_tests');
+}
+
+function basalt_test_0171($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    
+    $result_code = '';
+    $things = basalt_tests_read_things();
+    
+    foreach ($things as $thing) {
+        echo('<h3>Create a new thing for '.$thing['name'].'.</h3>');
+        $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=admin&password='.CO_Config::god_mode_password(), NULL, NULL, $result_code);
+        if (isset($result_code) && $result_code && (200 != $result_code)) {
+            echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+        } else {
+            echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+        }
+        
+        $result = call_REST_API('POST', 'http://localhost/basalt/test/basalt_runner.php/json/things/?name='.urlencode($thing['name']).'&key='.$thing['key'], $thing, $api_result, $result_code);
+        if (isset($result_code) && $result_code && (200 != $result_code)) {
+            echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+        } else {
+            echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+        }
+        
+        $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/logout', NULL, $api_result, $result_code);
+    }
+}
+
+// --------------------
+
+function basalt_test_define_0172() {
+//     basalt_run_single_direct_test(172, 'BIG HONKERS', 'We retrieve items individually.', 'things_tests');
+}
+
+function basalt_test_0172($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    $things = basalt_tests_read_things();
+    
+    echo('<h3>First, we get them as individual resource IDs:</h3>');
+    foreach ($things as $thing) {
+        $st1 = microtime(true);
+        $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/things/'.$thing['db_index'].'?show_details', NULL, NULL, $result_code);
+        $fetchTime = sprintf('%01.4f', microtime(true) - $st1);
+        if (isset($result_code) && $result_code && (200 != $result_code)) {
+            echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+        } else {
+            echo("<h4>The test took $fetchTime seconds to complete.</h4>");
+            basalt_tests_display_things_result_json($result);
+        }
+    }
+    
+    echo('<h3>Next, we get them as individual resource keys:</h3>');
+    foreach ($things as $thing) {
+        $st1 = microtime(true);
+        $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/things/'.$thing['key'].'?show_details', NULL, NULL, $result_code);
+        $fetchTime = sprintf('%01.4f', microtime(true) - $st1);
+        if (isset($result_code) && $result_code && (200 != $result_code)) {
+            echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+        } else {
+            echo("<h4>The test took $fetchTime seconds to complete.</h4>");
+            basalt_tests_display_things_result_json($result);
+        }
+    }
+    
+    echo('<h3>Finally, we get them as individual resource keys, but ask only for raw data:</h3>');
+    foreach ($things as $thing) {
+        $st1 = microtime(true);
+        $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/things/'.$thing['key'].'?data_only', NULL, NULL, $result_code);
+        $fetchTime = sprintf('%01.4f', microtime(true) - $st1);
+        if (isset($result_code) && $result_code && (200 != $result_code)) {
+            echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+        } else {
+            if (isset($result_code) && $result_code && (200 != $result_code)) {
+                echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+            } else {
+                echo("<h4>The test took $fetchTime seconds to complete.</h4>");
+                basalt_tests_display_things_result_raw($result);
+            }
+        }
+    }
+}
+
+// --------------------
+
+function basalt_test_define_0173() {
+//     basalt_run_single_direct_test(173, 'BIG HONKERS -THE SEQUEL', 'We retrieve items as groups.', 'things_tests');
+}
+
+function basalt_test_0173($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    
+    $things = basalt_tests_read_things();
+    
+    $things_id_list = [array_reduce($things, function ($prev, $current) { return $prev ? $prev.','.$current['db_index'] : $current['db_index']; })];
+    $things_id_list[] = array_reduce($things, function ($prev, $current) { return $prev ? $prev.','.$current['key'] : $current['key']; });
+    
+    echo('<h3>First, we get them as ID-selected and key-selected resources:</h3>');
+    
+    foreach ($things_id_list as $things_list) {
+        $st1 = microtime(true);
+        $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/things/'.$things_list.'?show_details', NULL, NULL, $result_code);
+        $fetchTime = sprintf('%01.4f', microtime(true) - $st1);
+        if (isset($result_code) && $result_code && (200 != $result_code)) {
+            echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+        } else {
+            echo("<h4>The test took $fetchTime seconds to complete.</h4>");
+            basalt_tests_display_things_result_json($result);
+        }
+    }
+    
+    echo('<h3>Now, we try it again, but this time, as data-only, so only the first item will be returned:</h3>');
+    
+    foreach ($things_id_list as $things_list) {
+        $st1 = microtime(true);
+        $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/things/'.$things_list.'?data_only', NULL, NULL, $result_code);
+        $fetchTime = sprintf('%01.4f', microtime(true) - $st1);
+        if (isset($result_code) && $result_code && (200 != $result_code)) {
+            echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+        } else {
+            echo("<h4>The test took $fetchTime seconds to complete.</h4>");
+            basalt_tests_display_things_result_raw($result);
+        }
+    }
+}
+?>

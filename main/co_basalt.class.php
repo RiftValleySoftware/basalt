@@ -334,7 +334,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                                                     $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings. For the baseline, this should be exactly one element.
                                                     $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                                 ) {
-        $ret = NULL;
+        $ret = [];
         
         // No command simply means list the plugins.
         if (('GET' == $in_http_method) && (!isset($in_command) || !$in_command)) {
@@ -342,6 +342,37 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
             array_unshift($ret['plugins'], $this->plugin_name());
         } elseif ('tokens' == $in_command) {   // If we are viewing or editing the tokens, then we deal with that here.
             $ret = $this->_process_token_command($in_andisol_instance, $in_http_method, $in_path, $in_query);
+        } elseif ('search' == $in_command) {
+            $radius = isset($in_query) && is_array($in_query) && isset($in_query['search_radius']) && (0.0 < floatval($in_query['search_radius'])) ? floatval($in_query['search_radius']) : NULL;
+            $longitude = isset($in_query) && is_array($in_query) && isset($in_query['search_longitude']) ? floatval($in_query['search_longitude']) : NULL;
+            $latitude = isset($in_query) && is_array($in_query) && isset($in_query['search_latitude']) ? floatval($in_query['search_latitude']) : NULL;
+            $search_page_size = isset($in_query) && is_array($in_query) && isset($in_query['search_page_size']) ? abs(intval($in_query['search_page_size'])) : 0;       // Ignored for discrete IDs. This is the size of a page of results (1-based result count. 0 is no page size).
+            $search_page_number = isset($in_query) && is_array($in_query) && isset($in_query['search_page_number']) ? abs(intval($in_query['search_page_number'])) : 0; // Ignored for discrete IDs, or if search_page_size is 0. The page we are interested in (0-based. 0 is the first page).
+            $writeable = isset($in_query) && is_array($in_query) && isset($in_query['writeable']);                                                                      // Show/list only things this user can modify.
+            
+            $search_array = [];
+            
+            if (isset($radius) && isset($longitude) && isset($latitude)) {
+                $location_search = Array('radius' => $radius, 'longitude' => $longitude, 'latitude' => $latitude);
+                $search_array['location'] = $location_search;
+                $class_search = Array('%_Collection', 'use_like' => 1);
+                $search_array['access_class'] = $class_search;
+            
+                $object_list = $in_andisol_instance->generic_search($search_array, false, $search_page_size, $search_page_number, $writeable);
+                
+                if (isset($object_list) && is_array($object_list) && count($object_list)) {
+                    foreach ($object_list as $instance) {
+                        $class_name = get_class($instance);
+                
+                        if ($class_name) {
+                            $handler = self::_get_handler($class_name);
+                            $ret[$handler][] = $instance->id();
+                        }
+                    }
+                }
+                
+                $ret['search_location'] = $location_search;
+            }
         }
         
         return $ret;
