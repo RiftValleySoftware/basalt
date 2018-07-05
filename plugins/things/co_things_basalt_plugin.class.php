@@ -330,6 +330,8 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $search_page_size = isset($in_query) && is_array($in_query) && isset($in_query['search_page_size']) ? abs(intval($in_query['search_page_size'])) : 0;           // Ignored for discrete IDs. This is the size of a page of results (1-based result count. 0 is no page size).
             $search_page_number = isset($in_query) && is_array($in_query) && isset($in_query['search_page_number']) ? abs(intval($in_query['search_page_number'])) : 0;  // Ignored for discrete IDs, or if search_page_size is 0. The page we are interested in (0-based. 0 is the first page).
             
+            $thinglist = [];
+            
             // For the default (no thing ID), we simply act on a list of all available things (or filtered by some search criteria).
             if (0 == count($in_path)) {
                 $radius = isset($in_query) && is_array($in_query) && isset($in_query['search_radius']) && (0.0 < floatval($in_query['search_radius'])) ? floatval($in_query['search_radius']) : NULL;
@@ -350,7 +352,7 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     $search_array['location'] = $location_search;
                 }
                 
-                $placelist = $in_andisol_instance->generic_search($search_array, false, $search_page_size, $search_page_number, $writeable, $search_count_only, $search_ids_only);
+                $thinglist = $in_andisol_instance->generic_search($search_array, false, $search_page_size, $search_page_number, $writeable, $search_count_only, $search_ids_only);
             } else {
                 $thing_id_list = array_unique(explode(',', $in_path[0]));
                 
@@ -358,8 +360,6 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     $thing_id_list = [$thing_id_list[0]];
                 }
                 
-                $thinglist = [];
-            
                 foreach ($thing_id_list as $id) {
                     $thing = NULL;
                     
@@ -380,8 +380,13 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         break;
                     }
                 }
-                
+            }
+            
+            if ('GET' == $in_http_method) {
                 $ret = $this->_process_thing_get($in_andisol_instance, $thinglist, $data_only, $show_details, $show_parents, $search_count_only, $search_ids_only, $in_path, $in_query);
+            } elseif ('DELETE' == $in_http_method) {
+            } else {
+                $ret = $this->_process_thing_put($in_andisol_instance, $thinglist, $in_path, $in_query);
             }
         }
                 
