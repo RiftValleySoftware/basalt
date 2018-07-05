@@ -292,7 +292,7 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         $finfo = finfo_open(FILEINFO_MIME_TYPE);  
                         $content_type = finfo_file($finfo, $temp_file);
                         $payload_type = $content_type.';base64,';
-                        $ret[] = $payload_type.base64_encode($payload);
+                        $ret = $payload_type.base64_encode($payload);
                     } else {
                         $ret[] = $this->_get_short_description($thing);
                     }
@@ -353,7 +353,11 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $placelist = $in_andisol_instance->generic_search($search_array, false, $search_page_size, $search_page_number, $writeable, $search_count_only, $search_ids_only);
             } else {
                 $thing_id_list = array_unique(explode(',', $in_path[0]));
-
+                
+                if ($data_only) {   // We only do one at a time for data only.
+                    $thing_id_list = [$thing_id_list[0]];
+                }
+                
                 $thinglist = [];
             
                 foreach ($thing_id_list as $id) {
@@ -371,12 +375,16 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     if (isset($thing) && ($thing instanceof CO_Collection)) {
                         $thinglist[] = $thing;
                     }
+                    
+                    if ($data_only) {   // We only allow one thing for data only.
+                        break;
+                    }
                 }
                 
                 $ret = $this->_process_thing_get($in_andisol_instance, $thinglist, $data_only, $show_details, $show_parents, $search_count_only, $search_ids_only, $in_path, $in_query);
             }
         }
                 
-        return $data_only ? implode(' ', $ret) : $this->_condition_response($in_response_type, $ret);
+        return $data_only ? $ret : $this->_condition_response($in_response_type, $ret);
     }
 }
