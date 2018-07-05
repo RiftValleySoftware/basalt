@@ -25,6 +25,24 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
     protected function _get_xsd() {
         return $this->_process_xsd(dirname(__FILE__).'/schema.xsd');
     }
+
+    /***********************/
+    /**
+    This returns a more comprehensive description of the thing.
+    
+    \returns an associative array of strings and integers.
+     */
+    protected function _get_long_thing_description( $in_object,                 ///< REQUIRED: The object to display.
+                                                    $in_show_parents = false    ///< OPTIONAL: (Default is false). If true, then the parents will be shown. This can be a time-consuming operation, so it needs to be explicitly requested.
+                                                    ) {
+        $ret = parent::_get_long_description($in_object, $in_show_parents);
+        
+        if (isset($in_object->tags()[0]) && trim($in_object->tags()[0])) {
+            $ret['key'] = trim($in_object->tags()[0]);
+        }
+        
+        return $ret;
+    }
         
     /***********************/
     /**
@@ -248,6 +266,7 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
      */
     protected function _process_thing_get(  $in_andisol_instance,           ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
                                             $in_object_list = [],           ///< OPTIONAL: This function is worthless without at least one object. This will be an array of place objects, holding the places to examine.
+                                            $in_data_only = false,          ///< OPTIONAL: If true (default is false), then the resulting record will be returned in pure data format.
                                             $in_show_details = false,       ///< OPTIONAL: If true (default is false), then the resulting record will be returned in "detailed" format.
                                             $in_show_parents = false,       ///< OPTIONAL: (Default is false). If true, then the parents will be shown. This can be a time-consuming operation, so it needs to be explicitly requested.
                                             $in_search_count_only = false,  ///< OPTIONAL: If true, then we are only looking for a single integer count.
@@ -265,7 +284,15 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
             } else {
                 foreach ($in_object_list as $thing) {
                     if ($in_show_details) {
-                        $ret[] = $this->_get_long_description($thing, $in_show_parents);
+                        $ret[] = $this->_get_long_thing_description($thing, $in_show_parents);
+                    } elseif ($in_data_only) {
+                        $payload = $thing->get_payload();
+                        $temp_file = tempnam(sys_get_temp_dir(), 'RVP');  
+                        file_put_contents($temp_file , $payload);
+                        $finfo = finfo_open(FILEINFO_MIME_TYPE);  
+                        $content_type = finfo_file($finfo, $temp_file);
+                        $payload_type = $content_type.';base64,';
+                        $ret[] = $payload_type.base64_encode($payload);
                     } else {
                         $ret[] = $this->_get_short_description($thing);
                     }
@@ -289,12 +316,14 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                         $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                     ) {
         $ret = [];
-
+        $data_only = false; // Return only base64 data. If this is sent, the return type is ignored. Multiple responses are concatenated by spaces.
+        
         if ('POST' == $in_http_method) {    // We handle POST directly.
             $ret = $this->_process_thing_post($in_andisol_instance, $in_path, $in_query);
         } else {
             $show_parents = isset($in_query) && is_array($in_query) && isset($in_query['show_parents']);    // Show all things in detail, as well as the parents (applies only to GET).
             $show_details = $show_parents || (isset($in_query) && is_array($in_query) && isset($in_query['show_details']));    // Show all things in detail (applies only to GET).
+            $data_only = (isset($in_query) && is_array($in_query) && isset($in_query['data_only']));    
             $writeable = isset($in_query) && is_array($in_query) && isset($in_query['writeable']);          // Show/list only things this user can modify.
             $search_count_only = isset($in_query) && is_array($in_query) && isset($in_query['search_count_only']);  // Ignored for discrete IDs. If true, then a simple "count" result is returned as an integer.
             $search_ids_only = isset($in_query) && is_array($in_query) && isset($in_query['search_ids_only']);      // Ignored for discrete IDs. If true, then the response will be an array of integers, denoting resource IDs.
@@ -323,34 +352,31 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 
                 $placelist = $in_andisol_instance->generic_search($search_array, false, $search_page_size, $search_page_number, $writeable, $search_count_only, $search_ids_only);
             } else {
-                $first_directory = $in_path[0];    // Get the first directory.
-        
-                // This tests to see if we only got one single digit as our "command."
-                $single_thing_id = (ctype_digit($first_directory) && (1 < intval($first_directory))) ? intval($first_directory) : NULL;    // This will be for if we are looking only one single thing.
-        
-                // The first thing that we'll do, is look for a list of thing IDs. If that is the case, we split them into an array of int.
-        
-                $thing_id_list = explode(',', $first_directory);
-        
-                // If we do, indeed, have a list, we will force them to be ints, and cycle through them.
-                if ($single_thing_id || (1 < count($thing_id_list))) {
-                    $thing_id_list = ($single_thing_id ? [$single_thing_id] : array_unique(array_map('intval', $thing_id_list)));
-                    $thinglist = [];
-                
-                    foreach ($thing_id_list as $id) {
-                        if (0 < $id) {
-                            $thing = $in_andisol_instance->get_single_data_record_by_id($id);
-                            if (isset($thing) && ($thing instanceof CO_Collection)) {
-                                $thinglist[] = $thing;
-                            }
-                        }
+                $thing_id_list = array_unique(explode(',', $in_path[0]));
+
+                $thinglist = [];
+            
+                foreach ($thing_id_list as $id) {
+                    $thing = NULL;
+                    
+                    if (ctype_digit($id) && (0 < intval($id))) {    // Numerical, we go by ID
+                        $thing = $in_andisol_instance->get_single_data_record_by_id($id);
                     }
                     
-                    $ret = $this->_process_thing_get($in_andisol_instance, $thinglist, $show_details, $show_parents, $search_count_only, $search_ids_only, $in_path, $in_query);
+                    if (!$thing) {
+                        $id = urldecode($id);
+                        $thing = $in_andisol_instance->get_object_for_key($id);
+                    }
+                    
+                    if (isset($thing) && ($thing instanceof CO_Collection)) {
+                        $thinglist[] = $thing;
+                    }
                 }
+                
+                $ret = $this->_process_thing_get($in_andisol_instance, $thinglist, $data_only, $show_details, $show_parents, $search_count_only, $search_ids_only, $in_path, $in_query);
             }
         }
                 
-        return $this->_condition_response($in_response_type, $ret);
+        return $data_only ? implode(' ', $ret) : $this->_condition_response($in_response_type, $ret);
     }
 }
