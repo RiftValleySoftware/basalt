@@ -121,6 +121,20 @@ abstract class A_CO_Basalt_Plugin {
             $ret ['lang'] = $lang;
         }
         
+        // Just to make sure that we're a valid long/lat object
+        if (method_exists($in_object, 'longitude')) {
+            $longitude = $in_object->longitude();
+            $latitude = $in_object->latitude();
+        
+            if (isset($longitude) && is_float($longitude) && isset($latitude) && is_float($latitude)) {
+                $ret['coords'] = sprintf("%f,%f", $latitude, $longitude);
+            }
+        
+            if (isset($in_object->distance)) {
+                $ret['distance_in_km'] = $in_object->distance;
+            }
+        }
+
         return $ret;
     }
     

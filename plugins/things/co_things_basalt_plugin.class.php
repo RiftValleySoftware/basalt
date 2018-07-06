@@ -66,161 +66,6 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
         return $ret;
     }
-        
-    /***********************/
-    /**
-    Handle the PUT operation (modify).
-    
-    \returns an associative array, with the "raw" response.
-     */
-    protected function _process_thing_put(  $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
-                                            $in_object_list = [],       ///< OPTIONAL: This function is worthless without at least one object. This will be an array of thing objects, holding the things to modify.
-                                            $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
-                                            $in_query = []              ///< OPTIONAL: The query parameters, as an associative array.
-                                        ) {
-        if ($in_andisol_instance->logged_in()) {    // Must be logged in to PUT.
-            $ret = ['changed_things' => []];
-            $fuzz_factor = isset($in_query) && is_array($in_query) && isset($in_query['fuzz_factor']) ? floatval($in_query['fuzz_factor']) : 0; // Set any fuzz factor.
-        
-            $parameters = $this->_process_parameters($in_andisol_instance, $in_query);
-            if (isset($parameters) && is_array($parameters) && count($parameters) && isset($in_object_list) && is_array($in_object_list) && count($in_object_list)) {
-                /*
-                What we are doing here, is using the "batch mode" for each record object to set the changes in thing without doing a DB update.
-                We generate a change report, but don't add the report to the final report yet, as the change isn't "set" yet.
-                After we make all the changes, we cycle through the records, clearing the "batch mode" for each record object, which sends it to the DB.
-                If the clear works, then we set it into the final report.
-                This makes the process work much better in a multiuser environment, where other clients could be querying the DB.
-                */
-                $change_reports = [];   // We will keep our interin reports here.
-                
-                foreach ($in_object_list as $thing) {
-                    if ($thing->user_can_write()) { // Belt and suspenders. Make sure we can write.
-                        $thing->set_batch_mode();
-                        // Take a "before" snapshot.
-                        $changed_thing = ['before' => $this->_get_long_description($thing)];
-                        $result = true;
-                    
-                        if ($result && isset($parameters['key'])) {
-                            $result = $thing->set_key($parameters['key']);
-                        }
-                    
-                        if ($result && isset($parameters['name'])) {
-                            $result = $thing->set_name($parameters['name']);
-                        }
-             
-                        if ($result && isset($parameters['write_token'])) {
-                            $result = $thing->set_write_security_id($parameters['write_token']);
-                        }
-             
-                        if ($result && isset($parameters['lang'])) {
-                            $result = $thing->set_lang($parameters['lang']);
-                        }
-                    
-                        if ($result && isset($parameters['longitude'])) {
-                            $result = $thing->set_longitude($parameters['longitude']);
-                        }
-                    
-                        if ($result && isset($parameters['latitude'])) {
-                            $result = $thing->set_latitude($parameters['latitude']);
-                        }
-                    
-                        if ($result && isset($parameters['fuzz_factor'])) {
-                            $result = $thing->set_fuzz_factor($parameters['fuzz_factor']);
-                        }
-                        
-                        if ($result && isset($parameters['can_see_through_the_fuzz'])) {
-                            $result = $thing->set_can_see_through_the_fuzz($parameters['can_see_through_the_fuzz']);
-                        }
-                    
-                        if ($result && isset($parameters['remove_payload'])) {
-                            $result = $thing->set_payload(NULL);
-                        } elseif ($result && isset($parameters['payload'])) {
-                            $result = $thing->set_payload($parameters['payload']);
-                        }
-                        
-                        // We have previously split into "add" and "remove" lists (dictated by the sign of the integer).
-                        if ($result && isset($parameters['child_ids'])) {
-                            $add = $parameters['child_ids']['add'];
-                            $remove = $parameters['child_ids']['remove'];
-                    
-                            foreach ($remove as $id) {
-                                if ($id != $thing->id()) {
-                                    $child = $in_andisol_instance->get_single_data_record_by_id($id);
-                                    if (isset($child)) {
-                                        $result = $thing->deleteThisElement($child);
-                                    }
-                        
-                                    if (!$result) {
-                                        break;
-                                    }
-                                }
-                            }
-                        
-                            if ($result) {
-                                foreach ($add as $id) {
-                                    if ($id != $thing->id()) {
-                                        $child = $in_andisol_instance->get_single_data_record_by_id($id);
-                                        if (isset($child)) {
-                                            $result = $thing->appendElement($child);
-                                        
-                                            if (!$result) {
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        
-                        // We do this last, so we have the option of doing a "lock" (which isn't necessary in "batch mode").
-                        if ($result && isset($parameters['read_token'])) {
-                            $result = $thing->set_read_security_id($parameters['read_token']);
-                        }
-                    
-                        if ($result) {  // Assuming all went well to this point, we take an "after" snapshot, and save the object and interim report in our "final clear" list.
-                            $changed_thing['after'] = $this->_get_long_description($thing);
-                            $change_reports[] = ['object' => $thing, 'report' => $changed_thing];
-                        }
-                    }
-                }
-                
-                // Here's where we actually set each record into the DB, and generate the full final report.
-                if ($result && count($change_reports)) {
-                    $ret['changed_things'] = [];
-                    foreach ($change_reports as $value) {
-                        $result = $value['object']->clear_batch_mode();
-                        if ($result) {  // We only report the ones that work.
-                            $ret['changed_things'][] = $value['report'];
-                        } else {
-                            break;
-                        }
-                    }
-                }
-            }
-        } else {
-            header('HTTP/1.1 403 Forbidden');
-            exit();
-        }
-        return $ret;
-    }
-        
-    /***********************/
-    /**
-    \returns a string, with our plugin name.
-     */
-    public function plugin_name() {
-        return 'things';
-    }
-    
-    /***********************/
-    /**
-    This returns an array of classnames, handled by this plugin.
-    
-    \returns an array of string, with the names of the classes handled by this plugin.
-     */
-    static public function classes_managed() {
-        return ['CO_Collection', 'CO_KeyValue_CO_Collection'];
-    }
     
     /***********************/
     /**
@@ -305,6 +150,191 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     /***********************/
     /**
+    Handles the DELETE operation.
+    
+    \returns an associative array, with the "raw" response.
+     */
+    protected function _process_thing_delete(   $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                                $in_object_list = [],       ///< OPTIONAL: This function is worthless without at least one object. This will be an array of place objects, holding the places to delete.
+                                                $in_show_parents = false    ///< OPTIONAL: (Default is false). If true, then the parents will be shown. This can be a time-consuming operation, so it needs to be explicitly requested.
+                                            ) {
+        $ret = [];
+        
+        if ($in_andisol_instance->logged_in()) {    // Must be logged in to DELETE.
+            if (isset($in_object_list) && is_array($in_object_list) && (0 < count($in_object_list))) {
+                foreach ($in_object_list as $thing) {
+                    $to_be_deleted = $this->_get_long_thing_description($thing, $in_show_parents);
+                    if ($thing->user_can_write() && $thing->delete_from_db()) {
+                        $ret['deleted_things'][] = $to_be_deleted;
+                    }
+                }
+            }
+        } else {
+            header('HTTP/1.1 403 Forbidden');
+            exit();
+        }
+        
+        return $ret;
+    }
+        
+    /***********************/
+    /**
+    Handle the PUT operation (modify).
+    
+    \returns an associative array, with the "raw" response.
+     */
+    protected function _process_thing_put(  $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                            $in_object_list = [],       ///< OPTIONAL: This function is worthless without at least one object. This will be an array of thing objects, holding the things to modify.
+                                            $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
+                                            $in_query = [],             ///< OPTIONAL: The query parameters, as an associative array.
+                                            $in_show_parents = false    ///< OPTIONAL: (Default is false). If true, then the parents will be shown. This can be a time-consuming operation, so it needs to be explicitly requested.
+                                        ) {
+        if ($in_andisol_instance->logged_in()) {    // Must be logged in to PUT.
+            $ret = [];
+            $fuzz_factor = isset($in_query) && is_array($in_query) && isset($in_query['fuzz_factor']) ? floatval($in_query['fuzz_factor']) : 0; // Set any fuzz factor.
+        
+            $parameters = $this->_process_parameters($in_andisol_instance, $in_query);
+            if (isset($parameters) && is_array($parameters) && count($parameters) && isset($in_object_list) && is_array($in_object_list) && count($in_object_list)) {
+                /*
+                What we are doing here, is using the "batch mode" for each record object to set the changes in thing without doing a DB update.
+                We generate a change report, but don't add the report to the final report yet, as the change isn't "set" yet.
+                After we make all the changes, we cycle through the records, clearing the "batch mode" for each record object, which sends it to the DB.
+                If the clear works, then we set it into the final report.
+                This makes the process work much better in a multiuser environment, where other clients could be querying the DB.
+                */
+                $change_reports = [];   // We will keep our interin reports here.
+                
+                foreach ($in_object_list as $thing) {
+                    if ($thing->user_can_write()) { // Belt and suspenders. Make sure we can write.
+                        $thing->set_batch_mode();
+                        // Take a "before" snapshot.
+                        $changed_thing = ['before' => $this->_get_long_thing_description($thing, $in_show_parents)];
+                        $result = true;
+                    
+                        if ($result && isset($parameters['key'])) {
+                            $result = $thing->set_key($parameters['key']);
+                        }
+                    
+                        if ($result && isset($parameters['name'])) {
+                            $result = $thing->set_name($parameters['name']);
+                        }
+             
+                        if ($result && isset($parameters['write_token'])) {
+                            $result = $thing->set_write_security_id($parameters['write_token']);
+                        }
+             
+                        if ($result && isset($parameters['lang'])) {
+                            $result = $thing->set_lang($parameters['lang']);
+                        }
+                    
+                        if ($result && isset($parameters['longitude'])) {
+                            $result = $thing->set_longitude($parameters['longitude']);
+                        }
+                    
+                        if ($result && isset($parameters['latitude'])) {
+                            $result = $thing->set_latitude($parameters['latitude']);
+                        }
+                    
+                        if ($result && isset($parameters['fuzz_factor'])) {
+                            $result = $thing->set_fuzz_factor($parameters['fuzz_factor']);
+                        }
+                        
+                        if ($result && isset($parameters['can_see_through_the_fuzz'])) {
+                            $result = $thing->set_can_see_through_the_fuzz($parameters['can_see_through_the_fuzz']);
+                        }
+                    
+                        if ($result && isset($parameters['remove_payload'])) {
+                            $result = $thing->set_payload(NULL);
+                        } elseif ($result && isset($parameters['payload'])) {
+                            $result = $thing->set_payload($parameters['payload']);
+                        }
+                        
+                        // We have previously split into "add" and "remove" lists (dictated by the sign of the integer).
+                        if ($result && isset($parameters['child_ids'])) {
+                            $add = $parameters['child_ids']['add'];
+                            $remove = $parameters['child_ids']['remove'];
+                    
+                            foreach ($remove as $id) {
+                                if ($id != $thing->id()) {
+                                    $child = $in_andisol_instance->get_single_data_record_by_id($id);
+                                    if (isset($child)) {
+                                        $result = $thing->deleteThisElement($child);
+                                    }
+                        
+                                    if (!$result) {
+                                        break;
+                                    }
+                                }
+                            }
+                        
+                            if ($result) {
+                                foreach ($add as $id) {
+                                    if ($id != $thing->id()) {
+                                        $child = $in_andisol_instance->get_single_data_record_by_id($id);
+                                        if (isset($child)) {
+                                            $result = $thing->appendElement($child);
+                                        
+                                            if (!$result) {
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // We do this last, so we have the option of doing a "lock" (which isn't necessary in "batch mode").
+                        if ($result && isset($parameters['read_token'])) {
+                            $result = $thing->set_read_security_id($parameters['read_token']);
+                        }
+                    
+                        if ($result) {  // Assuming all went well to this point, we take an "after" snapshot, and save the object and interim report in our "final clear" list.
+                            $changed_thing['after'] = $this->_get_long_thing_description($thing, $in_show_parents);
+                            $change_reports[] = ['object' => $thing, 'report' => $changed_thing];
+                        }
+                    }
+                }
+                
+                // Here's where we actually set each record into the DB, and generate the full final report.
+                if ($result && count($change_reports)) {
+                    $ret['changed_things'] = [];
+                    foreach ($change_reports as $value) {
+                        $result = $value['object']->clear_batch_mode();
+                        if ($result) {  // We only report the ones that work.
+                            $ret['changed_things'][] = $value['report'];
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+        } else {
+            header('HTTP/1.1 403 Forbidden');
+            exit();
+        }
+        return $ret;
+    }
+    
+    /***********************/
+    /**
+    This returns an array of classnames, handled by this plugin.
+    
+    \returns an array of string, with the names of the classes handled by this plugin.
+     */
+    static public function classes_managed() {
+        return ['CO_Collection', 'CO_KeyValue_CO_Collection'];
+    }
+        
+    /***********************/
+    /**
+    \returns a string, with our plugin name.
+     */
+    public function plugin_name() {
+        return 'things';
+    }
+    
+    /***********************/
+    /**
     This runs our plugin command.
     
     \returns the HTTP response string, as either JSON or XML.
@@ -385,8 +415,9 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
             if ('GET' == $in_http_method) {
                 $ret = $this->_process_thing_get($in_andisol_instance, $thinglist, $data_only, $show_details, $show_parents, $search_count_only, $search_ids_only, $in_path, $in_query);
             } elseif ('DELETE' == $in_http_method) {
+                $ret = $this->_process_thing_delete($in_andisol_instance, $thinglist, $show_parents);
             } else {
-                $ret = $this->_process_thing_put($in_andisol_instance, $thinglist, $in_path, $in_query);
+                $ret = $this->_process_thing_put($in_andisol_instance, $thinglist, $in_path, $in_query, $show_parents);
             }
         }
                 

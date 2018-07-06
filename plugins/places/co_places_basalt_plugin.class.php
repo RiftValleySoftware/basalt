@@ -62,21 +62,11 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
     protected function _get_short_description(  $in_object  ///< REQUIRED: The user or login object to extract information from.
                                             ) {
         $ret = parent::_get_short_description($in_object);
-        $longitude = $in_object->longitude();
-        $latitude = $in_object->latitude();
-        
-        if (isset($longitude) && is_float($longitude) && isset($latitude) && is_float($latitude)) {
-            $ret['coords'] = sprintf("%f,%f", $latitude, $longitude);
-        }
         
         $address = trim($in_object->get_readable_address());
         
         if (isset($address) && $address) {
             $ret['address'] = $address;
-        }
-        
-        if (isset($in_object->distance)) {
-            $ret['distance_in_km'] = $in_object->distance;
         }
         
         return $ret;
@@ -186,9 +176,9 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
     
     /***********************/
     /**
-    Handles the POST operation (new).
+    Handles the DELETE operation.
     
-    \returns an associative array, with the "raw" response. This will always show the parents.
+    \returns an associative array, with the "raw" response.
      */
     protected function _process_place_delete(   $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
                                                 $in_object_list = [],       ///< OPTIONAL: This function is worthless without at least one object. This will be an array of place objects, holding the places to delete.
@@ -264,7 +254,8 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
     protected function _process_place_put(  $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
                                             $in_object_list = [],       ///< OPTIONAL: This function is worthless without at least one object. This will be an array of place objects, holding the places to modify.
                                             $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
-                                            $in_query = []              ///< OPTIONAL: The query parameters, as an associative array.
+                                            $in_query = [],             ///< OPTIONAL: The query parameters, as an associative array.
+                                            $in_show_parents = false    ///< OPTIONAL: (Default is false). If true, then the parents will be shown. This can be a time-consuming operation, so it needs to be explicitly requested.
                                         ) {
         if ($in_andisol_instance->logged_in()) {    // Must be logged in to PUT.
             $ret = ['changed_places' => []];
@@ -285,7 +276,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     if ($place->user_can_write()) { // Belt and suspenders. Make sure we can write.
                         $place->set_batch_mode();
                         // Take a "before" snapshot.
-                        $changed_place = ['before' => $this->_get_long_place_description($place)];
+                        $changed_place = ['before' => $this->_get_long_place_description($place, $in_show_parents)];
                         $result = true;
                         
                         if ($result && isset($parameters['geocode']) && (0 != intval($parameters['geocode']))) {
@@ -422,7 +413,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         }
                     
                         if ($result) {  // Assuming all went well to this point, we take an "after" snapshot, and save the object and interim report in our "final clear" list.
-                            $changed_place['after'] = $this->_get_long_place_description($place);
+                            $changed_place['after'] = $this->_get_long_place_description($place, $in_show_parents);
                             $change_reports[] = ['object' => $place, 'report' => $changed_place];
                         }
                     }
@@ -616,7 +607,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     $ret = $this->_process_place_get($in_andisol_instance, $placelist, $show_details, $show_parents, $search_count_only, $search_ids_only, $in_path, $in_query);
                     $ret = Array('results' => $ret);
                 } elseif ('PUT' == $in_http_method) {
-                    $ret = $this->_process_place_put($in_andisol_instance, $placelist, $in_path, $in_query);
+                    $ret = $this->_process_place_put($in_andisol_instance, $placelist, $in_path, $in_query, $show_parents);
                 } elseif ('DELETE' == $in_http_method) {
                     $ret = $this->_process_place_delete($in_andisol_instance, $placelist, $in_path, $in_query, $show_parents);
                 }
@@ -652,7 +643,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         $ret = $this->_process_place_get($in_andisol_instance, $placelist, $show_details, $show_parents, $search_count_only, $search_ids_only, $in_path, $in_query);
                         $ret = Array('results' => $ret);
                     } elseif ('PUT' == $in_http_method) {
-                        $ret = $this->_process_place_put($in_andisol_instance, $placelist, $in_path, $in_query);
+                        $ret = $this->_process_place_put($in_andisol_instance, $placelist, $in_path, $in_query, $show_parents);
                     } elseif ('DELETE' == $in_http_method) {
                         $ret = $this->_process_place_delete($in_andisol_instance, $placelist, $in_path, $in_query, $show_parents);
                     }
