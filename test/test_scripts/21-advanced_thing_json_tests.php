@@ -73,7 +73,7 @@ function basalt_tests_display_thing_result_json($in_thing) {
     switch ($type_header[0]) {
         case 'image':
             if ('tiff' != $type_trailer[0]) {
-                echo('<div style="text-align:center;margin:1em"><img src="data:'.$type.','.$payload.'" title="'.$in_thing->name.'" alt="'.$in_thing->name.'" style="width:256px" /></div>');
+                echo('<div style="text-align:left;margin:1em"><img src="data:'.$type.','.$payload.'" title="'.$in_thing->name.'" alt="'.$in_thing->name.'" style="width:256px" /></div>');
             } else {
                 echo('<h4 style="color:green">'.$in_thing->name.' ('.$type.')</h3>');
             }
@@ -243,7 +243,7 @@ function basalt_test_0175($in_login = NULL, $in_hashed_password = NULL, $in_pass
     
     echo("<h3>First, Search for the Exact Description String:</h3>");
     $st1 = microtime(true);
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/things/?show_details&search_description=Worth+Enough,+by+Radoxsist', NULL, NULL, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/things/?show_details&search_description=Worth+Enough,+by+Radoxist', NULL, NULL, $result_code);
     $fetchTime = sprintf('%01.4f', microtime(true) - $st1);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
@@ -371,17 +371,6 @@ function basalt_test_0176($in_login = NULL, $in_hashed_password = NULL, $in_pass
     echo("<h3>Try wildcards for Tag 3:</h3>");
     $st1 = microtime(true);
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/things/?show_details&search_tag3=%city', NULL, NULL, $result_code);
-    $fetchTime = sprintf('%01.4f', microtime(true) - $st1);
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
-        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
-    } else {
-        echo("<h4>The test took $fetchTime seconds to complete.</h4>");
-        basalt_tests_display_things_result_json($result);
-    }
-    
-    echo("<h3>Look specifically for an empty Tag 9. Note that we only get the two items we edited, despite the fact that all of them have a NULL tag9. 'Empty' is different from 'NULL.':</h3>");
-    $st1 = microtime(true);
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/things/?show_details&search_tag9=', NULL, NULL, $result_code);
     $fetchTime = sprintf('%01.4f', microtime(true) - $st1);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');

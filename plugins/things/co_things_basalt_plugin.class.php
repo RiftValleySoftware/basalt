@@ -413,7 +413,7 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $search_page_size = isset($in_query) && is_array($in_query) && isset($in_query['search_page_size']) ? abs(intval($in_query['search_page_size'])) : 0;           // Ignored for discrete IDs. This is the size of a page of results (1-based result count. 0 is no page size).
             $search_page_number = isset($in_query) && is_array($in_query) && isset($in_query['search_page_number']) ? abs(intval($in_query['search_page_number'])) : 0;  // Ignored for discrete IDs, or if search_page_size is 0. The page we are interested in (0-based. 0 is the first page).
             // The following criteria relate to the tags array. The user can set tags for searching. The description is a tag.
-            $search_name = isset($in_query) && is_array($in_query) && isset($in_query['search_name']) ? trim($in_query['search_name']) : '%';          // Search in the object name.
+            $search_name = isset($in_query) && is_array($in_query) && isset($in_query['search_name']) ? trim($in_query['search_name']) : NULL;          // Search in the object name.
             $description = isset($in_query) && is_array($in_query) && isset($in_query['search_description']) ? trim($in_query['search_description']) : '%';          // Search in our special description tag.
             $tags = ['%', $description];
             
@@ -454,7 +454,7 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     $search_array['tags'] = $tags;
                     $search_array['tags']['use_like'] = 1;
                 }
-                
+
                 $thinglist = $in_andisol_instance->generic_search($search_array, false, $search_page_size, $search_page_number, $writeable, $search_count_only, $search_ids_only);
             } else {
                 $thing_id_list = array_unique(explode(',', $in_path[0]));
