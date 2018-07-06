@@ -7,29 +7,17 @@
             <li><a href="#01-places-structure-basics">THE BASICS</a></li>
             <li><a href="#01-places-structure-obfuscation">LOCATION OBFUSCATION</a></li>
             <li><a href="#01-places-structure-basic-uri-structure">BASIC URI STRUCTURE</a><ul class="toc-ul">
-                <li><a href="#01-places-structure-basic-uri-structure-idlist">Direct Place Record IDs</a><ul class="toc-ul">
-                    <li><a href="#01-places-structure-basic-uri-structure-direct-json">JSON</a></li>
-                    <li><a href="#01-places-structure-basic-uri-structure-direct-xml">XML</a></li>
-                </ul></li>
+                <li><a href="#01-places-structure-basic-uri-structure-idlist">Direct Place Record IDs</a></li>
             </ul></li>
             <li><a href="#02-places-queries">QUERY PARAMETERS</a><ul class="toc-ul">
                 <li><a href="#02-places-queries-global">Global Parameters</a><ul class="toc-ul">
-                    <li><a href="#02-places-queries-global-show_details">show_details</a><ul class="toc-ul">
-                        <li><a href="#02-places-queries-global-show_details-json">JSON</a></li>
-                        <li><a href="#02-places-queries-global-show_details-xml">XML</a></li>
-                    </ul></li>
+                    <li><a href="#02-places-queries-global-show_details">show_details</a></li>
                     <li><a href="#02-places-queries-global-show_parents">show_parents</a></li>
                     <li><a href="#02-places-queries-global-writeable">writeable</a></li>
                 </ul></li>
                 <li><a href="#02-places-queries-search">Search Parameters</a><ul class="toc-ul">
-                    <li><a href="#02-places-queries-search-search_count_only">search_count_only</a><ul class="toc-ul">
-                        <li><a href="#02-places-queries-search-search_count_only-json">JSON</a></li>
-                        <li><a href="#02-places-queries-search-search_count_only-xml">XML</a></li>
-                    </ul></li>
-                    <li><a href="#02-places-queries-search-search_ids_only">search_ids_only</a><ul class="toc-ul">
-                        <li><a href="#02-places-queries-search-search_ids_only-json">JSON</a></li>
-                        <li><a href="#02-places-queries-search-search_ids_only-xml">XML</a></li>
-                    </ul></li>
+                    <li><a href="#02-places-queries-search-search_count_only">search_count_only</a><ul class="toc-ul"></li>
+                    <li><a href="#02-places-queries-search-search_ids_only">search_ids_only</a></li>
                     <li><a href="#02-places-queries-search-string_searches">String Search Parameters</a><ul class="toc-ul">
                         <li><a href="#02-places-queries-search-string_searches-search_name">search_name</a></li>
                         <li><a href="#02-places-queries-search-string_searches-search_venue_name">search_venue_name</a></li>
@@ -58,10 +46,7 @@
                         <li><a href="#03-places-queries-locality-searches-search_address">search_address</a></li>
                         <li><a href="#03-places-queries-locality-searches-search_region_bias">search_region_bias</a></li>
                     </ul></li>
-                    <li><a href="#03-places-queries-locality-searches-response">Response Data</a><ul class="toc-ul">
-                        <li><a href="#03-places-queries-locality-searches-response-json">JSON</a></li>
-                        <li><a href="#03-places-queries-locality-searches-response-xml">XML</a></li>
-                    </ul></li>
+                    <li><a href="#03-places-queries-locality-searches-response">Response Data</a></li>
                 </ul></li>
                 <li><a href="#04-places-queries-put-post-queries">POST and PUT Parameters</a><ul class="toc-ul">
                     <li><a href="#04-places-queries-put-post-queries-name">name</a></li>
@@ -122,95 +107,6 @@
         <p class="main_doc-p">If you specify a list of locations by ID, then you cannot search by radius from a location (covered below), or paginate the response (also covered below). Only the specified place records will be returned (assuming that the current user has at least read permissions on the records). If records to which the logged-in user does not have read permission are specified, they will be ignored.</p>
 
         <p class="main_doc-p">If you call the Places Plugin with no search queries or ID subdirectories, the BAOBAB Server will return a list of all possible places, which could be a very large dataset.</p>
-        <h5 class="rest_api_doc-h5" id="01-places-structure-basic-uri-structure-direct-json">JSON</h5>
-        <div class="uri_display-div">
-            <code class="uri-code"><span class="uri_protocol-span">https://</span><span class="uri_server-span">example.com</span><span class="uri_response_type-span">/json</span><span class="uri_plugin-span">/places</span></code>
-            <code class="uri-code"><span class="uri_protocol-span">https://</span><span class="uri_server-span">example.com</span><span class="uri_response_type-span">/json</span><span class="uri_plugin-span">/places</span><span class="uri_directory-span">/2,3,...1723,1724</span></code>
-        </div>
-        <pre class="code-dump-json">{
-  "places": {
-    "results": [
-      {
-        "id": 2,
-        "name": "New Start",
-        "lang": "en",
-        "coords": "39.059283,-76.877007",
-        "address": "Queens Chapel United Methodist Church, 7410 Old Muirkirk Road, Beltsville, MD 20705 USA"
-      },
-      {
-        "id": 3,
-        "name": "Dealing With Feelings",
-        "lang": "en",
-        "coords": "38.564376,-76.078324",
-        "address": "New Way of Life Club, 742 Race St., Cambridge, MD 21613 USA"
-      },
-    
-        <big><strong>&middot;</strong></big>
-        <big><strong>&middot;</strong></big>
-        <big><strong>&middot;</strong></big>
-    
-          {
-        "id": 1723,
-        "name": "Living Clean Group",
-        "lang": "en",
-        "coords": "39.301061,-75.608132",
-        "address": "Asbury Methodist Church, 20 West Mount Vernon Street, Smyrna, DE 19977 USA"
-      },
-      {
-        "id": 1724,
-        "name": "Recovery Through the Step Working Guides",
-        "lang": "en",
-        "coords": "38.728577,-75.129297",
-        "address": "Rehobeth Presbyterian, 4470 Highway 1, Rehobeth Beach, DE 19971 USA"
-      }
-    ]
-  }
-}</pre>
-        <h5 class="rest_api_doc-h5" id="01-places-structure-basic-uri-structure-direct-xml">XML</h5>
-        <div class="uri_display-div">
-            <code class="uri-code"><span class="uri_protocol-span">https://</span><span class="uri_server-span">example.com</span><span class="uri_response_type-span">/xml</span><span class="uri_plugin-span">/places</span></code>
-            <code class="uri-code"><span class="uri_protocol-span">https://</span><span class="uri_server-span">example.com</span><span class="uri_response_type-span">/xml</span><span class="uri_plugin-span">/places</span><span class="uri_directory-span">/2,3,...1723,1724</span></code>
-        </div>
-        <pre class="code-dump-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;places xmlns="https://example.com"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="https://example.com https://example.com/xsd/places"&gt;
-  &lt;results&gt;
-    &lt;value sequence_index="0"&gt;
-      &lt;id&gt;2&lt;/id&gt;
-      &lt;name&gt;New Start&lt;/name&gt;
-      &lt;lang&gt;en&lt;/lang&gt;
-      &lt;coords&gt;39.059283,-76.877007&lt;/coords&gt;
-      &lt;address&gt;Queens Chapel United Methodist Church, 7410 Old Muirkirk Road, Beltsville, MD 20705 USA&lt;/address&gt;
-    &lt;/value&gt;
-    &lt;value sequence_index="1"&gt;
-      &lt;id&gt;3&lt;/id&gt;
-      &lt;name&gt;Dealing With Feelings&lt;/name&gt;
-      &lt;lang&gt;en&lt;/lang&gt;
-      &lt;coords&gt;38.564376,-76.078324&lt;/coords&gt;
-      &lt;address&gt;New Way of Life Club, 742 Race St., Cambridge, MD 21613 USA&lt;/address&gt;
-    &lt;/value&gt;
-        
-    <big><strong>&middot;</strong></big>
-    <big><strong>&middot;</strong></big>
-    <big><strong>&middot;</strong></big>
-    
-    &lt;value sequence_index="1277"&gt;
-      &lt;id&gt;1723&lt;/id&gt;
-      &lt;name&gt;Living Clean Group&lt;/name&gt;
-      &lt;lang&gt;en&lt;/lang&gt;
-      &lt;coords&gt;39.301061,-75.608132&lt;/coords&gt;
-      &lt;address&gt;Asbury Methodist Church, 20 West Mount Vernon Street, Smyrna, DE 19977 USA&lt;/address&gt;
-    &lt;/value&gt;
-    &lt;value sequence_index="1278"&gt;
-      &lt;id&gt;1724&lt;/id&gt;
-      &lt;name&gt;Recovery Through the Step Working Guides&lt;/name&gt;
-      &lt;lang&gt;en&lt;/lang&gt;
-      &lt;coords&gt;38.728577,-75.129297&lt;/coords&gt;
-      &lt;address&gt;Rehobeth Presbyterian, 4470 Highway 1, Rehobeth Beach, DE 19971 USA&lt;/address&gt;
-    &lt;/value&gt;
-  &lt;/results&gt;
-&lt;/places&gt;</pre>
     </header>
     
     <div class="uri_commands-div rest_api_doc_div-people">
@@ -220,206 +116,7 @@
         <h5 class="rest_api_doc-h5" id="02-places-queries-global-show_details">show_details</h5>
         <p class="main_doc-p">This applies only to GET.</p>
         <p class="main_doc-p">If you specify this (no value required), then the resulting list will display the places in "detailed" form:</p>
-        <h5 class="rest_api_doc-h5" id="02-places-queries-global-show_details-json">JSON</h5>
-        <div class="uri_display-div">
-            <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/json</span><span class="uri_plugin_lite-span">/places</span><span class="uri_query-span">?show_details</span></code>
-            <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/json</span><span class="uri_plugin_lite-span">/places</span><span class="uri_directory_lite-span">/2,3,...1723,1724</span><span class="uri_query-span">?show_details</span></code>
-        </div>
-        <pre class="code-dump-json">{
-  "places": {
-    "results": [
-      {
-        "id": 2,
-        "name": "New Start",
-        "lang": "en",
-        "coords": "39.059283,-76.877007",
-        "address": "Queens Chapel United Methodist Church, 7410 Old Muirkirk Road, Beltsville, MD 20705 USA",
-        "last_access": "1970-01-02 00:00:00",
-        "owner_id": "7",
-        "latitude": 39.05928327,
-        "longitude": -76.87700701,
-        "address_elements": {
-          "venue": "Queens Chapel United Methodist Church",
-          "street_address": "7410 Old Muirkirk Road",
-          "extra_information": "",
-          "town": "Beltsville",
-          "county": "",
-          "state": "MD",
-          "postal_code": "20705",
-          "nation": "USA"
-        }
-      },
-      {
-        "id": 3,
-        "name": "Dealing With Feelings",
-        "lang": "en",
-        "coords": "38.564376,-76.078324",
-        "address": "New Way of Life Club, 742 Race St., Cambridge, MD 21613 USA",
-        "last_access": "1970-01-02 00:00:00",
-        "owner_id": "7",
-        "latitude": 38.5643758,
-        "longitude": -76.0783243,
-        "address_elements": {
-          "venue": "New Way of Life Club",
-          "street_address": "742 Race St.",
-          "extra_information": "",
-          "town": "Cambridge",
-          "county": "Dorchester",
-          "state": "MD",
-          "postal_code": "21613",
-          "nation": "USA"
-        }
-      },
-    
-        <big><strong>&middot;</strong></big>
-        <big><strong>&middot;</strong></big>
-        <big><strong>&middot;</strong></big>
-    
-    {
-        "id": 1723,
-        "name": "Living Clean Group",
-        "lang": "en",
-        "coords": "39.301061,-75.608132",
-        "address": "Asbury Methodist Church, 20 West Mount Vernon Street, Smyrna, DE 19977 USA",
-        "last_access": "1970-01-02 00:00:00",
-        "owner_id": "11",
-        "latitude": 39.3010606,
-        "longitude": -75.608132,
-        "address_elements": {
-          "venue": "Asbury Methodist Church",
-          "street_address": "20 West Mount Vernon Street",
-          "extra_information": "",
-          "town": "Smyrna",
-          "county": "Kent",
-          "state": "DE",
-          "postal_code": "19977",
-          "nation": "USA"
-        }
-      },
-      {
-        "id": 1724,
-        "name": "Recovery Through the Step Working Guides",
-        "lang": "en",
-        "coords": "38.728577,-75.129297",
-        "address": "Rehobeth Presbyterian, 4470 Highway 1, Rehobeth Beach, DE 19971 USA",
-        "last_access": "1970-01-02 00:00:00",
-        "owner_id": "11",
-        "latitude": 38.72857679,
-        "longitude": -75.12929678,
-        "address_elements": {
-          "venue": "Rehobeth Presbyterian",
-          "street_address": "4470 Highway 1",
-          "extra_information": "",
-          "town": "Rehobeth Beach",
-          "county": "Sussex",
-          "state": "DE",
-          "postal_code": "19971",
-          "nation": "USA"
-        }
-      }
-    ]
-  }
-}</pre>
-        <h5 class="rest_api_doc-h5" id="02-places-queries-global-show_parents">show_parents</h5>
-        <p class="main_doc-p">This applies only to GET.</p>
-        <p class="main_doc-p">If you specify this (no value required), then the resulting list will display the places in "detailed" form, and will also display any "parent" records, using the same format as the "children" element. This can be a time-consuming process, and is not necessarily that useful, so we have it as an option.</p>
 
-        <h5 class="rest_api_doc-h5" id="02-places-queries-global-show_details-xml">XML</h5>
-        <div class="uri_display-div">
-            <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/xml</span><span class="uri_plugin_lite-span">/places</span><span class="uri_query-span">?show_details</span></code>
-            <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/xml</span><span class="uri_plugin_lite-span">/places</span><span class="uri_directory_lite-span">/2,3,...1723,1724</span><span class="uri_query-span">?show_details</span></code>
-        </div>
-        <pre class="code-dump-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;places xmlns="https://example.com"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="https://example.com https://example.com/xsd/places"&gt;
-  &lt;results&gt;
-    &lt;value sequence_index="0"&gt;
-      &lt;id&gt;2&lt;/id&gt;
-      &lt;name&gt;New Start&lt;/name&gt;
-      &lt;lang&gt;en&lt;/lang&gt;
-      &lt;coords&gt;39.059283,-76.877007&lt;/coords&gt;
-      &lt;address&gt;Queens Chapel United Methodist Church, 7410 Old Muirkirk Road, Beltsville, MD 20705 USA&lt;/address&gt;
-      &lt;last_access&gt;1970-01-02 00:00:00&lt;/last_access&gt;
-      &lt;owner_id&gt;7&lt;/owner_id&gt;
-      &lt;latitude&gt;39.05928327&lt;/latitude&gt;
-      &lt;longitude&gt;-76.87700701&lt;/longitude&gt;
-      &lt;address_elements&gt;
-        &lt;venue&gt;Queens Chapel United Methodist Church&lt;/venue&gt;
-        &lt;street_address&gt;7410 Old Muirkirk Road&lt;/street_address&gt;
-        &lt;town&gt;Beltsville&lt;/town&gt;
-        &lt;state&gt;MD&lt;/state&gt;
-        &lt;postal_code&gt;20705&lt;/postal_code&gt;
-        &lt;nation&gt;USA&lt;/nation&gt;
-      &lt;/address_elements&gt;
-    &lt;/value&gt;
-    &lt;value sequence_index="1"&gt;
-      &lt;id&gt;3&lt;/id&gt;
-      &lt;name&gt;Dealing With Feelings&lt;/name&gt;
-      &lt;lang&gt;en&lt;/lang&gt;
-      &lt;coords&gt;38.564376,-76.078324&lt;/coords&gt;
-      &lt;address&gt;New Way of Life Club, 742 Race St., Cambridge, MD 21613 USA&lt;/address&gt;
-      &lt;last_access&gt;1970-01-02 00:00:00&lt;/last_access&gt;
-      &lt;owner_id&gt;7&lt;/owner_id&gt;
-      &lt;latitude&gt;38.5643758&lt;/latitude&gt;
-      &lt;longitude&gt;-76.0783243&lt;/longitude&gt;
-      &lt;address_elements&gt;
-        &lt;venue&gt;New Way of Life Club&lt;/venue&gt;
-        &lt;street_address&gt;742 Race St.&lt;/street_address&gt;
-        &lt;town&gt;Cambridge&lt;/town&gt;
-        &lt;county&gt;Dorchester&lt;/county&gt;
-        &lt;state&gt;MD&lt;/state&gt;
-        &lt;postal_code&gt;21613&lt;/postal_code&gt;
-        &lt;nation&gt;USA&lt;/nation&gt;
-      &lt;/address_elements&gt;
-    &lt;/value&gt;
-    
-    <big><strong>&middot;</strong></big>
-    <big><strong>&middot;</strong></big>
-    <big><strong>&middot;</strong></big>
-    
-    &lt;value sequence_index="1277"&gt;
-      &lt;id&gt;1723&lt;/id&gt;
-      &lt;name&gt;Living Clean Group&lt;/name&gt;
-      &lt;lang&gt;en&lt;/lang&gt;
-      &lt;coords&gt;39.301061,-75.608132&lt;/coords&gt;
-      &lt;address&gt;Asbury Methodist Church, 20 West Mount Vernon Street, Smyrna, DE 19977 USA&lt;/address&gt;
-      &lt;last_access&gt;1970-01-02 00:00:00&lt;/last_access&gt;
-      &lt;owner_id&gt;11&lt;/owner_id&gt;
-      &lt;latitude&gt;39.3010606&lt;/latitude&gt;
-      &lt;longitude&gt;-75.608132&lt;/longitude&gt;
-      &lt;address_elements&gt;
-        &lt;venue&gt;Asbury Methodist Church&lt;/venue&gt;
-        &lt;street_address&gt;20 West Mount Vernon Street&lt;/street_address&gt;
-        &lt;town&gt;Smyrna&lt;/town&gt;
-        &lt;county&gt;Kent&lt;/county&gt;
-        &lt;state&gt;DE&lt;/state&gt;
-        &lt;postal_code&gt;19977&lt;/postal_code&gt;
-        &lt;nation&gt;USA&lt;/nation&gt;
-      &lt;/address_elements&gt;
-    &lt;/value&gt;
-    &lt;value sequence_index="1278"&gt;
-      &lt;id&gt;1724&lt;/id&gt;
-      &lt;name&gt;Recovery Through the Step Working Guides&lt;/name&gt;
-      &lt;lang&gt;en&lt;/lang&gt;
-      &lt;coords&gt;38.728577,-75.129297&lt;/coords&gt;
-      &lt;address&gt;Rehobeth Presbyterian, 4470 Highway 1, Rehobeth Beach, DE 19971 USA&lt;/address&gt;
-      &lt;last_access&gt;1970-01-02 00:00:00&lt;/last_access&gt;
-      &lt;owner_id&gt;11&lt;/owner_id&gt;
-      &lt;latitude&gt;38.72857679&lt;/latitude&gt;
-      &lt;longitude&gt;-75.12929678&lt;/longitude&gt;
-      &lt;address_elements&gt;
-        &lt;venue&gt;Rehobeth Presbyterian&lt;/venue&gt;
-        &lt;street_address&gt;4470 Highway 1&lt;/street_address&gt;
-        &lt;town&gt;Rehobeth Beach&lt;/town&gt;
-        &lt;county&gt;Sussex&lt;/county&gt;
-        &lt;state&gt;DE&lt;/state&gt;
-        &lt;postal_code&gt;19971&lt;/postal_code&gt;
-        &lt;nation&gt;USA&lt;/nation&gt;
-      &lt;/address_elements&gt;
-    &lt;/value&gt;
-  &lt;/results&gt;
-&lt;/places&gt;</pre>
         <h5 class="rest_api_doc-h5" id="02-places-queries-global-writeable">writeable</h5>
         <p class="main_doc-p">This applies to GET, PUT and DELETE.</p>
         <p class="main_doc-p">This only applies if you are logged into the BAOBAB server. If you specify this (no value required), then the resulting list will consist only of records to which your logged-in user has modification permissions. Note that PUT and DELETE require that the user have modification permissions on the record, so this could be an effective "prefilter," to avoid records that the user cannot affect:</p>
@@ -433,78 +130,10 @@
         <h5 class="rest_api_doc-h5" id="02-places-queries-search-search_count_only">search_count_only</h5>
         <p class="main_doc-p">This applies only to GET.</p>
         <p class="main_doc-p">If you specify this (no value necessary), then the response will not be a list of data items. Instead, you will get only a single integer, with the count of items that the specified search would return.</p>
-        <h5 class="rest_api_doc-h5" id="02-places-queries-search-search_count_only-json">JSON</h5>
-        <div class="uri_display-div">
-            <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/json</span><span class="uri_plugin_lite-span">/places</span><span class="uri_query-span">?search_count_only</span></code>
-        </div>
-        <pre class="code-dump-json">{
-  "places": {
-    "results": {
-      "count": 1279
-    }
-  }
-}</pre>
-        <h5 class="rest_api_doc-h5" id="02-places-queries-search-search_count_only-xml">XML</h5>
-        <div class="uri_display-div">
-            <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/xml</span><span class="uri_plugin_lite-span">/places</span><span class="uri_query-span">?search_count_only</span></code>
-        </div>
-        <pre class="code-dump-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;places xmlns="https://example.com"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="https://example.com https://example.com/xsd/places"&gt;
-  &lt;results&gt;
-        &lt;count&gt;1279&lt;/count&gt;
-    &lt;/results&gt;
-&lt;/places&gt;</pre>
 
         <h5 class="rest_api_doc-h5" id="02-places-queries-search-search_ids_only">search_ids_only</h5>
         <p class="main_doc-p">This applies only to GET.</p>
         <p class="main_doc-p">If you specify this (no value necessary), then the response will not be a list of full data items. Instead, you will get a list of integers, with each integer being the resource ID of the location in the response.</p>
-        <h5 class="rest_api_doc-h5" id="02-places-queries-search-search_ids_only-json">JSON</h5>
-        <div class="uri_display-div">
-            <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/json</span><span class="uri_plugin_lite-span">/places</span><span class="uri_query-span">?search_ids_only</span></code>
-        </div>
-        <pre class="code-dump-json">{
-  "places": {
-    "results": {
-        "ids": [
-          2,
-          3,
-    
-        <big><strong>&middot;</strong></big>
-        <big><strong>&middot;</strong></big>
-        <big><strong>&middot;</strong></big>
-    
-          1723,
-          1724
-        ]
-      }
-    }
-}</pre>
-
-        <h5 class="rest_api_doc-h5" id="02-places-queries-search-search_ids_only-xml">XML</h5>
-        <div class="uri_display-div">
-            <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/xml</span><span class="uri_plugin_lite-span">/places</span><span class="uri_query-span">?search_ids_only</span></code>
-        </div>
-        <pre class="code-dump-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;places xmlns="https://example.com"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="https://example.com https://example.com/xsd/places"&gt;
-  &lt;results&gt;
-    &lt;ids&gt;
-      &lt;value sequence_index="0"&gt;2&lt;/value&gt;
-      &lt;value sequence_index="1"&gt;3&lt;/value&gt;
-
-      <big><strong>&middot;</strong></big>
-      <big><strong>&middot;</strong></big>
-      <big><strong>&middot;</strong></big>
-
-      &lt;value sequence_index="1277"&gt;1723&lt;/value&gt;
-      &lt;value sequence_index="1278"&gt;1724&lt;/value&gt;
-    &lt;/ids&gt;
-  &lt;/results&gt;
-&lt;/places&gt;
-</pre>
 
         <h4 class="rest_api_doc-h5" id="02-places-queries-search-string_searches">String Search Parameters</h4>
         <p class="main_doc-p">These apply to GET, PUT and POST.</p>
@@ -597,115 +226,6 @@
         
         <h5 class="rest_api_doc-h5" id="03-places-queries-locality-searches-response">Response Data</h5>
         <p class="main_doc-p">If you specify a center/radius search, the response data will have an extra "<code>search_location</code>" element, with the search center and radius. Additionally, each record will also have a "<code>distance_in_km</code>" element, with a floating-point number. This will denote the distance, in Kilometers, from the element's long/lat to the search center. It should be noted that "Fuzzy" location distance will be inaccurate by design.</p>
-
-        <h5 class="rest_api_doc-h5" id="03-places-queries-locality-searches-response-json">JSON</h5>
-        <div class="uri_display-div">
-            <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/json</span><span class="uri_plugin_lite-span">/places</span><span class="uri_query-span">?search_radius=10&search_address=1600+Pennsylvania+Avenue,+Washington+DC</span></code>
-        </div>
-        <pre class="code-dump-json">{
-  "places": {
-    "results": [
-      {
-        "id": 1565,
-        "name": "Open Door To Freedom",
-        "lang": "en",
-        "coords": "38.898460,-77.030465",
-        "address": "Church of the Epiphany, 1317 G Street NW, Washington, DC 20005 USA",
-        "distance_in_km": 0.537
-      },
-      {
-        "id": 1517,
-        "name": "Foggy Bottom Step",
-        "lang": "en",
-        "coords": "38.898191,-77.044700",
-        "address": "United Church of Christ, 1920 G Street NW, Washington, DC 20006 USA",
-        "distance_in_km": 0.707
-      },
-    
-        <big><strong>&middot;</strong></big>
-        <big><strong>&middot;</strong></big>
-        <big><strong>&middot;</strong></big>
-    
-      {
-        "id": 415,
-        "name": "Beginning Miracles",
-        "lang": "en",
-        "coords": "38.980190,-77.076731",
-        "address": "Chevy Chase UMC, 7001 Connecticut Ave, Chevy Chase, MD 20815 USA",
-        "distance_in_km": 9.801
-      },
-      {
-        "id": 997,
-        "name": "Glad To Be Back",
-        "lang": "en",
-        "coords": "38.808974,-77.049364",
-        "address": "Third Baptist Church, 917 Princess St, Alexandria, VA 22309 USA",
-        "distance_in_km": 9.908
-      }
-    ],
-    "search_location": {
-      "radius": 10,
-      "longitude": -77.0365739,
-      "latitude": 38.8976633
-    }
-  }
-}</pre>
-        <p class="main_doc-p">Note the new "<code>search_location</code>" element at the end of the response. This is the resolved address (in the case of the given example. If a "<code>search_latitude=</code>/<code>search_longitude=</code>" pair were entered directly, then that would be used).</p>
-        <p class="main_doc-p">Also note that each response element now has a "<code>distance_in_km</code>" element. This is the distance from the record's displayed longitude/latitude, and the search center longitude/latitude.</p>
-
-        <h5 class="rest_api_doc-h5" id="03-places-queries-locality-searches-response-xml">XML</h5>
-        <div class="uri_display-div">
-            <code class="uri-code"><span class="uri_protocol_lite-span">https://</span><span class="uri_server_lite-span">example.com</span><span class="uri_response_type_lite-span">/xml</span><span class="uri_plugin_lite-span">/places</span><span class="uri_query-span">?search_radius=10&search_address=1600+Pennsylvania+Avenue,+Washington+DC</span></code>
-        </div>
-        <pre class="code-dump-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;places xmlns="https://example.com"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="https://example.com https://example.com/xsd/places"&gt;
-  &lt;results&gt;
-    &lt;value sequence_index="0"&gt;
-      &lt;id&gt;1565&lt;/id&gt;
-      &lt;name&gt;Open Door To Freedom&lt;/name&gt;
-      &lt;lang&gt;en&lt;/lang&gt;
-      &lt;coords&gt;38.898460,-77.030465&lt;/coords&gt;
-      &lt;address&gt;Church of the Epiphany, 1317 G Street NW, Washington, DC 20005 USA&lt;/address&gt;
-      &lt;distance_in_km&gt;0.537&lt;/distance_in_km&gt;
-    &lt;/value&gt;
-    &lt;value sequence_index="1"&gt;
-      &lt;id&gt;1517&lt;/id&gt;
-      &lt;name&gt;Foggy Bottom Step&lt;/name&gt;
-      &lt;lang&gt;en&lt;/lang&gt;
-      &lt;coords&gt;38.898191,-77.044700&lt;/coords&gt;
-      &lt;address&gt;United Church of Christ, 1920 G Street NW, Washington, DC 20006 USA&lt;/address&gt;
-      &lt;distance_in_km&gt;0.707&lt;/distance_in_km&gt;
-    &lt;/value&gt;
-    
-        <big><strong>&middot;</strong></big>
-        <big><strong>&middot;</strong></big>
-        <big><strong>&middot;</strong></big>
-    
-    &lt;value sequence_index="127"&gt;
-      &lt;id&gt;415&lt;/id&gt;
-      &lt;name&gt;Beginning Miracles&lt;/name&gt;
-      &lt;lang&gt;en&lt;/lang&gt;
-      &lt;coords&gt;38.980190,-77.076731&lt;/coords&gt;
-      &lt;address&gt;Chevy Chase UMC, 7001 Connecticut Ave, Chevy Chase, MD 20815 USA&lt;/address&gt;
-      &lt;distance_in_km&gt;9.801&lt;/distance_in_km&gt;
-    &lt;/value&gt;
-    &lt;value sequence_index="128"&gt;
-      &lt;id&gt;997&lt;/id&gt;
-      &lt;name&gt;Glad To Be Back&lt;/name&gt;
-      &lt;lang&gt;en&lt;/lang&gt;
-      &lt;coords&gt;38.808974,-77.049364&lt;/coords&gt;
-      &lt;address&gt;Third Baptist Church, 917 Princess St, Alexandria, VA 22309 USA&lt;/address&gt;
-      &lt;distance_in_km&gt;9.908&lt;/distance_in_km&gt;
-    &lt;/value&gt;
-  &lt;/results&gt;
-  &lt;search_location&gt;
-    &lt;radius&gt;10&lt;/radius&gt;
-    &lt;longitude&gt;-77.0365739&lt;/longitude&gt;
-    &lt;latitude&gt;38.8976633&lt;/latitude&gt;
-  &lt;/search_location&gt;
-&lt;/places&gt;</pre>
 
         <h4 class="rest_api_doc-h4" id="04-places-queries-put-post-queries">POST and PUT Parameters</h4>
         <p class="main_doc-p">DELETE simply uses the resource URI, and does not use any query arguments.</p>

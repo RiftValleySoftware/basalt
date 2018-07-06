@@ -55,6 +55,8 @@ function basalt_test_0180($in_login = NULL, $in_hashed_password = NULL, $in_pass
         
         echo('<pre style="color:green">'.prettify_json($result).'</pre>');
     }
+    
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/logout', NULL, $api_result, $result_code);
 }
 
 function basalt_test_define_0181() {

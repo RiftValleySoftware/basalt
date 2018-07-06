@@ -1,8 +1,9 @@
-**1.0.0.1002** *(TBD)*
+**1.0.0.2000** *(July 6, 2018)*
 
 - Tiny adjustment to the BAOBAB logo.
 - Renamed the 'users' plugin to 'people'.
 - Made test reporting more efficient.
+- Massive work on the plugins. The plugins are now complete, but more testing and documentation needs to be done.
 
 **1.0.0.1001** *(June 11, 2018)*
 
