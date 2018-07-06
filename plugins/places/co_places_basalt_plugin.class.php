@@ -517,6 +517,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $search_ids_only = isset($in_query) && is_array($in_query) && isset($in_query['search_ids_only']);      // Ignored for discrete IDs. If true, then the response will be an array of integers, denoting resource IDs.
             $search_page_size = isset($in_query) && is_array($in_query) && isset($in_query['search_page_size']) ? abs(intval($in_query['search_page_size'])) : 0;           // Ignored for discrete IDs. This is the size of a page of results (1-based result count. 0 is no page size).
             $search_page_number = isset($in_query) && is_array($in_query) && isset($in_query['search_page_number']) ? abs(intval($in_query['search_page_number'])) : 0;  // Ignored for discrete IDs, or if search_page_size is 0. The page we are interested in (0-based. 0 is the first page).
+            $search_name = isset($in_query) && is_array($in_query) && isset($in_query['search_name']) ? trim($in_query['search_name']) : '%';          // Search in the object name.
             
             // For the default (no place ID), we simply act on a list of all available places (or filtered by some search criteria).
             if (0 == count($in_path)) {
@@ -599,6 +600,10 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     if (isset($address) && $address && !(isset($longitude) && isset($latitude))) {
                         $search_array['location']['address'] = $address;
                     }
+                }
+                
+                if (isset($search_name)) {
+                    $search_array['name'] = Array($search_name, 'use_like' => 1);
                 }
                 
                 $placelist = $in_andisol_instance->generic_search($search_array, false, $search_page_size, $search_page_number, $writeable, $search_count_only, $search_ids_only);
