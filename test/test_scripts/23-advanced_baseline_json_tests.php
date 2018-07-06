@@ -20,7 +20,7 @@ basalt_run_tests(180, 'ADVANCED JSON BASELINE TESTS', 'NOTE: These tests may giv
 // -------------------------- DEFINITIONS AND TESTS -----------------------------------
 
 function basalt_test_define_0180() {
-//     basalt_run_single_direct_test(180, 'PASS: Do A Radius Search (With Login)', 'Log in with the "God" login, and search for resources (any kind) within 10Km of the Lincoln Memorial', 'things_tests', 'admin', '', CO_Config::god_mode_password());
+    basalt_run_single_direct_test(180, 'PASS: Do A Radius Search (With Login)', 'Log in with the "God" login, and search for resources (any kind) within 10Km of the Lincoln Memorial', 'things_tests', 'admin', '', CO_Config::god_mode_password());
 }
 
 function basalt_test_0180($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
