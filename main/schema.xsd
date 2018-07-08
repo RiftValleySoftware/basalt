@@ -1,11 +1,15 @@
     <xs:element name='baseline'>
         <xs:complexType>
-            <xs:choice>
-                <xs:element ref='b:plugins'/>
-                <xs:element ref='b:tokens'/>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element minOccurs="0" ref='b:plugins'/>
+                <xs:element minOccurs="0" ref='b:tokens'/>
+                <xs:element minOccurs="0" ref='b:people'/>
+                <xs:element minOccurs="0" ref='b:places'/>
+                <xs:element minOccurs="0" ref='b:things'/>
             </xs:choice>
         </xs:complexType>
     </xs:element>
+    
     <xs:element name='plugins'>
         <xs:complexType>
             <xs:sequence>
@@ -13,6 +17,7 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+    
     <xs:element name='tokens'>
         <xs:complexType>
             <xs:sequence>
@@ -20,6 +25,31 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+    
+    <xs:element name='people'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs='unbounded' ref='b:value'/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name='places'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs='unbounded' ref='b:value'/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name='things'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs='unbounded' ref='b:value'/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
     <xs:element name='value'>
         <xs:complexType>
             <xs:simpleContent>
