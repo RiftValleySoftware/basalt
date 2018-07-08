@@ -1,6 +1,7 @@
 **1.0.0.2001** *(TBD)*
 
 - Updated the baseline schema for people, places and things.
+- Tweaked the token handler to make sure that the God login gets all available tokens.
 
 **1.0.0.2000** *(July 6, 2018)*
 
