@@ -1,3 +1,7 @@
+**1.0.0.2001** *(TBD)*
+
+- Updated the baseline schema for people, places and things.
+
 **1.0.0.2000** *(July 6, 2018)*
 
 - Tiny adjustment to the BAOBAB logo.
