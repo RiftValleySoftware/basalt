@@ -1,6 +1,6 @@
 \page people-plugin PEOPLE
 
-![USERS PLUGIN](images/BASALT-PLUGIN.png)
+![PEOPLE PLUGIN](images/BASALT-PLUGIN.png)
 
 BASALT PEOPLE REST PLUGIN
 =========================
