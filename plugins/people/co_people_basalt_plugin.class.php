@@ -197,19 +197,24 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             }
         } else {    // They want the list of all of them.
             $login_id_list = $in_andisol_instance->get_all_login_users();
-            $login_id_list = $in_andisol_instance->get_cobra_instance()->get_all_logins();
-            if (0 < count($login_id_list)) {
-                foreach ($login_id_list as $login_instance) {
-                    if (isset($login_instance) && ($login_instance instanceof CO_Security_Login) && (!$writeable || $login_instance->user_can_write())) {
-                        if (!$logged_in || ($logged_in && $login_instance->get_api_key())) { // See if they are filtering for logins.
-                            if ($show_details) {
-                                $ret[] = $this->_get_long_description($login_instance);
-                            } else {
-                                $ret[] = $this->_get_short_description($login_instance);
+            if ($in_andisol_instance->get_cobra_instance()) {
+                $login_id_list = $in_andisol_instance->get_cobra_instance()->get_all_logins();
+                if (0 < count($login_id_list)) {
+                    foreach ($login_id_list as $login_instance) {
+                        if (isset($login_instance) && ($login_instance instanceof CO_Security_Login) && (!$writeable || $login_instance->user_can_write())) {
+                            if (!$logged_in || ($logged_in && $login_instance->get_api_key())) { // See if they are filtering for logins.
+                                if ($show_details) {
+                                    $ret[] = $this->_get_long_description($login_instance);
+                                } else {
+                                    $ret[] = $this->_get_short_description($login_instance);
+                                }
                             }
                         }
                     }
                 }
+            } else {
+                header('HTTP/1.1 403 Forbidden');
+                exit();
             }
         }
         
@@ -1658,7 +1663,13 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         // For the default (no user ID), we simply return a list of commands. We also only allow GET to do this.
         if (0 == count($in_path)) {
             if ('GET' == $in_http_method) {
-                $ret = ['people', 'logins'];
+                $ret = ['people'];
+                if ($in_andisol_instance->logged_in()) {
+                    $ret[] = 'my_info';
+                }
+                if ($in_andisol_instance->manager()) {
+                    $ret[] = 'logins';
+                }
             } else {
                 header('HTTP/1.1 400 Incorrect HTTP Request Method');
                 exit();

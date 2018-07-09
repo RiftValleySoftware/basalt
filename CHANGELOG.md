@@ -2,6 +2,9 @@
 
 - Updated the baseline schema for people, places and things.
 - Tweaked the token handler to make sure that the God login gets all available tokens.
+- The people plugin needed to return a 403 if someone tried to get logins when not logged in.
+- Only return the 'people' response in the people plugin if the user is not logged in.
+- Tweaked the schema and response of the people plugin for a better user experience via the REST API.
 
 **1.0.0.2000** *(July 6, 2018)*
 
