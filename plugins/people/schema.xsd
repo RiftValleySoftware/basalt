@@ -2,7 +2,16 @@
     <xs:element name="people">
         <xs:complexType mixed="true">
             <xs:choice minOccurs="0" maxOccurs="unbounded">
-        
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="value">
+                    <xs:complexType mixed="true">
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attribute name="sequence_index" use="required" type="xs:integer"/>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+                
                 <xs:element minOccurs="0" name="people">
                     <xs:complexType mixed="true">
                         <xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -110,6 +119,8 @@
             <xs:element name="id" type="xs:integer"/>
             <xs:element name="name" type="xs:string"/>
             <xs:element name="lang" type="xs:string"/>
+            <xs:element minOccurs='0' name='coords' type='xs:string'/>
+            <xs:element minOccurs='0' name='distance_in_km' type='xs:float'/>
             <xs:element minOccurs="0" name="read_token" type="xs:integer"/>
             <xs:element minOccurs="0" name="write_token" type="xs:integer"/>
             <xs:element minOccurs="0" name="writeable" type="xs:integer"/>
