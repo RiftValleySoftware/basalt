@@ -1539,6 +1539,10 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $login_user = true;
         }
         
+        if ($login_user) {  // Same for login_user.
+            $show_details = true;
+        }
+        
         if (isset($my_info) && $my_info) {  // If we are just asking after our own info, then we just send that back.
             if ($in_andisol_instance->logged_in()) {
                 $user = $in_andisol_instance->current_user();

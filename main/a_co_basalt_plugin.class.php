@@ -200,26 +200,30 @@ abstract class A_CO_Basalt_Plugin {
                     $ret['fuzz_factor'] = $in_object->fuzz_factor();
                 }
             }
+        }
         
+        if (method_exists($in_object, 'children')) { 
             $child_objects = $this->_get_child_ids($in_object);
             if (0 < count($child_objects)) {
                 $ret['children'] = $this->_get_child_handler_data($in_object);
             }
-        
-            if ($in_show_parents && method_exists($in_object, 'who_are_my_parents')) {
-                $parent_objects = $in_object->who_are_my_parents();
-                if (isset($parent_objects) && is_array($parent_objects) && count($parent_objects)) {
-                    foreach ($parent_objects as $instance) {
-                        $class_name = get_class($instance);
-                
-                        if ($class_name) {
-                            $handler = self::_get_handler($class_name);
-                            $ret['parents'][$handler][] = $instance->id();
-                        }
+        }
+    
+        if ($in_show_parents && method_exists($in_object, 'who_are_my_parents')) {
+            $parent_objects = $in_object->who_are_my_parents();
+            if (isset($parent_objects) && is_array($parent_objects) && count($parent_objects)) {
+                foreach ($parent_objects as $instance) {
+                    $class_name = get_class($instance);
+            
+                    if ($class_name) {
+                        $handler = self::_get_handler($class_name);
+                        $ret['parents'][$handler][] = $instance->id();
                     }
                 }
             }
+        }
         
+        if (method_exists($in_object, 'get_payload')) {
             $payload = $in_object->get_payload();
         
             if ($payload) {
