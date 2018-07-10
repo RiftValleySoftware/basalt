@@ -5,6 +5,7 @@
 - The people plugin needed to return a 403 if someone tried to get logins when not logged in.
 - Only return the 'people' response in the people plugin if the user is not logged in.
 - Tweaked the schema and response of the people plugin for a better user experience via the REST API.
+- Removed unnecessary documentation. I will be relying on the README files.
 
 **1.0.0.2000** *(July 6, 2018)*
 
