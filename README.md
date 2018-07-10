@@ -13,6 +13,8 @@ INTRODUCTION
 ============
 BASALT is the [REST API](https://restfulapi.net) and extension framework of the Rift Valley Platform.
 
+![BASALT Diagram](images/BASALTLayers.png)
+
 Think of it as "part one" of the [CONTROLLER](https://www.tutorialspoint.com/mvc_framework/mvc_framework_controllers.htm) layer of the [MVC Pattern](https://en.wikipedia.org/wiki/Model–view–controller). "Part two" will be provided by the client SDKs.
 
 \ref ANDISOL is the "public face" of the [MODEL](https://www.tutorialspoint.com/mvc_framework/mvc_framework_models.htm) layer.
@@ -162,8 +164,6 @@ Logging is not enabled by default. It should be noted that it is possible that l
 
 SUBPROJECTS
 ===========
-![BASALT Diagram](images/BASALTLayers.png)
-
 \ref ANDISOL is the "public face" of the lowest levels of the Rift Valley Platform. It encapsulates the model (database or server connections), and provides an object-based, functional model to the implementation layers.
 
 \ref COBRA is the security administration toolbox for the Rift Valley Platform. It is only available to logged-in users that are "manager" users; capable of editing other users.
