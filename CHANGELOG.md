@@ -6,6 +6,8 @@
 - Only return the 'people' response in the people plugin if the user is not logged in.
 - Tweaked the schema and response of the people plugin for a better user experience via the REST API.
 - Removed unnecessary documentation. I will be relying on the README files.
+- Tweaked the plugins to be a bit more robust in display of detailed descriptions.
+- Specifying "login_user" in the people plugin now also triggers "show_details".
 
 **1.0.0.2000** *(July 6, 2018)*
 
