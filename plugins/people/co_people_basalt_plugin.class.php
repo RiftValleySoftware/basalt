@@ -165,11 +165,16 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         $writeable = isset($in_query) && is_array($in_query) && isset($in_query['writeable']);                      // Show/list only logins this user can modify.
         
         if (isset($my_info) && $my_info) {  // If we are just asking after our own info, then we just send that back.
-            $login = $in_andisol_instance->current_login();
-            if ($login instanceof CO_Security_Login) {
-                $ret['my_info'] = $this->_get_long_description($login);
+            if ($in_andisol_instance->logged_in()) {
+                $login = $in_andisol_instance->current_login();
+                if ($login instanceof CO_Security_Login) {
+                    $ret['my_info'] = $this->_get_long_description($login);
+                } else {
+                    header('HTTP/1.1 400 No Login Available');
+                    exit();
+                }
             } else {
-                header('HTTP/1.1 400 No Login Available');
+                header('HTTP/1.1 403 Forbidden');
                 exit();
             }
         } elseif (isset($in_path) && is_array($in_path) && (0 < count($in_path))) {
@@ -1535,11 +1540,16 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         }
         
         if (isset($my_info) && $my_info) {  // If we are just asking after our own info, then we just send that back.
-            $user = $in_andisol_instance->current_user();
-            if ($user instanceof CO_User_Collection) {
-                $ret['my_info'] = $this->_get_long_user_description($user, $login_user, $show_parents);
+            if ($in_andisol_instance->logged_in()) {
+                $user = $in_andisol_instance->current_user();
+                if ($user instanceof CO_User_Collection) {
+                    $ret['my_info'] = $this->_get_long_user_description($user, $login_user, $show_parents);
+                } else {
+                    header('HTTP/1.1 400 No Logged-In User');
+                    exit();
+                }
             } else {
-                header('HTTP/1.1 400 No Logged-In User');
+                header('HTTP/1.1 403 Forbidden');
                 exit();
             }
         } elseif (isset($in_path) && is_array($in_path) && (1 < count($in_path) && ('login_ids' == $in_path[0]))) {    // See if they are looking for people associated with string login IDs.
@@ -1664,9 +1674,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         if (0 == count($in_path)) {
             if ('GET' == $in_http_method) {
                 $ret = ['people'];
-                if ($in_andisol_instance->logged_in()) {
-                    $ret[] = 'my_info';
-                }
                 if ($in_andisol_instance->manager()) {
                     $ret[] = 'logins';
                 }
