@@ -21,7 +21,7 @@ USAGE
 
 This plugin is accessed by setting `"baseline"` as the Command in the [REST](https://restfulapi.net) URI. There are a number of other aspects to the URI that will be explained:
 
-    {GET | POST} http[s]://{SERVER URL}/{json | xml | xsd}/baseline/[{search | tokens | serverinfo}/[?[search_radius= & search_longitude= & search_latitude=] | search_name= | search_tag0= | ... | search_tag9=]
+    {GET | POST} http[s]://{SERVER URL}/{json | xml | xsd}/baseline/[tokens | serverinfo | search[/?[search_radius= & search_longitude= & search_latitude=] | search_name= | search_tag0= | ... | search_tag9=]]
 
 SERVER URL
 ----------
@@ -50,9 +50,9 @@ The plugin will return the following information:
 
     These are the actual security tokens visible to the currently logged-in user. The response will be an array of integers.
     
-- results
+- search results
     
-    These are IDs of data objects that fit within the search criteria given (and are visible to the current user). These will be delivered in an assocative array of integer arrays.
+    These are collections IDs of data objects that fit within the search criteria given (and are visible to the current user). These will be delivered in an assocative array of integer arrays. The top-level keys will indicate which plugin to use to examine the search results in the contained array of integers.
 
 GET CALLS
 ---------
