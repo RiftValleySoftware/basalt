@@ -113,6 +113,15 @@ This will return a structure, containing various server settings and information
 
 It is only accessible if you are logged in with the "God" admin.
 
+POST CALLS
+----------
+
+There is only one POST call allowed: `"tokens"`. This must be called when logged in as at least a manager.
+
+Calling this with the `"tokens"` resource identifier will create one single new token, and will return it in the response. It will also add it to the current logged-in user login.
+
+    {POST} http[s]://{SERVER URL}/{json | xml}/baseline/tokens
+
 LICENSE
 =======
 
