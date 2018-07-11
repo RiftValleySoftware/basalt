@@ -47,15 +47,15 @@ TYPES OF RECORDS
 
 The plugin will return information (assuming permission) about two types of records:
 
-- Users (Data database -The base class is CO_User_Collection)
+- Users (Data Database -The base class is CO_User_Collection)
 
-    These are collection objects that describe individual people/persons in the database.
+    These are collection objects that describe individual people/persons in the database. They may or may not be associated with a login (Security Database) record.
     
-- Logins (Security Database -The base class is CO_Security_Login)
+- Logins (Security Database -The base class is either CO_Cobra_Login or CO_Login_Manager)
 
     These are the actual security login objects visible to the currently logged-in user.
 
-With the people, it is also possible to get information about associated logins.
+With the users, it is also possible to get information about associated logins.
 
 SPECIAL CALLS
 -------------
@@ -66,7 +66,7 @@ There are two "special" GET calls that can be made with this plugin:
     
 Simply calling `people`, specifying only JSON or XML as the response type. Any query parameters are ignored.
     
-Calling this will return a simple listing of the two top-level commands (`people` and `logins`); either in JSON or XML.
+Calling this will return a simple listing of the two top-level commands (`people` and `logins`); either in JSON or XML. You will not see `"logins"` unless you are logged in.
     
     {GET} http[s]://{SERVER URL}/xsd/people/
     
@@ -98,13 +98,13 @@ If this is specified (a value is not necessary, and will be ignored, if provided
 
 - `login_user`
 
-This says don't return any people that don't have associated login IDs.
+This says don't return any people that don't have associated login IDs. It will also show each user's `"show_details"` response, with additional full information about each user's login (as long as your user has permission to read both the user and the login record).
 
 For example:
 
     {GET} http[s]://example.com/entrypoint.php/json/people/people?login_user
 
-Will return every user visible, that also has an associated login ID, in JSON.
+Will return every user visible, that also has an associated login ID, in JSON. Each user will also have a "comprehensive" information dump, including the associated login.
 
     {GET} http[s]://{SERVER URL}/{json|xml}/people/people/{[INTEGER USER IDS CSV]}[?{show_details|login_user}]
 
@@ -122,9 +122,9 @@ Will show you a comprehensive dump of the user with ID 23 in XML.
 
     {GET} http[s]://{SERVER URL}/{json|xml}/people/people/login_ids}/{[INTEGER LOGIN IDS CSV]}|{[STRING LOGIN IDS CSV]}][?show_details]
 
-Calling `people/people/login_ids`, followed by a CSV list of either numbers (login record -not user- IDs), or strings (login record string login IDs). You can ask for details, but `login_user` is unnecessary.
+Calling `people/people/login_ids`, followed by a CSV list of either numbers (login record -not user- IDs), or strings (login record string login IDs).
 
-In this variant, you are fetching user records by the login IDs of associated logins. For this reason, all returned records will have associated logins.
+In this variant, you are fetching user records by the login IDs of associated logins. For this reason, all returned user records will have associated logins.
 
 Examples:
 
@@ -137,6 +137,8 @@ Gets the summary for the people associated with login record IDs 10, 20 and 567 
 Gets the detailed dumps for the three people associated with the logins accessed via `bob`, `Theodore` and `a71C3`, in XML.
 
 **NOTE:** If the login is not associated with a user, or your login does not have permission to view both records, the login ID/login string will be ignored.
+
+**NOTE:** You can have **EITHER** a CSV list of strings (login IDs) or integers (login record IDs); but not a combination of both.
 
 logins
 ------
@@ -159,7 +161,7 @@ Will display all the login records as JSON.
 
 Gives a comprehensive dump of all logins in XML.
 
-**NOTE:** With the `people/logins` call, you can get logins that have no associated user records.
+**NOTE:** With the `people/logins` call, you can get logins that have no associated user records, and with the `people/people` call, you can get users that have no associated login records (as long as you have not accessed the users by login ID).
 
 LICENSE
 =======

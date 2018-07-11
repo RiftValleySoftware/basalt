@@ -1678,7 +1678,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         if (0 == count($in_path)) {
             if ('GET' == $in_http_method) {
                 $ret = ['people'];
-                if ($in_andisol_instance->manager()) {
+                if ($in_andisol_instance->logged_in()) {
                     $ret[] = 'logins';
                 }
             } else {
