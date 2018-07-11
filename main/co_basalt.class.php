@@ -296,7 +296,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
     
     /***********************/
     /**
-    This runs our baseline command.
+    This runs our baseline token command.
     
     \returns the HTTP response intermediate state, as an associative array.
      */
@@ -324,6 +324,40 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
     
     /***********************/
     /**
+    This runs our baseline serverinfo command.
+    
+    \returns the HTTP response intermediate state, as an associative array.
+     */
+    protected function _process_serverinfo_command(  $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases (ignored).
+                                                $in_http_method,        ///< REQUIRED: 'GET' or 'POST' are the only allowed values.
+                                                $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings. For the baseline, this should be exactly one element.
+                                                $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
+                                                ) {
+        $ret = NULL;
+        if ($in_andisol_instance->god()) {    // We also have to be logged in as God to have any access to serverinfo.
+            $ret = ['serverinfo' => []];
+            $ret['serverinfo']['basalt_version'] = __BASALT_VERSION__;
+            $ret['serverinfo']['andisol_version'] = __ANDISOL_VERSION__;
+            $ret['serverinfo']['cobra_version'] = __COBRA_VERSION__;
+            $ret['serverinfo']['chameleon_version'] = __CHAMELEON_VERSION__;
+            $ret['serverinfo']['badger_version'] = __BADGER_VERSION__;
+            $ret['serverinfo']['security_db_type'] = CO_Config::$sec_db_type;
+            $ret['serverinfo']['data_db_type'] = CO_Config::$data_db_type;
+            $ret['serverinfo']['min_pw_length'] = intval(CO_Config::$min_pw_len);
+            $ret['serverinfo']['regular_timeout_in_seconds'] = intval(CO_Config::$session_timeout_in_seconds);
+            $ret['serverinfo']['god_timeout_in_seconds'] = intval(CO_Config::$god_session_timeout_in_seconds);
+            $ret['serverinfo']['block_repeated_logins'] = CO_Config::$block_logins_for_valid_api_key ? true : false;
+            $ret['serverinfo']['block_differing_ip_address'] = CO_Config::$api_key_includes_ip_address ? true : false;
+            $ret['serverinfo']['ssl_requirement_level'] = intval(CO_Config::$ssl_requirement_level);
+        } else {
+            header('HTTP/1.1 403 Unauthorized Command');
+            exit();
+        }
+        return $ret;
+    }
+    
+    /***********************/
+    /**
     This runs our baseline command.
     
     \returns the HTTP response intermediate state, as an associative array.
@@ -342,6 +376,8 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
             array_unshift($ret['plugins'], $this->plugin_name());
         } elseif ('tokens' == $in_command) {   // If we are viewing or editing the tokens, then we deal with that here.
             $ret = $this->_process_token_command($in_andisol_instance, $in_http_method, $in_path, $in_query);
+        } elseif (('serverinfo' == $in_command) && $in_andisol_instance->god()) {   // God can ask for information about the server.
+            $ret = $this->_process_serverinfo_command($in_andisol_instance, $in_http_method, $in_path, $in_query);
         } elseif ('search' == $in_command) {
             // For a location search, all three of these need to be specified, and radius needs to be nonzero.
             $radius = isset($in_query) && is_array($in_query) && isset($in_query['search_radius']) && (0.0 < floatval($in_query['search_radius'])) ? floatval($in_query['search_radius']) : NULL;

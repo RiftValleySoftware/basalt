@@ -7,6 +7,7 @@
                 <xs:element minOccurs="0" ref='b:places'/>
                 <xs:element minOccurs="0" ref='b:things'/>
                 <xs:element minOccurs="0" ref='b:search_location'/>
+                <xs:element minOccurs="0" ref='b:serverinfo'/>
             </xs:choice>
         </xs:complexType>
     </xs:element>
@@ -67,6 +68,26 @@
                 <xs:element minOccurs='0' name='radius' type='xs:float'/>
                 <xs:element minOccurs='0' name='longitude' type='xs:float'/>
                 <xs:element minOccurs='0' name='latitude' type='xs:float'/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name='serverinfo'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs='0' name='basalt_version' type='xs:string'/>
+                <xs:element minOccurs='0' name='andisol_version' type='xs:string'/>
+                <xs:element minOccurs='0' name='cobra_version' type='xs:string'/>
+                <xs:element minOccurs='0' name='chameleon_version' type='xs:string'/>
+                <xs:element minOccurs='0' name='badger_version' type='xs:string'/>
+                <xs:element minOccurs='0' name='security_db_type' type='xs:string'/>
+                <xs:element minOccurs='0' name='data_db_type' type='xs:string'/>
+                <xs:element minOccurs='0' name='min_pw_length' type='xs:integer'/>
+                <xs:element minOccurs='0' name='regular_timeout_in_seconds' type='xs:integer'/>
+                <xs:element minOccurs='0' name='god_timeout_in_seconds' type='xs:integer'/>
+                <xs:element minOccurs='0' name='block_repeated_logins' type='xs:integer'/>
+                <xs:element minOccurs='0' name='block_differing_ip_address' type='xs:integer'/>
+                <xs:element minOccurs='0' name='ssl_requirement_level' type='xs:integer'/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
