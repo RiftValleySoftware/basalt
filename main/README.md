@@ -21,7 +21,7 @@ USAGE
 
 This plugin is accessed by setting `"baseline"` as the Command in the [REST](https://restfulapi.net) URI. There are a number of other aspects to the URI that will be explained:
 
-    {GET | POST} http[s]://{SERVER URL}/{json | xml | xsd}/baseline/[{search | tokens}/[?[search_radius= & search_longitude= & search_latitude=] | search_name= | search_tag0= | ... | search_tag9=]
+    {GET | POST} http[s]://{SERVER URL}/{json | xml | xsd}/baseline/[{search | tokens | serverinfo}/[?[search_radius= & search_longitude= & search_latitude=] | search_name= | search_tag0= | ... | search_tag9=]
 
 SERVER URL
 ----------
