@@ -104,6 +104,15 @@ Every resource type in the BAOBAB server can (but is not required to) have a loc
 
 These should all be followed by floating point numbers. `search_radius` is the *radius* (not diameter) of a circle, with the location specified by the `search_longitude` and `search_latitude` query arguments, which are a long/lat location (in degrees).
 
+serverinfo
+----------
+
+    {GET} http[s]://{SERVER URL}/{json | xml}/baseline/serverinfo
+
+This will return a structure, containing various server settings and information, such as versions and enabled features.
+
+It is only accessible if you are logged in with the "God" admin.
+
 LICENSE
 =======
 
