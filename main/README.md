@@ -21,7 +21,7 @@ USAGE
 
 This plugin is accessed by setting `"baseline"` as the Command in the [REST](https://restfulapi.net) URI. There are a number of other aspects to the URI that will be explained:
 
-    {GET | POST} http[s]://{SERVER URL}/{json | xml | xsd}/baseline/[tokens | serverinfo | search[/?[search_radius= & search_longitude= & search_latitude=] | search_name= | search_tag0= | ... | search_tag9=]]
+    {GET | POST} http[s]://{SERVER URL}/{json | xml | xsd}/baseline/[{tokens | serverinfo | search[/?[search_radius= & search_longitude= & search_latitude=] | search_name= | search_tag0= | ... | search_tag9=]}]
 
 SERVER URL
 ----------
@@ -100,7 +100,7 @@ It should be noted that the various tags have different default functions, based
 
 These must all be specified together in order for location searches to work. This can be used in conjunction with the above string searches.
 
-Every resource type in the BAOBAB server can (but is not required to) have a location, denothed by a long/lat pair. If there is a location, it can be found, using this search.
+Every resource type in the BAOBAB server can (but is not required to) have a location, denoted by a long/lat pair. If there is a location, it can be found, using this search. Resources without a long/lat pair will not be returned in location/radius searches.
 
 These should all be followed by floating point numbers. `search_radius` is the *radius* (not diameter) of a circle, with the location specified by the `search_longitude` and `search_latitude` query arguments, which are a long/lat location (in degrees).
 
