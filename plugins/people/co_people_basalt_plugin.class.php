@@ -1197,224 +1197,219 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         $login_id = (isset($in_query['login_id']) && trim($in_query['login_id'])) ? trim($in_query['login_id']) : NULL;
         $in_login_user = $in_login_user || (NULL != $login_id);
         
-        if (!$in_login_user || $login_id) {
-            $ret = ['new_user'];
-            $password = NULL;
-            
-            if (isset($in_query['login_id'])) {
-                unset($in_query['login_id']);
+        $ret = ['new_user'];
+        $password = NULL;
+        
+        if (isset($in_query['login_id'])) {
+            unset($in_query['login_id']);
+        }
+        
+        $password = isset($in_query) && is_array($in_query) && isset($in_query['password']) && trim($in_query['password']) ? trim($in_query['password']) : NULL;
+        if (isset($in_query['password'])) {
+            unset($in_query['password']);
+        }
+        
+        if (!$password || (strlen($password) < CO_Config::$min_pw_len)) {
+            $password = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"), 0, CO_Config::$min_pw_len + 2);
+        }
+        
+        $name = isset($in_query) && is_array($in_query) && isset($in_query['name']) && trim($in_query['name']) ? trim($in_query['name']) : NULL;
+        if (isset($in_query['name'])) {
+            unset($in_query['name']);
+        }
+        
+        $tokens = isset($in_query) && is_array($in_query) && isset($in_query['tokens']) && trim($in_query['tokens']) ? trim($in_query['tokens']) : NULL;
+        if (isset($in_query['tokens'])) {
+            unset($in_query['tokens']);
+        }
+        
+        $read_token = isset($in_query) && is_array($in_query) && isset($in_query['read_token']) && trim($in_query['read_token']) ? trim($in_query['read_token']) : NULL;
+        
+        $is_manager = isset($in_query) && is_array($in_query) && isset($in_query['is_manager']);
+        if (isset($in_query['is_manager'])) {
+            unset($in_query['is_manager']);
+        }
+        
+        $user = NULL;
+        $settings_list = $this->_build_user_mod_list($in_andisol_instance, 'POST', $in_query);   // First, build up a list of the settings for the new user.
+        
+        // Before we start, we make sure that only valid data has been provided. These are the ONLY settings allowed when creating a user.
+        $comp_array = Array('lang', 'payload', 'surname', 'middle_name', 'given_name', 'prefix', 'suffix', 'nickname', 'child_ids', 'read_token', 'write_token');
+        $keys = array_keys($settings_list);
+        
+        foreach ($keys as $key) {
+            if (!in_array($key, $comp_array)) {
+                header('HTTP/1.1 400 1 Improper Data Provided');
+                exit();
             }
+        }
+        
+        if ($in_login_user) {  // Create a user/login pair.
+            if ($tokens) {
+                $tokens_temp = array_map('intval', explode(',', $tokens));
+                $tokens = [];
             
-            $password = isset($in_query) && is_array($in_query) && isset($in_query['password']) && trim($in_query['password']) ? trim($in_query['password']) : NULL;
-            if (isset($in_query['password'])) {
-                unset($in_query['password']);
-            }
-            
-            if (!$password || (strlen($password) < CO_Config::$min_pw_len)) {
-                $password = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"), 0, CO_Config::$min_pw_len + 2);
-            }
-            
-            $name = isset($in_query) && is_array($in_query) && isset($in_query['name']) && trim($in_query['name']) ? trim($in_query['name']) : NULL;
-            if (isset($in_query['name'])) {
-                unset($in_query['name']);
-            }
-            
-            $tokens = isset($in_query) && is_array($in_query) && isset($in_query['tokens']) && trim($in_query['tokens']) ? trim($in_query['tokens']) : NULL;
-            if (isset($in_query['tokens'])) {
-                unset($in_query['tokens']);
-            }
-            
-            $read_token = isset($in_query) && is_array($in_query) && isset($in_query['read_token']) && trim($in_query['read_token']) ? trim($in_query['read_token']) : NULL;
-            
-            $is_manager = isset($in_query) && is_array($in_query) && isset($in_query['is_manager']);
-            if (isset($in_query['is_manager'])) {
-                unset($in_query['is_manager']);
-            }
-            
-            $user = NULL;
-            $settings_list = $this->_build_user_mod_list($in_andisol_instance, 'POST', $in_query);   // First, build up a list of the settings for the new user.
-            
-            // Before we start, we make sure that only valid data has been provided. These are the ONLY settings allowed when creating a user.
-            $comp_array = Array('lang', 'payload', 'surname', 'middle_name', 'given_name', 'prefix', 'suffix', 'nickname', 'child_ids', 'read_token', 'write_token');
-            $keys = array_keys($settings_list);
-            
-            foreach ($keys as $key) {
-                if (!in_array($key, $comp_array)) {
-                    header('HTTP/1.1 400 1 Improper Data Provided');
-                    exit();
-                }
-            }
-            
-            if ($in_login_user) {  // Create a user/login pair.
-                if ($tokens) {
-                    $tokens_temp = array_map('intval', explode(',', $tokens));
-                    $tokens = [];
-                
-                    if ($in_andisol_instance->god()) {  // God is on the TSA Pre-Check list.
-                        $tokens = $tokens_temp;
-                    } else {    // Otherwise, we need to make sure that we have only tokens that we own.
-                        // BADGER deals with this, but we trust no one.
-                        $my_tokens = array_map('intval', $in_andisol_instance->get_login_item()->ids());
-                        $tokens_temp = array_intersect($my_tokens, $tokens_temp);
-                        foreach ($tokens_temp as $token) {
-                            if ((1 < $token) && ($token != $in_andisol_instance->get_login_item()->id())) {
-                                $tokens[] = $token;
-                            }
+                if ($in_andisol_instance->god()) {  // God is on the TSA Pre-Check list.
+                    $tokens = $tokens_temp;
+                } else {    // Otherwise, we need to make sure that we have only tokens that we own.
+                    // BADGER deals with this, but we trust no one.
+                    $my_tokens = array_map('intval', $in_andisol_instance->get_login_item()->ids());
+                    $tokens_temp = array_intersect($my_tokens, $tokens_temp);
+                    foreach ($tokens_temp as $token) {
+                        if ((1 < $token) && ($token != $in_andisol_instance->get_login_item()->id())) {
+                            $tokens[] = $token;
                         }
                     }
                 }
+            }
+        
+            $password = $in_andisol_instance->create_new_user($login_id, $password, $name, $tokens, $read_token, $is_manager);
+        
+            if ($password) {
+                $user = $in_andisol_instance->get_user_from_login_string($login_id);
+            }
+        } else {    // Standalone user (person).
+            $user = $in_andisol_instance->make_standalone_user();
+        }
+        
+        if (isset($user) && ($user instanceof CO_User_Collection)) {
+            $original_id = $user->lock();
             
-                $password = $in_andisol_instance->create_new_user($login_id, $password, $name, $tokens, $read_token, $is_manager);
-            
-                if ($password) {
-                    $user = $in_andisol_instance->get_user_from_login_string($login_id);
-                }
-            } else {    // Standalone user (person).
-                $user = $in_andisol_instance->make_standalone_user();
+            if (!isset($settings_list['read_token'])) {
+                $settings_list['read_token'] = $original_id;
             }
             
-            if (isset($user) && ($user instanceof CO_User_Collection)) {
-                $original_id = $user->lock();
-                
-                if (!isset($settings_list['read_token'])) {
-                    $settings_list['read_token'] = $original_id;
-                }
-                
-                foreach ($settings_list as $key => $value) {
-                    switch ($key) {
-                        case 'child_ids':
-                            $add = $value['add'];
-                            $remove = $value['remove'];
-                            $result = true;
+            foreach ($settings_list as $key => $value) {
+                switch ($key) {
+                    case 'child_ids':
+                        $add = $value['add'];
+                        $remove = $value['remove'];
+                        $result = true;
+                        
+                        foreach ($remove as $id) {
+                            if ($id != $user->id()) {
+                                $child = $in_andisol_instance->get_single_data_record_by_id($id);
+                                if (isset($child)) {
+                                    $result = $user->deleteThisElement($child);
+                                }
                             
-                            foreach ($remove as $id) {
+                                if (!$result) {
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if ($result) {
+                            foreach ($add as $id) {
                                 if ($id != $user->id()) {
                                     $child = $in_andisol_instance->get_single_data_record_by_id($id);
                                     if (isset($child)) {
-                                        $result = $user->deleteThisElement($child);
+                                        $result = $user->appendElement($child);
                                     }
-                                
+                            
                                     if (!$result) {
                                         break;
                                     }
                                 }
                             }
-                            
-                            if ($result) {
-                                foreach ($add as $id) {
-                                    if ($id != $user->id()) {
-                                        $child = $in_andisol_instance->get_single_data_record_by_id($id);
-                                        if (isset($child)) {
-                                            $result = $user->appendElement($child);
-                                        }
-                                
-                                        if (!$result) {
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                            break;
-                                
-                        case 'longitude':
-                            $result = $user->set_longitude($value);
-                            break;
-                                
-                        case 'latitude':
-                            $result = $user->set_latitude($value);
-                            break;
-                            
-                        case 'fuzz_factor':
-                            $result = $user->set_fuzz_factor($value);
-                            break;
-                            
-                        case 'can_see_through_the_fuzz':
-                            $result = $user->set_can_see_through_the_fuzz($value);
-                            break;
-                            
-                        case 'lang':
-                            $result = $user->set_lang($value);
-                            
-                            if ($result) {
-                                $login_instance = $user->get_login_instance();
-                                
-                                if ($login_instance) {
-                                    $result = $login_instance->set_lang($value);
-                                }
-                            }
-                            break;
-                                
-                        case 'write_token':
-                            $result = $user->set_write_security_id($value);
-                            if ($result) {
-                                $login_instance = $user->get_login_instance();
-                            
-                                if ($login_instance) {
-                                    $result = $login_instance->set_write_security_id($value);
-                                }
-                            }
-                            break;
-                
-                        case 'payload':
-                            $result = $user->set_payload($value);
-                            break;
-                
-                        case 'surname':
-                            $result = $user->set_surname($value);
-                            break;
-                
-                        case 'middle_name':
-                            $result = $user->set_middle_name($value);
-                            break;
-                
-                        case 'given_name':
-                            $result = $user->set_given_name($value);
-                            break;
-                
-                        case 'prefix':
-                            $result = $user->set_prefix($value);
-                            break;
-                
-                        case 'suffix':
-                            $result = $user->set_suffix($value);
-                            break;
-                
-                        case 'nickname':
-                            $result = $user->set_nickname($value);
-                            break;
-                        
-                        default:
-                            $result = true;
-                    }
-                
-                    if (!$result) {
-                        $login_instance = $user->get_login_instance();
-                        $user->delete_from_db();
-                        if (isset($login_instance)) {
-                            $login_instance->delete_from_db();
                         }
+                        break;
+                            
+                    case 'longitude':
+                        $result = $user->set_longitude($value);
+                        break;
+                            
+                    case 'latitude':
+                        $result = $user->set_latitude($value);
+                        break;
                         
-                        header('HTTP/1.1 400 Improper Data Provided');
-                        exit();
+                    case 'fuzz_factor':
+                        $result = $user->set_fuzz_factor($value);
+                        break;
+                        
+                    case 'can_see_through_the_fuzz':
+                        $result = $user->set_can_see_through_the_fuzz($value);
+                        break;
+                        
+                    case 'lang':
+                        $result = $user->set_lang($value);
+                        
+                        if ($result) {
+                            $login_instance = $user->get_login_instance();
+                            
+                            if ($login_instance) {
+                                $result = $login_instance->set_lang($value);
+                            }
+                        }
+                        break;
+                            
+                    case 'write_token':
+                        $result = $user->set_write_security_id($value);
+                        if ($result) {
+                            $login_instance = $user->get_login_instance();
+                        
+                            if ($login_instance) {
+                                $result = $login_instance->set_write_security_id($value);
+                            }
+                        }
+                        break;
+            
+                    case 'payload':
+                        $result = $user->set_payload($value);
+                        break;
+            
+                    case 'surname':
+                        $result = $user->set_surname($value);
+                        break;
+            
+                    case 'middle_name':
+                        $result = $user->set_middle_name($value);
+                        break;
+            
+                    case 'given_name':
+                        $result = $user->set_given_name($value);
+                        break;
+            
+                    case 'prefix':
+                        $result = $user->set_prefix($value);
+                        break;
+            
+                    case 'suffix':
+                        $result = $user->set_suffix($value);
+                        break;
+            
+                    case 'nickname':
+                        $result = $user->set_nickname($value);
+                        break;
+                    
+                    default:
+                        $result = true;
+                }
+            
+                if (!$result) {
+                    $login_instance = $user->get_login_instance();
+                    $user->delete_from_db();
+                    if (isset($login_instance)) {
+                        $login_instance->delete_from_db();
                     }
+                    
+                    header('HTTP/1.1 400 Improper Data Provided');
+                    exit();
                 }
-                
-                // Unlock by setting the read token.
-                if ($result && isset($settings_list['read_token'])) {
-                    $result = $user->set_read_security_id($settings_list['read_token']);
-                }
-                
-                $ret = Array('new_user' => $this->_get_long_user_description($user, true));
-                
-                if (isset($password)) {
-                    $ret['new_user']['associated_login']['password'] = $password;
-                }
-            } else {
-                header('HTTP/1.1 400 Failed to Create User');
-                exit();
+            }
+            
+            // Unlock by setting the read token.
+            if ($result && isset($settings_list['read_token'])) {
+                $result = $user->set_read_security_id($settings_list['read_token']);
+            }
+            
+            $ret = Array('new_user' => $this->_get_long_user_description($user, true));
+            
+            if ($in_login_user && isset($password)) {
+                $ret['new_user']['associated_login']['password'] = $password;
             }
         } else {
-            header('HTTP/1.1 400 No Login ID Provided');
+            header('HTTP/1.1 400 Failed to Create User');
             exit();
         }
         

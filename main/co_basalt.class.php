@@ -343,12 +343,17 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
             $ret['serverinfo']['badger_version'] = __BADGER_VERSION__;
             $ret['serverinfo']['security_db_type'] = CO_Config::$sec_db_type;
             $ret['serverinfo']['data_db_type'] = CO_Config::$data_db_type;
+            $ret['serverinfo']['lang'] = CO_Config::$lang;
             $ret['serverinfo']['min_pw_length'] = intval(CO_Config::$min_pw_len);
             $ret['serverinfo']['regular_timeout_in_seconds'] = intval(CO_Config::$session_timeout_in_seconds);
             $ret['serverinfo']['god_timeout_in_seconds'] = intval(CO_Config::$god_session_timeout_in_seconds);
             $ret['serverinfo']['block_repeated_logins'] = CO_Config::$block_logins_for_valid_api_key ? true : false;
             $ret['serverinfo']['block_differing_ip_address'] = CO_Config::$api_key_includes_ip_address ? true : false;
             $ret['serverinfo']['ssl_requirement_level'] = intval(CO_Config::$ssl_requirement_level);
+            $ret['serverinfo']['google_api_key'] = CO_Config::$google_api_key;
+            $ret['serverinfo']['allow_address_lookup'] = CO_Config::$allow_address_lookup ? true : false;
+            $ret['serverinfo']['allow_general_address_lookup'] = CO_Config::$allow_general_address_lookup ? true : false;
+            $ret['serverinfo']['default_region_bias'] = CO_Config::$default_region_bias;
         } else {
             header('HTTP/1.1 403 Unauthorized Command');
             exit();

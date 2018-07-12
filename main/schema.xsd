@@ -82,12 +82,17 @@
                 <xs:element minOccurs='0' name='badger_version' type='xs:string'/>
                 <xs:element minOccurs='0' name='security_db_type' type='xs:string'/>
                 <xs:element minOccurs='0' name='data_db_type' type='xs:string'/>
+                <xs:element minOccurs='0' name='lang' type='xs:string'/>
                 <xs:element minOccurs='0' name='min_pw_length' type='xs:integer'/>
                 <xs:element minOccurs='0' name='regular_timeout_in_seconds' type='xs:integer'/>
                 <xs:element minOccurs='0' name='god_timeout_in_seconds' type='xs:integer'/>
                 <xs:element minOccurs='0' name='block_repeated_logins' type='xs:integer'/>
                 <xs:element minOccurs='0' name='block_differing_ip_address' type='xs:integer'/>
                 <xs:element minOccurs='0' name='ssl_requirement_level' type='xs:integer'/>
+                <xs:element minOccurs='0' name='google_api_key' type='xs:string'/>
+                <xs:element minOccurs='0' name='allow_address_lookup' type='xs:integer'/>
+                <xs:element minOccurs='0' name='allow_general_address_lookup' type='xs:integer'/>
+                <xs:element minOccurs='0' name='default_region_bias' type='xs:string'/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
