@@ -328,7 +328,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
         $lang = NULL;
         $name = NULL;
-        $read_token = NULL;
+        $read_token = 0;
         
         if ($in_andisol_instance->manager()) {  // Must be a manager
             $is_manager = isset($in_query) && is_array($in_query) && isset($in_query['is_manager']);
@@ -349,12 +349,8 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     $name = trim($params['name']);
                 }
         
-                if (isset($params['read_token']) && $params['read_token']) {
+                if (isset($params['read_token']) && intval($params['read_token'])) {
                     $read_token = intval($params['read_token']);
-                }
-        
-                if (!$read_token) {
-                    $read_token = 1;
                 }
         
                 $result = true;
@@ -382,7 +378,9 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         if ($lang) {
                             $result = $new_login->set_lang($lang);
                         }
-            
+                        
+                        $id = $new_login->id();
+                        
                         if ($result && $name) {
                             $result = $new_login->set_name($name);
                         } elseif ($result) {
@@ -391,6 +389,8 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             
                         if ($result && $read_token) {
                             $result = $new_login->set_read_security_id($read_token);
+                        } elseif ($result) {
+                            $result = $new_login->set_read_security_id($id);
                         }
             
                         if (!$result) {
@@ -878,6 +878,19 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                     }
                                 }
                                 break;
+                                
+                            case 'read_token':
+                                $result = $user->set_read_security_id($value);
+                            
+                                if ($result && $in_login_user) {
+                                    $login_instance = $user->get_login_instance();
+                            
+                                    if ($login_instance) {
+                                        $result = $login_instance->set_read_security_id($value);
+                                        $user_changed = true;
+                                    }
+                                }
+                                break;
                         
                             case 'fuzz_factor':
                                 $result = $place->set_fuzz_factor($value);
@@ -989,11 +1002,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                 }
                                 break;
                         }
-                    }
-                    
-                    if ($result && isset($mod_list['read_token'])) {
-                        // We unlock by setting the read security.
-                        $result = $user->set_read_security_id($mod_list['read_token']);
                     }
                     
                     if ($result && $in_login_user) {
@@ -1234,7 +1242,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             unset($in_query['tokens']);
         }
         
-        $read_token = isset($in_query) && is_array($in_query) && isset($in_query['read_token']) && trim($in_query['read_token']) ? trim($in_query['read_token']) : NULL;
+        $read_token = isset($in_query) && is_array($in_query) && isset($in_query['read_token']) && intval($in_query['read_token']) ? intval($in_query['read_token']) : 0;
         
         $is_manager = isset($in_query) && is_array($in_query) && isset($in_query['is_manager']);
         if (isset($in_query['is_manager'])) {
@@ -1283,13 +1291,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $user = $in_andisol_instance->make_standalone_user();
         }
         
-        if (isset($user) && ($user instanceof CO_User_Collection)) {
-            $original_id = $user->lock();
-            
-            if (!isset($settings_list['read_token'])) {
-                $settings_list['read_token'] = $original_id;
-            }
-            
+        if (isset($user) && ($user instanceof CO_User_Collection)) {            
             foreach ($settings_list as $key => $value) {
                 switch ($key) {
                     case 'child_ids':
@@ -1407,11 +1409,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     header('HTTP/1.1 400 Improper Data Provided');
                     exit();
                 }
-            }
-            
-            // Unlock by setting the read token.
-            if ($result && isset($settings_list['read_token'])) {
-                $result = $user->set_read_security_id($settings_list['read_token']);
             }
             
             $ret = Array('new_user' => $this->_get_long_user_description($user, true));
