@@ -1200,7 +1200,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         $ret = NULL;
         
         $login_id = (isset($in_query['login_id']) && trim($in_query['login_id'])) ? trim($in_query['login_id']) : NULL;
-        $in_login_user = $in_login_user || (NULL != $login_id);
+        $in_login_user = $in_login_user || (NULL != $login_id); // Supplying a login ID also means creating a new login.
         
         $ret = ['new_user'];
         $password = NULL;
