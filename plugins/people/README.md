@@ -74,13 +74,13 @@ Calling `people`, specifying `xsd` as the response type.
 
 Calling this will return XML, which will be the XML validation schema for the plugin. It's a comprehensive schema that covers all response types.
 
-REGULAR CALLS
--------------
+GET CALLS
+---------
 
 people
 -----
 
-    {GET | POST | PUT | DELETE} http[s]://{SERVER URL}/{json|xml}/people/people/[{[INTEGER USER IDS CSV]}|[{login_ids/[INTEGER LOGIN IDS CSV]|[STRING LOGIN IDS CSV]][?{show_details|login_user}]
+    {GET} http[s]://{SERVER URL}/{json|xml}/people/people/[{[INTEGER USER IDS CSV]}|[{login_ids/[INTEGER LOGIN IDS CSV]|[STRING LOGIN IDS CSV]][?{show_details|login_user}]
     
 In this case, we are asking for user records (as opposed to login records). We have a number of choices as to how we can ask for these:
 
@@ -145,7 +145,7 @@ logins
 
 We can also get login record information; which we do by appending `logins` to the `people` command, like so:
 
-    {GET | POST | PUT | DELETE} http[s]://{SERVER URL}/{json|xml}/people/logins/[{[INTEGER LOGIN IDS CSV]}|{[STRING LOGIN IDS CSV]}][?show_details]
+    {GET} http[s]://{SERVER URL}/{json|xml}/people/logins/[{[INTEGER LOGIN IDS CSV]}|{[STRING LOGIN IDS CSV]}][?show_details]
 
 This URI is followed by a CSV list of numeric login record IDs or string login IDs, in exactly the same fashion as above. In this case, the returned data will be for login records, not user records.
 
@@ -162,6 +162,20 @@ Will display all the login records as JSON.
 Gives a comprehensive dump of all logins in XML.
 
 **NOTE:** With the `people/logins` call, you can get logins that have no associated user records, and with the `people/people` call, you can get users that have no associated login records (as long as you have not accessed the users by login ID).
+
+POST CALLS
+----------
+You can create new users, logins, or both, if you are logged in as a Manager (not a regular user) or the "God" login. You do this by calling the basic `"people/people"` or `"people/logins"` commands with a POST method.
+
+If you call the /people with a `"login_id="` value, containing a unique (on the server) login ID string, you will create a user/login pair. If you do not specify this, then you will create a simple, standalone user (with not associated login).
+
+    {POST} http[s]://example.com/entrypoint.php/json/people/people
+
+Will create a simple, standalone user with not associated login, and default values.
+
+    {POST} http[s]://example.com/entrypoint.php/json/people/people?login_id=SomeRandomLoginString
+
+Will create a simple, default user, but it will also have an associated login with a login ID string of `"SomeRandomLoginString"`.
 
 LICENSE
 =======

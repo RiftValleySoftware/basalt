@@ -254,6 +254,8 @@
             <xs:element minOccurs="0" name="prefix" type="xs:string"/>
             <xs:element minOccurs="0" name="suffix" type="xs:string"/>
             <xs:element minOccurs="0" name="nickname" type="xs:string"/>
+            <xs:element minOccurs="0" name="is_manager" type="xs:integer"/>
+            <xs:element minOccurs="0" name="is_main_admin" type="xs:integer"/>
             <xs:element minOccurs="0" name="current_login" type="xs:integer"/>
             <xs:element minOccurs="0" name="associated_login" type="b:login_structure"/>
             <xs:element minOccurs="0" name="associated_login_id" type="xs:integer"/>
@@ -273,6 +275,8 @@
             <xs:element minOccurs="0" name="writeable" type="xs:integer"/>
             <xs:element minOccurs="0" name="current_login" type="xs:integer"/>
             <xs:element minOccurs="0" name="user_object_id" type="xs:integer"/>
+            <xs:element minOccurs="0" name="is_manager" type="xs:integer"/>
+            <xs:element minOccurs="0" name="is_main_admin" type="xs:integer"/>
             <xs:element minOccurs="0" name="security_tokens">
                 <xs:complexType>
                     <xs:sequence>

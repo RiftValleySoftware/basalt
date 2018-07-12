@@ -58,6 +58,8 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         }
         
         $ret['login_id'] = $in_login_object->login_id;
+        $ret['is_manager'] = $in_login_object->is_manager();
+        $ret['is_main_admin'] = $in_login_object->is_god();
         $ret['security_tokens'] = $in_login_object->ids();
         
         $api_key = $in_login_object->get_api_key();
@@ -120,6 +122,10 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         if (isset($test_string) && trim($test_string)) {
             $ret['nickname'] = $test_string;
         }
+        
+        $ret['is_manager'] = $in_user_object->is_manager();
+        
+        $ret['is_main_admin'] = $in_user_object->is_god();
         
         if ($in_with_login_info) {
             $login_instance = $in_user_object->get_login_instance();
