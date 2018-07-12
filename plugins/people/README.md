@@ -1,4 +1,4 @@
-\page rest-plugin-people REST PLUGIN: PEOPLE
+\page rest-plugin-people PEOPLE
 
 ![PEOPLE PLUGIN](images/BASALT-PLUGIN.png)
 

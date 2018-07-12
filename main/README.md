@@ -1,4 +1,4 @@
-\page rest-plugin-baseline REST PLUGIN: BASELINE
+\page rest-plugin-baseline BASELINE
 
 ![BASELINE PLUGIN](images/BASALT-PLUGIN.png)
 
@@ -52,7 +52,7 @@ The plugin will return the following information:
     
 - search results
     
-    These are collections IDs of data objects that fit within the search criteria given (and are visible to the current user). These will be delivered in an assocative array of integer arrays. The top-level keys will indicate which plugin to use to examine the search results in the contained array of integers.
+    These are resource IDs of data objects that fit within the search criteria given (and are visible to the current user). These will be delivered in an assocative array of integer arrays. The top-level keys will indicate which plugin to use to examine the search results in the contained array of integers.
 
 GET CALLS
 ---------
