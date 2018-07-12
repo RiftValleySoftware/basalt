@@ -138,7 +138,7 @@ Gets the detailed dumps for the three people associated with the logins accessed
 
 **NOTE:** If the login is not associated with a user, or your login does not have permission to view both records, the login ID/login string will be ignored.
 
-**NOTE:** You can have **EITHER** a CSV list of strings (login IDs) or integers (login record IDs); but not a combination of both.
+**NOTE:** You can have **EITHER** a CSV list of strings (login IDs) **OR** integers (login record IDs); but not a combination of both.
 
 logins
 ------
@@ -157,9 +157,19 @@ Examples:
     
 Will display all the login records as JSON.
 
+    {GET} http[s]://example.com/entrypoint.php/json/people/logins/10,20,567
+
+Gets the summary for the logins (not users) associated with login record IDs 10, 20 and 567 as JSON.
+
+    {GET} http[s]://example.com/entrypoint.php/xml/people/logins/bob,Theodore,a71C3?show_details
+
+Gets the detailed dumps for the three logins associated with the logins accessed via `bob`, `Theodore` and `a71C3`, in XML.
+
     {GET} http[s]://example.com/entrypoint.php/xml/people/logins?show_details
 
 Gives a comprehensive dump of all logins in XML.
+
+**NOTE:** As above, you can have **EITHER** a CSV list of strings (login IDs) **OR** integers (login record IDs); but not a combination of both.
 
 **NOTE:** With the `people/logins` call, you can get logins that have no associated user records, and with the `people/people` call, you can get users that have no associated login records (as long as you have not accessed the users by login ID).
 
@@ -167,11 +177,11 @@ POST CALLS
 ----------
 You can create new users, logins, or both, if you are logged in as a Manager (not a regular user) or the "God" login. You do this by calling the basic `"people/people"` or `"people/logins"` commands with a POST method.
 
-If you call the /people with a `"login_id="` value, containing a unique (on the server) login ID string, you will create a user/login pair. If you do not specify this, then you will create a simple, standalone user (with not associated login).
+If you call the /people with a `"login_id="` value, containing a unique (on the server) login ID string, you will create a user/login pair. If you do not specify this, then you will create a simple, standalone user (with no associated login).
 
     {POST} http[s]://example.com/entrypoint.php/json/people/people
 
-Will create a simple, standalone user with not associated login, and default values.
+Will create a simple, standalone user with no associated login, and default values.
 
     {POST} http[s]://example.com/entrypoint.php/json/people/people?login_id=SomeRandomLoginString
 
