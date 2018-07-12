@@ -275,8 +275,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     }
                 }
             }
-        } else {    // They want the list of all of them.
-            $login_id_list = $in_andisol_instance->get_all_login_users();
+        } elseif ($in_andisol_instance->manager()) {  // Must have a COBRA instance, and be a manager
             $login_id_list = $in_andisol_instance->get_cobra_instance()->get_all_logins();
             if (0 < count($login_id_list)) {
                 foreach ($login_id_list as $login_instance) {
@@ -293,11 +292,11 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 }
             }
         }
-
-        if (isset($logins_to_edit) && is_array($logins_to_edit) && count($logins_to_edit)) {
-            if ('POST' == $in_http_method) {
-                $ret = $this->_handle_edit_logins_post($in_andisol_instance, $logins_to_edit, $in_query);
-            } elseif ('DELETE' == $in_http_method) {
+        
+        if ('POST' == $in_http_method) {
+            $ret = $this->_handle_edit_logins_post($in_andisol_instance, $in_query);
+        } elseif (isset($logins_to_edit) && is_array($logins_to_edit) && count($logins_to_edit)) {
+            if ('DELETE' == $in_http_method) {
                 if (!$also_delete_user) {
                     $in_show_parents = false;   // Doesn't count, unless we are deleting a user. Logins can't have parents.
                 }
@@ -317,7 +316,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     \returns an array, with the results.
      */
     protected function _handle_edit_logins_post(    $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
-                                                    $in_logins_to_edit,     ///< REQUIRED: An array of login objects to be affected.
                                                     $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                                 ) {
         $ret = [];
@@ -326,81 +324,88 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         $name = NULL;
         $read_token = NULL;
         
-        $is_manager = isset($in_query) && is_array($in_query) && isset($in_query['is_manager']);
-        if (isset($in_query['is_manager'])) {
-            unset($in_query['is_manager']);
-        }
+        if ($in_andisol_instance->manager()) {  // Must be a manager
+            $is_manager = isset($in_query) && is_array($in_query) && isset($in_query['is_manager']);
+            if (isset($in_query['is_manager'])) {
+                unset($in_query['is_manager']);
+            }
+           
+            $login_string = (isset($in_query['login_string']) && trim($in_query['login_string'])) ? trim($in_query['login_string']) : NULL;
         
-        $login_string = (isset($in_query['login_string']) && trim($in_query['login_string'])) ? trim($in_query['login_string']) : NULL;
+            if ($login_string) {    // Minimum is a login string.
+                $params = $this->_build_login_mod_list($in_andisol_instance, $in_query);
         
-        $params = $this->_build_login_mod_list($in_andisol_instance, $in_query);
-        
-        if (isset($params['lang']) && trim($params['lang'])) {
-            $lang = trim($params['lang']);
-        }
-        
-        if (isset($params['name']) && trim($params['name'])) {
-            $name = trim($params['name']);
-        }
-        
-        if (isset($params['read_token']) && $params['read_token']) {
-            $read_token = intval($params['read_token']);
-        }
-        
-        if (!$read_token) {
-            $read_token = 1;
-        }
-        
-        if ($login_string) {    // Minimum is a login string.
-            $result = true;
-            
-            $cobra_instance = $in_andisol_instance->get_cobra_instance();
-            
-            if (isset($cobra_instance) && ($cobra_instance instanceof CO_Cobra)) {
-                $new_login = NULL;
-                
-                $password = isset($params['password']) ? $params['password'] : NULL;
-                
-                if (!$password || (strlen($password) < CO_Config::$min_pw_len)) {
-                    $password = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*~_-=+;:,.!?"), 0, CO_Config::$min_pw_len + 2);
+                if (isset($params['lang']) && trim($params['lang'])) {
+                    $lang = trim($params['lang']);
                 }
+        
+                if (isset($params['name']) && trim($params['name'])) {
+                    $name = trim($params['name']);
+                }
+        
+                if (isset($params['read_token']) && $params['read_token']) {
+                    $read_token = intval($params['read_token']);
+                }
+        
+                if (!$read_token) {
+                    $read_token = 1;
+                }
+        
+                $result = true;
+            
+                $cobra_instance = $in_andisol_instance->get_cobra_instance();
+            
+                if (isset($cobra_instance) && ($cobra_instance instanceof CO_Cobra)) {
+                    $new_login = NULL;
                 
-                $tokens = isset($params['tokens']) ? $params['tokens'] : NULL;
+                    $password = isset($params['password']) ? $params['password'] : NULL;
                 
-                if ($is_manager) {
-                    $new_login = $cobra_instance->create_new_manager_login($login_string, $password, $tokens);
+                    if (!$password || (strlen($password) < CO_Config::$min_pw_len)) {
+                        $password = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*~_-=+;:,.!?"), 0, CO_Config::$min_pw_len + 2);
+                    }
+                
+                    $tokens = isset($params['tokens']) ? $params['tokens'] : NULL;
+                
+                    if ($is_manager) {
+                        $new_login = $cobra_instance->create_new_manager_login($login_string, $password, $tokens);
+                    } else {
+                        $new_login = $cobra_instance->create_new_standard_login($login_string, $password, $tokens);
+                    }
+                
+                    if ($new_login instanceof CO_Security_Login) {
+                        if ($lang) {
+                            $result = $new_login->set_lang($lang);
+                        }
+            
+                        if ($result && $name) {
+                            $result = $new_login->set_name($name);
+                        } elseif ($result) {
+                            $result = $new_login->set_name($login_string);
+                        }
+            
+                        if ($result && $read_token) {
+                            $result = $new_login->set_read_security_id($read_token);
+                        }
+            
+                        if (!$result) {
+                            header('HTTP/1.1 400 Error Creating Login');
+                            exit();
+                        }
+                
+                        $ret = Array('new_login' => $this->_get_long_description($new_login));
+                        $ret['new_login']['password'] = $password;
+                    }
                 } else {
-                    $new_login = $cobra_instance->create_new_standard_login($login_string, $password, $tokens);
-                }
-                
-                if ($new_login instanceof CO_Security_Login) {
-                    if ($lang) {
-                        $result = $new_login->set_lang($lang);
-                    }
-            
-                    if ($result && $name) {
-                        $result = $new_login->set_name($name);
-                    } elseif ($result) {
-                        $result = $new_login->set_name($login_string);
-                    }
-            
-                    if ($result && $read_token) {
-                        $result = $new_login->set_read_security_id($read_token);
-                    }
-            
-                    if (!$result) {
-                        header('HTTP/1.1 400 Error Creating Login');
-                        exit();
-                    }
-                
-                    $ret = Array('new_login' => $this->_get_long_description($new_login));
-                    $ret['new_login']['password'] = $password;
+                    header('HTTP/1.1 403 Forbidden');
+                    exit();
                 }
             } else {
-                header('HTTP/1.1 403 Forbidden');
+                header('HTTP/1.1 400 Login String Required');
                 exit();
             }
         } else {
+            header('HTTP/1.1 403 Forbidden');
+            exit();
         }
         
         return $ret;
