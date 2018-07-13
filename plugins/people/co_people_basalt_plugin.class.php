@@ -300,7 +300,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         }
         
         if ('POST' == $in_http_method) {
-            $ret = $this->_handle_edit_logins_post($in_andisol_instance, $in_query);
+            $ret = $this->_handle_edit_logins_post($in_andisol_instance, $in_path, $in_query);
         } elseif (isset($logins_to_edit) && is_array($logins_to_edit) && count($logins_to_edit)) {
             if ('DELETE' == $in_http_method) {
                 if (!$also_delete_user) {
@@ -322,6 +322,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
     \returns an array, with the results.
      */
     protected function _handle_edit_logins_post(    $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                                    $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
                                                     $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                                 ) {
         $ret = [];
@@ -335,9 +336,21 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             if (isset($in_query['is_manager'])) {
                 unset($in_query['is_manager']);
             }
-           
+            
+            $login_id = NULL;
             $login_string = (isset($in_query['login_string']) && trim($in_query['login_string'])) ? trim($in_query['login_string']) : NULL;
-        
+            
+            // The first thing we do, is see if a login ID was supplied on the path.
+            if (isset($in_path) && is_array($in_path) && (0 < count($in_path)) && trim($in_path[0])) {
+                $login_id = trim($in_path[0]);
+            } elseif (isset($in_query) && isset($in_query['login_id']) && trim($in_query['login_id'])) {    // How about as a query argument?
+                $login_id = trim($in_query['login_id']);
+            }
+            
+            if ($login_id) {    // 'login_string' is deprecated. 'login_id' trumps it.
+                $login_string = $login_id;
+            }
+            
             if ($login_string) {    // Minimum is a login string.
                 $params = $this->_build_login_mod_list($in_andisol_instance, $in_query);
         
