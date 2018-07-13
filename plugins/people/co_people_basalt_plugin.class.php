@@ -400,12 +400,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                             $result = $new_login->set_name($login_string);
                         }
             
-                        if ($result && $read_token) {
-                            $result = $new_login->set_read_security_id($read_token);
-                        } elseif ($result) {
-                            $result = $new_login->set_read_security_id($id);
-                        }
-            
                         if (!$result) {
                             header('HTTP/1.1 400 Error Creating Login');
                             exit();
@@ -799,6 +793,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     $user_report = Array('before' => $this->_get_long_user_description($user, $in_login_user));
                   
                     $user->set_batch_mode();
+                    $result = false;
                 
                     foreach ($mod_list as $key => $value) {
                         switch ($key) {
@@ -881,37 +876,31 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                 
                             case 'write_token':
                                 $result = $user->set_write_security_id($value);
-                            
-                                if ($result && $in_login_user) {
-                                    $login_instance = $user->get_login_instance();
-                            
-                                    if ($login_instance) {
-                                        $result = $login_instance->set_write_security_id($value);
-                                        $user_changed = true;
-                                    }
-                                }
+                                $user_changed = true;
                                 break;
                                 
                             case 'read_token':
                                 $result = $user->set_read_security_id($value);
-                            
-                                if ($result && $in_login_user) {
-                                    $login_instance = $user->get_login_instance();
-                            
-                                    if ($login_instance) {
-                                        $result = $login_instance->set_read_security_id($value);
-                                        $user_changed = true;
-                                    }
-                                }
+                                $user_changed = true;
+                                break;
+                        
+                            case 'longitude':
+                                $result = $user->set_longitude($value);
+                                $user_changed = true;
+                                break;
+                        
+                            case 'latitude':
+                                $result = $user->set_latitude($value);
+                                $user_changed = true;
                                 break;
                         
                             case 'fuzz_factor':
-                                $result = $place->set_fuzz_factor($value);
+                                $result = $user->set_fuzz_factor($value);
                                 $user_changed = true;
                                 break;
                         
                             case 'can_see_through_the_fuzz':
-                                $result = $place->set_can_see_through_the_fuzz($value);
+                                $result = $user->set_can_see_through_the_fuzz($value);
                                 $user_changed = true;
                                 break;
                             
@@ -974,6 +963,11 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                 $user_changed = true;
                                 break;
                             
+                            case 'tag7':
+                                $result = $user->set_tag(7, $value);
+                                $user_changed = true;
+                                break;
+                            
                             case 'tag8':
                                 $result = $user->set_tag(8, $value);
                                 $user_changed = true;
@@ -1014,15 +1008,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                     }
                                 }
                                 break;
-                        }
-                    }
-                    
-                    if ($result && $in_login_user) {
-                        $login_instance = $user->get_login_instance();
-                
-                        if ($login_instance) {
-                            $result = $login_instance->set_read_security_id($value);
-                            $user_changed = true;
                         }
                     }
                 
@@ -1250,52 +1235,62 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             unset($in_query['name']);
         }
         
-        $tokens = isset($in_query) && is_array($in_query) && isset($in_query['tokens']) && trim($in_query['tokens']) ? trim($in_query['tokens']) : NULL;
-        if (isset($in_query['tokens'])) {
-            unset($in_query['tokens']);
-        }
-        
-        $read_token = isset($in_query) && is_array($in_query) && isset($in_query['read_token']) && intval($in_query['read_token']) ? intval($in_query['read_token']) : 0;
-        
         $is_manager = isset($in_query) && is_array($in_query) && isset($in_query['is_manager']);
         if (isset($in_query['is_manager'])) {
             unset($in_query['is_manager']);
         }
         
-        $user = NULL;
-        $settings_list = $this->_build_user_mod_list($in_andisol_instance, 'POST', $in_query);   // First, build up a list of the settings for the new user.
+        $my_tokens = array_map('intval', $in_andisol_instance->get_login_item()->ids());
+        array_shift($my_tokens); // we remove our own ID.
         
-        // Before we start, we make sure that only valid data has been provided. These are the ONLY settings allowed when creating a user.
-        $comp_array = Array('lang', 'payload', 'surname', 'middle_name', 'given_name', 'prefix', 'suffix', 'nickname', 'child_ids', 'read_token', 'write_token');
-        $keys = array_keys($settings_list);
-        
-        foreach ($keys as $key) {
-            if (!in_array($key, $comp_array)) {
-                header('HTTP/1.1 400 1 Improper Data Provided');
-                exit();
-            }
+        $tokens = isset($in_query) && is_array($in_query) && isset($in_query['tokens']) && trim($in_query['tokens']) ? trim($in_query['tokens']) : NULL;
+        if (isset($in_query['tokens'])) {
+            unset($in_query['tokens']);
         }
         
-        if ($in_login_user) {  // Create a user/login pair.
-            if ($tokens) {
-                $tokens_temp = array_map('intval', explode(',', $tokens));
-                $tokens = [];
-            
-                if ($in_andisol_instance->god()) {  // God is on the TSA Pre-Check list.
-                    $tokens = $tokens_temp;
-                } else {    // Otherwise, we need to make sure that we have only tokens that we own.
-                    // BADGER deals with this, but we trust no one.
-                    $my_tokens = array_map('intval', $in_andisol_instance->get_login_item()->ids());
-                    $tokens_temp = array_intersect($my_tokens, $tokens_temp);
-                    foreach ($tokens_temp as $token) {
-                        if ((1 < $token) && ($token != $in_andisol_instance->get_login_item()->id())) {
-                            $tokens[] = $token;
-                        }
+        if (isset($tokens)) {
+            $tokens_temp = array_map('intval', explode(',', $tokens));
+            $tokens = [];
+        
+            if ($in_andisol_instance->god()) {  // God is on the TSA Pre-Check list.
+                $tokens = $tokens_temp;
+            } else {    // Otherwise, we need to make sure that we have only tokens that we own.
+                // BADGER deals with this, but we trust no one.
+                $tokens_temp = array_intersect($my_tokens, $tokens_temp);
+                foreach ($tokens_temp as $token) {
+                    if ((1 < $token) && ($token != $in_andisol_instance->get_login_item()->id())) {
+                        $tokens[] = $token;
                     }
                 }
             }
+            
+            $in_query['tokens'] = implode(',', $tokens);
+        }                            
         
-            $password = $in_andisol_instance->create_new_user($login_id, $password, $name, $tokens, $read_token, $is_manager);
+        $read_token = isset($in_query) && is_array($in_query) && isset($in_query['read_token']) && intval($in_query['read_token']) ? intval($in_query['read_token']) : 1;
+        if (isset($in_query['read_token'])) {
+            unset($in_query['read_token']);
+        }
+        
+        if ((0 == $read_token) || (1 == $read_token) || in_array($read_token, $my_tokens)) {
+            $in_query['read_token'] = $read_token;
+        }
+        
+        $write_token = isset($in_query) && is_array($in_query) && isset($in_query['write_token']) && intval($in_query['write_token']) ? intval($in_query['write_token']) : 0;
+
+        if (isset($in_query['write_token'])) {
+            unset($in_query['write_token']);
+        }
+        
+        if (isset($write_token) && in_array($write_token, $my_tokens)) {
+            $in_query['write_token'] = $read_token;
+        }
+      
+        $user = NULL;
+        $settings_list = $this->_build_user_mod_list($in_andisol_instance, 'POST', $in_query);   // First, build up a list of the settings for the new user.
+
+        if ($in_login_user) {  // Create a user/login pair.
+            $password = $in_andisol_instance->create_new_user($login_id, $password, $name, $tokens, 0, $is_manager);
         
             if ($password) {
                 $user = $in_andisol_instance->get_user_from_login_string($login_id);
@@ -1304,125 +1299,9 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $user = $in_andisol_instance->make_standalone_user();
         }
         
-        if (isset($user) && ($user instanceof CO_User_Collection)) {            
-            foreach ($settings_list as $key => $value) {
-                switch ($key) {
-                    case 'child_ids':
-                        $add = $value['add'];
-                        $remove = $value['remove'];
-                        $result = true;
-                        
-                        foreach ($remove as $id) {
-                            if ($id != $user->id()) {
-                                $child = $in_andisol_instance->get_single_data_record_by_id($id);
-                                if (isset($child)) {
-                                    $result = $user->deleteThisElement($child);
-                                }
-                            
-                                if (!$result) {
-                                    break;
-                                }
-                            }
-                        }
-                        
-                        if ($result) {
-                            foreach ($add as $id) {
-                                if ($id != $user->id()) {
-                                    $child = $in_andisol_instance->get_single_data_record_by_id($id);
-                                    if (isset($child)) {
-                                        $result = $user->appendElement($child);
-                                    }
-                            
-                                    if (!$result) {
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                            
-                    case 'longitude':
-                        $result = $user->set_longitude($value);
-                        break;
-                            
-                    case 'latitude':
-                        $result = $user->set_latitude($value);
-                        break;
-                        
-                    case 'fuzz_factor':
-                        $result = $user->set_fuzz_factor($value);
-                        break;
-                        
-                    case 'can_see_through_the_fuzz':
-                        $result = $user->set_can_see_through_the_fuzz($value);
-                        break;
-                        
-                    case 'lang':
-                        $result = $user->set_lang($value);
-                        
-                        if ($result) {
-                            $login_instance = $user->get_login_instance();
-                            
-                            if ($login_instance) {
-                                $result = $login_instance->set_lang($value);
-                            }
-                        }
-                        break;
-                            
-                    case 'write_token':
-                        $result = $user->set_write_security_id($value);
-                        if ($result) {
-                            $login_instance = $user->get_login_instance();
-                        
-                            if ($login_instance) {
-                                $result = $login_instance->set_write_security_id($value);
-                            }
-                        }
-                        break;
-            
-                    case 'payload':
-                        $result = $user->set_payload($value);
-                        break;
-            
-                    case 'surname':
-                        $result = $user->set_surname($value);
-                        break;
-            
-                    case 'middle_name':
-                        $result = $user->set_middle_name($value);
-                        break;
-            
-                    case 'given_name':
-                        $result = $user->set_given_name($value);
-                        break;
-            
-                    case 'prefix':
-                        $result = $user->set_prefix($value);
-                        break;
-            
-                    case 'suffix':
-                        $result = $user->set_suffix($value);
-                        break;
-            
-                    case 'nickname':
-                        $result = $user->set_nickname($value);
-                        break;
-                    
-                    default:
-                        $result = true;
-                }
-            
-                if (!$result) {
-                    $login_instance = $user->get_login_instance();
-                    $user->delete_from_db();
-                    if (isset($login_instance)) {
-                        $login_instance->delete_from_db();
-                    }
-                    
-                    header('HTTP/1.1 400 Improper Data Provided');
-                    exit();
-                }
-            }
+        if (isset($user) && ($user instanceof CO_User_Collection)) {
+            $in_path[] = $user->id();
+            $result = $this->_handle_edit_people_put($in_andisol_instance, $in_login_user, $in_path, $in_query);
             
             $ret = Array('new_user' => $this->_get_long_user_description($user, true));
             
@@ -1473,7 +1352,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 }
                 
                 $ret['tokens'] = $tokens;
-            }
+            }                            
         
             // Next, we see if we want to change the password.
             if (isset($in_query['password']) && (strlen(trim($in_query['password'])) >= CO_Config::$min_pw_len)) {
@@ -1518,6 +1397,11 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             // Next, we see if we want to change/set the login object asociated with this. You can remove an associated login object by passing in NULL or 0, here.
             if (isset($in_query['login_string']) && $in_andisol_instance->god()) {  // Only God can change login strings (unless we are creating a new user).
                 $ret['login_string'] = trim($in_query['login_string']);
+            }
+                
+            // Next, look for the last three tags (the only ones we're allowed to change).
+            if (isset($in_query['tag7'])) {
+                $ret['tag7'] = trim(strval($in_query['tag7']));
             }
                 
             // Next, look for the last two tags (the only ones we're allowed to change).

@@ -78,7 +78,7 @@ GET CALLS
 ---------
 
 people
------
+------
 
     {GET} http[s]://{SERVER URL}/{json|xml}/people/people/[{[INTEGER USER IDS CSV]}|[{login_ids/[INTEGER LOGIN IDS CSV]|[STRING LOGIN IDS CSV]][?{show_details|login_user}]
     
@@ -195,6 +195,111 @@ You can also create standalone logins, by specifying the `"logins"` path compone
     {POST} http[s]://example.com/entrypoint.php/json/people/logins?login_id=SomeRandomLoginString
 
 Will both create a simple, default login with a login ID string of `"SomeRandomLoginString"`.
+
+PUT CALLS
+---------
+Use PUT to update existing resources. The modifications will be made to the entire found set of resources (so you are not just restricted to one at a time, like POST).
+
+POST AND PUT QUERY PARAMETERS
+-----------------------------
+Instead of sending fully-formed JSON or XML data to the server, we use query parameters to specify new values for resource data. We use PUT to change existing resources, and POST to create new ones, and they can use the same query parameters to indicate new values for the resources.
+
+In the case of PUT, it is possible to apply a common set of values to multiple resources, with invalid or non-existent resource field values being simply ignored (for example, a field may apply to some of the requested resources, but not all, so it is applied to the ones to which it applies, and is not applied to the resources to which it does not apply).
+
+Specifying one of these fields as empty (nothing following the `=` sign), indicates that the field should be set to NULL, or cleared.
+
+- `name=`
+
+    *String.* This is a simple resource name. If supplied to a request that includes a login, the `"object_name"` column in both resources (assuming write permissions on both) will be set to the given value.
+
+- `password=`
+
+    *String.* This is a new password for the user login. This will not be applied to standalone user objects (objects with no associated login).
+    
+- `longitude=`
+
+    *Floating-Point Decimal Value.* This is the longitude of the resource, in degrees.
+    
+    **NOTE:** Login objects cannot have location information associated with them.
+    
+- `latitude=`
+
+    *Floating-Point Decimal Value.* This is the latitude of the resource, in degrees.
+    
+    **NOTE:** Login objects cannot have location information associated with them.
+    
+- `fuzz_factor=`
+
+    *Floating-Point Decimal Value.* This is a distance, in Kilometers, for [location obfuscation](https://en.wikipedia.org/wiki/Location_obfuscation) to be applied to the resource. This requires that the `longitude` and `latitude` resource fields be set.
+    If set (setting this to blank, or 0 will clear location obfuscation), then a box (square) around the resource's actual location, double the value given to a side (i.e, a 5Km fuzz_factor will result in a 10Km X 10Km box), will be used as a "randomized dartboard" of locations that will be returned whenever the resource's location is queried (with the exception of the "can see through the fog" token).
+    
+    **NOTE:** Login objects cannot have location information associated with them.
+    
+- `can_see_through_the_fuzz=`
+
+    *Decimal Integer.* This is a security token that specifies that additional fields of `raw_longitude` and `raw_latitude` will be sent to users that posess the token. These fields contain the actual location (unobfuscated). Users with write security clearance will be allowed to see the actual location.
+   
+    **NOTE:** Login objects cannot have location information associated with them.
+     
+- `read_token=`
+
+    *Decimal Integer.* This is a new security token to be applied to the resource as its new read permission.
+
+- `write_token=`
+
+    *Decimal Integer.* This is a new security token to be applied to the resource as its new write permission.
+
+- `tokens=`
+
+    *String (A Comma-Separated List of Decimal Integer).* This is a set of new security tokens for the user. Only tokens available to the current manager will be set (excluding the ID of the manager login, itself). This is only applied to the login resource, so it will be ignored for user-only resources.
+
+- `surname=`
+
+    *String.* This is a family name (last name or surname) for the user. It is applied to the user object (not the login). Additionally, this is "tag1," for \ref rest-plugin-baseline "non-denominational" searches.
+
+- `middle_name=`
+
+    *String.* This is a middle name for the user. It is applied to the user object (not the login). Additionally, this is "tag2," for \ref rest-plugin-baseline "non-denominational" searches.
+
+- `given_name=`
+
+    *String.* This is a first ("given") name for the user. It is applied to the user object (not the login). Additionally, this is "tag3," for \ref rest-plugin-baseline "non-denominational" searches.
+
+- `prefix=`
+
+    *String.* This is a "prefix" (for example, "Mr.", "Dr.", "Representative", etc.) name for the user. It is applied to the user object (not the login). Additionally, this is "tag4," for \ref rest-plugin-baseline "non-denominational" searches.
+
+- `suffix=`
+
+    *String.* This is a "suffix" (for example, "Ph.D", "esq.", "LCSW", etc.) name for the user. It is applied to the user object (not the login). Additionally, this is "tag5," for \ref rest-plugin-baseline "non-denominational" searches.
+
+- `nickname=`
+
+    *String.* This is a "nickname" (for example, "Buddy", "Buffy", "Tommy", etc.) name for the user. It is applied to the user object (not the login). Additionally, this is "tag6," for \ref rest-plugin-baseline "non-denominational" searches.
+
+- `tag7=`
+
+    *String.* This is an arbitrary string value that can be applied to the user. It is not applied to the login.
+
+- `tag8=`
+
+    *String.* This is an arbitrary string value that can be applied to the user. It is not applied to the login.
+
+- `tag9=`
+
+    *String.* This is an arbitrary string value that can be applied to the user. It is not applied to the login.
+
+DATA PAYLOAD
+------------
+In addition to the above query arguments, you can upload arbitrary base64-encoded data to the record, which will be held in its "payload" column. This can be fairly substantial, but it's a good idea to keep the size of these payloads down.
+
+In POST, the payload should be sent as multipart-form, but in PUT, it is sent as simple inline.
+
+When queried, the payload is returned in the `"show_details"` response. If it is a large payload, it can make the response quite large (and slow).
+
+DELETE CALLS
+------------
+DELETE method calls apply to the entire found set. The orginal record values are returned as the result.
 
 LICENSE
 =======
