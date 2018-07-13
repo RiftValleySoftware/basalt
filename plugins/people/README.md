@@ -177,6 +177,8 @@ POST CALLS
 ----------
 You can create new users, logins, or both, if you are logged in as a Manager (not a regular user) or the "God" login. You do this by calling the basic `"people/people"` or `"people/logins"` commands with a POST method.
 
+You can only create one resource (or pair) at a time with POST.
+
 If you call the /people with a `"login_id="` value, containing a unique (on the server) login ID string, you will create a user/login pair. If you do not specify this, then you will create a simple, standalone user (with no associated login).
 
     {POST} http[s]://example.com/entrypoint.php/json/people/people
@@ -186,6 +188,13 @@ Will create a simple, standalone user with no associated login, and default valu
     {POST} http[s]://example.com/entrypoint.php/json/people/people?login_id=SomeRandomLoginString
 
 Will create a simple, default user, but it will also have an associated login with a login ID string of `"SomeRandomLoginString"`.
+
+You can also create standalone logins, by specifying the `"logins"` path component, and either appending the new login ID string to the component, or specifying it with a `"login_id="` query argument:
+
+    {POST} http[s]://example.com/entrypoint.php/json/people/logins/SomeRandomLoginString
+    {POST} http[s]://example.com/entrypoint.php/json/people/logins?login_id=SomeRandomLoginString
+
+Will both create a simple, default login with a login ID string of `"SomeRandomLoginString"`.
 
 LICENSE
 =======
