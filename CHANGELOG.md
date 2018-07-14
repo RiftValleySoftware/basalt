@@ -9,6 +9,7 @@
 - Tweaked the plugins to be a bit more robust in display of detailed descriptions.
 - Specifying "login_user" in the people plugin now also triggers "show_details".
 - Added the "serverinfo" response (God login only).
+- Added explicit support for compressed HTTP response.
 
 **1.0.0.2000** *(July 6, 2018)*
 

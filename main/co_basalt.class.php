@@ -290,7 +290,17 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         if ($header) {
             header($header);
         }
+        
+        $handler = null;
+        
+        if ( zlib_get_coding_type() === false )
+            {
+            $handler = "ob_gzhandler";
+            }
+        
+        ob_start($handler);
         echo($result);
+		ob_end_flush();
         exit();
     }
     
