@@ -92,7 +92,7 @@ The available search specifiers are:
 
 These are all text specifiers, and should have the `=` followed by text. Leaving this blank specifies that you want only records that have that field blank. If you use more than one of the `search_tag` specifiers, they act in an AND fashion, with each one narrowing the search.
 
-It should be noted that the various tags have different default functions, based upon the plugin. For example, in the `people` plugin, the first eight tags are used for names, and in the `places` plugin, the first eight tags are used for address information. In the `things` plugin, `tag0` is used to hold the key to look up the resource.
+It should be noted that the various tags have different default functions, based upon the plugin. For example, in the `people` plugin, the first seven tags are used for names and connection to the user's login, and in the `places` plugin, the first eight tags are used for address information. In the `things` plugin, `tag0` is used to hold the key to look up the resource.
 
 - `search_radius=`
 - `search_longitude=`
