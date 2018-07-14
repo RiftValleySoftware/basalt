@@ -482,16 +482,16 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                                 $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                                 ) {
         $ret = [];
-        $login_string = (isset($in_query['login_string']) && trim($in_query['login_string'])) ? trim($in_query['login_string']) : NULL;
-        
         $params = $this->_build_login_mod_list($in_andisol_instance, $in_query);
         
         $lang = NULL;
         $name = NULL;
         $password = NULL;
+        $login_string = NULL;
         $read_token = NULL;
         $write_token = NULL;
         $tokens = NULL;
+        
         if (isset($params['lang']) && trim($params['lang'])) {
             $lang = trim($params['lang']);
         }
@@ -502,6 +502,10 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
         if (isset($params['password']) && trim($params['password'])) {
             $password = trim($params['password']);
+        }
+        
+        if (isset($params['login_string']) && trim($params['login_string'])) {
+            $login_string = trim($params['login_string']);
         }
         
         if (isset($params['read_token']) && $params['read_token']) {
@@ -522,6 +526,26 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $login_report = Array('before' => $this->_get_long_description($login_instance));
             $login_changed = false;
             $changed_password = NULL;
+                            
+            // This is a rare and special occasion. The login change may fail, as it's possible to assign a login that already exists.
+            // Additionally, this will only apply to the FIRST login encountered, as, by definition, login strings are unique.
+            if ($login_string) {
+                if ($in_andisol_instance->god()) {  // Only God can change login strings.
+                    $original_login = $login_instance->login_id;
+                    $login_instance->login_id = $login_string;
+                    
+                    $result = $login_instance->update_db(); // This will fail if the new login is not valid. It must be unique, globally.
+                    
+                    if ($result) {
+                        $result = $login_instance->clear_api_key(); // Doing this invalidates any current logins.
+                        $login_changed = true;
+                        $login_string = NULL;
+                    } else {
+                        header('HTTP/1.1 400 Cannot Set New Login');
+                        exit();
+                    }
+                }
+            }
             
             if ($lang) {
                 $result = $login_instance->set_lang($lang);
@@ -623,6 +647,11 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             // Next, we see if we want to change the password.
             if (isset($in_query['password']) && (strlen(trim($in_query['password'])) >= CO_Config::$min_pw_len)) {
                 $ret['password'] = trim($in_query['password']);
+            }
+        
+            // Next, we see if we want to change/set the login object asociated with this. You can remove an associated login object by passing in NULL or 0, here.
+            if (isset($in_query['login_string']) && $in_andisol_instance->god()) {  // Only God can change login strings (unless we are creating a new user).
+                $ret['login_string'] = trim($in_query['login_string']);
             }
             
             // Next, we see if we want to change the read security.
@@ -976,37 +1005,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                             case 'tag9':
                                 $result = $user->set_tag(9, $value);
                                 $user_changed = true;
-                                break;
-                            
-                            case 'login_id':
-                                if ($in_andisol_instance->god()) {  // Only God can change login IDs.
-                                    $result = $user->set_login_id($value);
-                                    $user_changed = true;
-                                }
-                                break;
-                            
-                            // This is a rare and special occasion. The login change may fail, as it's possible to assign a login that already exists.
-                            case 'login_string':
-                                if ($in_andisol_instance->god()) {  // Only God can change login strings.
-                                    $login_instance = $user->get_login_instance();
-                        
-                                    if ($login_instance) {
-                                        $login_instance->login_id = $value;
-                                        
-                                        $result = $login_instance->update_db(); // This will fail if the new login is not valid. It must be unique, globally.
-                                        
-                                        if ($result) {
-                                            $result = $login_instance->clear_api_key(); // Doing this invalidates any current logins.
-                                            $user_changed = true;
-                                        } else {
-                                            header('HTTP/1.1 400 Cannot Set New Login');
-                                            exit();
-                                        }
-                                    } else {
-                                        header('HTTP/1.1 400 No Login Item');
-                                        exit();
-                                    }
-                                }
                                 break;
                         }
                     }
@@ -1392,11 +1390,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             // Next, we see if we want to change/set the login object asociated with this. You can remove an associated login object by passing in NULL or 0, here.
             if (isset($in_query['login_id']) && (('POST' == $in_http_method) || $in_andisol_instance->god())) {  // Only God can change login IDs (unless we are creating a new user).
                 $ret['login_id'] = abs(intval(trim($in_query['login_id'])));
-            }
-        
-            // Next, we see if we want to change/set the login object asociated with this. You can remove an associated login object by passing in NULL or 0, here.
-            if (isset($in_query['login_string']) && $in_andisol_instance->god()) {  // Only God can change login strings (unless we are creating a new user).
-                $ret['login_string'] = trim($in_query['login_string']);
             }
                 
             // Next, look for the last three tags (the only ones we're allowed to change).
