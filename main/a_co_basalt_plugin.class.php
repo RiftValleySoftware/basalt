@@ -227,12 +227,12 @@ abstract class A_CO_Basalt_Plugin {
             $payload = $in_object->get_payload();
         
             if ($payload) {
-                $ret['payload'] = base64_encode($payload);
                 $temp_file = tempnam(sys_get_temp_dir(), 'RVP');  
                 file_put_contents($temp_file , $payload);
                 $finfo = finfo_open(FILEINFO_MIME_TYPE);  
                 $content_type = finfo_file($finfo, $temp_file);
                 $ret['payload_type'] = $content_type.';base64';
+                $ret['payload'] = base64_encode($payload);
             }
         }
         

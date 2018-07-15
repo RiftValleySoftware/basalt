@@ -246,8 +246,8 @@
                 </xs:complexType>
             </xs:element>
             <xs:element minOccurs="0" name="last_access" type="xs:string"/>
-            <xs:element name="payload" type="xs:base64Binary"/>
             <xs:element name="payload_type" type="xs:string"/>
+            <xs:element name="payload" type="xs:base64Binary"/>
             <xs:element minOccurs="0" name="surname" type="xs:string"/>
             <xs:element minOccurs="0" name="middle_name" type="xs:string"/>
             <xs:element minOccurs="0" name="given_name" type="xs:string"/>

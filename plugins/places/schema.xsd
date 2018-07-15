@@ -203,8 +203,8 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element minOccurs="0" name="payload" type="xs:base64Binary"/>
             <xs:element minOccurs="0" name="payload_type" type="xs:string"/>
+            <xs:element minOccurs="0" name="payload" type="xs:base64Binary"/>
             <xs:element minOccurs="0" name="address_elements">
                 <xs:complexType>
                     <xs:sequence>
