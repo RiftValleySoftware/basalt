@@ -182,21 +182,18 @@ abstract class A_CO_Basalt_Plugin {
             $ret['writeable'] = true;
         }
         
-        if (method_exists($in_object, 'longitude')) {   // Cheap test to figure out if we can look at these things.
+        if (method_exists($in_object, 'owner_id')) {   // Cheap test to figure out if we can look at these things.
             if (0 < $in_object->owner_id()) {
                 $ret['owner_id'] = $in_object->owner_id();
             }
+        }
         
-            // We do this little dance, because we want to make sure that our internal long/lat match the ones assigned to coords. If we ask again, we'll get different results.
-            if ($in_object->is_fuzzy()) {
-                $coords = array_map('floatval', explode(',', $ret['coords']));
-                $latitude = $coords[0];
-                $longitude = $coords[1];
-            } else {
-                $latitude = $in_object->latitude();
-                $longitude = $in_object->longitude();
-            }
-
+        if (method_exists($in_object, 'longitude') && isset($ret['coords'])) {   // Cheap test to figure out if we can look at these things.
+            // We do this little dance, because we want to make sure that our internal long/lat match the ones assigned to coords. If we ask again, we'll get different results (if fuzzy). Otherwise, it's just a wee bit faster.
+            $coords = array_map('floatval', explode(',', $ret['coords']));
+            $latitude = $coords[0];
+            $longitude = $coords[1];
+            
             if (isset($longitude) && is_float($longitude) && isset($latitude) && is_float($latitude)) {
                 $ret['latitude'] = floatval($latitude);
                 $ret['longitude'] = floatval($longitude);
