@@ -17,6 +17,8 @@ defined( 'LGV_BASALT_CATCHER' ) or die ( 'Cannot Execute Directly' );	// Makes s
 /**
  */
 abstract class A_CO_Basalt_Plugin {
+    static protected $_s_cached_list = NULL;  ///< This will contain caches of our handler list.
+    
     /***********************/
     /**
     This returns any handler for the presented class.
@@ -25,19 +27,28 @@ abstract class A_CO_Basalt_Plugin {
      */
     static protected function _get_handler( $in_classname   ///< REQUIRED: The name of the class we are querying for a handler.
                                             ) {
-        $plugin_dirs = CO_Config::plugin_dirs();
+        // First time through, we build up a cached list of handlers.
+        if (!isset(self::$_s_cached_list) || !is_array(self::$_s_cached_list) || !count(self::$_s_cached_list)) {
+            self::$_s_cached_list = [];
+            $plugin_dirs = CO_Config::plugin_dirs();
         
-        foreach ($plugin_dirs as $plugin_dir) {
-            if (isset($plugin_dir) && is_dir($plugin_dir)) {
-                $plugin_name = basename($plugin_dir);
-                $plugin_classname = 'CO_'.$plugin_name.'_Basalt_Plugin';
-                $plugin_filename = strtolower($plugin_classname).'.class.php';
-                $plugin_file = $plugin_dir.'/'.$plugin_filename;
-                include_once($plugin_file);
-                $class_list = $plugin_classname::classes_managed();
-                if (in_array($in_classname, $class_list)) {
-                    return $plugin_name;
+            foreach ($plugin_dirs as $plugin_dir) {
+                if (isset($plugin_dir) && is_dir($plugin_dir)) {
+                    $plugin_name = basename($plugin_dir);
+                    $plugin_classname = 'CO_'.$plugin_name.'_Basalt_Plugin';
+                    $plugin_filename = strtolower($plugin_classname).'.class.php';
+                    $plugin_file = $plugin_dir.'/'.$plugin_filename;
+                    include_once($plugin_file);
+                    $class_list = $plugin_classname::classes_managed();
+                    self::$_s_cached_list[$plugin_classname] = $class_list;
                 }
+            }
+        }
+        
+        foreach (self::$_s_cached_list as $plugin_name => $class_list) {
+            if (in_array($in_classname, $class_list)) {
+                $plugin_name = substr($plugin_name, 3, -14);
+                return $plugin_name;
             }
         }
         
@@ -123,8 +134,8 @@ abstract class A_CO_Basalt_Plugin {
         
         // Just to make sure that we're a valid long/lat object
         if (method_exists($in_object, 'longitude')) {
-            $longitude = $in_object->longitude();
             $latitude = $in_object->latitude();
+            $longitude = $in_object->longitude();
         
             if (isset($longitude) && is_float($longitude) && isset($latitude) && is_float($latitude)) {
                 $ret['coords'] = sprintf("%f,%f", $latitude, $longitude);
@@ -176,8 +187,15 @@ abstract class A_CO_Basalt_Plugin {
                 $ret['owner_id'] = $in_object->owner_id();
             }
         
-            $longitude = $in_object->longitude();
-            $latitude = $in_object->latitude();
+            // We do this little dance, because we want to make sure that our internal long/lat match the ones assigned to coords. If we ask again, we'll get different results.
+            if ($in_object->is_fuzzy()) {
+                $coords = array_map('floatval', explode(',', $ret['coords']));
+                $latitude = $coords[0];
+                $longitude = $coords[1];
+            } else {
+                $latitude = $in_object->latitude();
+                $longitude = $in_object->longitude();
+            }
 
             if (isset($longitude) && is_float($longitude) && isset($latitude) && is_float($latitude)) {
                 $ret['latitude'] = floatval($latitude);
@@ -199,6 +217,7 @@ abstract class A_CO_Basalt_Plugin {
                     $ret['raw_longitude'] = floatval($in_object->raw_longitude());
                     $ret['fuzz_factor'] = $in_object->fuzz_factor();
                 }
+            } else {
             }
         }
         
@@ -343,15 +362,10 @@ abstract class A_CO_Basalt_Plugin {
         
         if (isset($access_object) && is_array($id_list) && count($id_list)) {
             foreach ($id_list as $id) {
-                $instance = $access_object->get_single_data_record_by_id($id);
-                
-                if (isset($instance) && ($instance instanceof CO_Main_DB_Record)) {
-                    $class_name = get_class($instance);
-                    
-                    if ($class_name) {
-                        $handler = self::_get_handler($class_name);
-                        $ret[$handler][] = $id;
-                    }
+                $class_name = $access_object->get_data_access_class_by_id($id);
+                if ($class_name) {
+                    $handler = self::_get_handler($class_name);
+                    $ret[$handler][] = $id;
                 }
             }
         }
@@ -418,6 +432,8 @@ abstract class A_CO_Basalt_Plugin {
                     }
                     $ret['child_ids']['remove'] = $delete_child_item_list;
                 }
+            } elseif (isset($in_query['child_ids']) && !trim($in_query['child_ids'])) {
+                $ret['child_ids'] = 'DELETE-ALL';   // Remove everything.
             }
             
             if (isset($in_query['name'])) {

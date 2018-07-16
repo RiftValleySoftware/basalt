@@ -827,34 +827,39 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     foreach ($mod_list as $key => $value) {
                         switch ($key) {
                             case 'child_ids':
-                                $add = $value['add'];
-                                $remove = $value['remove'];
-                                $result = true;
+                                if ('DELETE-ALL' == $value) { // This means remove everything.
+                                    $result = $user->deleteAllChildren();
+                                    $user_changed = true;
+                                } else {
+                                    $add = $value['add'];
+                                    $remove = $value['remove'];
+                                    $result = true;
                             
-                                foreach ($remove as $id) {
-                                    if ($id != $user->id()) {
-                                        $child = $in_andisol_instance->get_single_data_record_by_id($id);
-                                        if (isset($child)) {
-                                            $result = $user->deleteThisElement($child);
-                                            $user_changed = true;
-                                        }
-                                
-                                        if (!$result) {
-                                            break;
-                                        }
-                                    }
-                                }
-                            
-                                if ($result) {
-                                    foreach ($add as $id) {
+                                    foreach ($remove as $id) {
                                         if ($id != $user->id()) {
                                             $child = $in_andisol_instance->get_single_data_record_by_id($id);
                                             if (isset($child)) {
-                                                $result = $user->appendElement($child);
+                                                $result = $user->deleteThisElement($child);
                                                 $user_changed = true;
+                                            }
+                                
+                                            if (!$result) {
+                                                break;
+                                            }
+                                        }
+                                    }
+                            
+                                    if ($result) {
+                                        foreach ($add as $id) {
+                                            if ($id != $user->id()) {
+                                                $child = $in_andisol_instance->get_single_data_record_by_id($id);
+                                                if (isset($child)) {
+                                                    $result = $user->appendElement($child);
+                                                    $user_changed = true;
                                                 
-                                                if (!$result) {
-                                                    break;
+                                                    if (!$result) {
+                                                        break;
+                                                    }
                                                 }
                                             }
                                         }

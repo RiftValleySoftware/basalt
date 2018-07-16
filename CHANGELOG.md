@@ -10,6 +10,8 @@
 - Specifying "login_user" in the people plugin now also triggers "show_details".
 - Added the "serverinfo" response (God login only).
 - Added explicit support for compressed HTTP response.
+- Made the class handler code a lot faster.
+- Added handling for removing ALL children.
 
 **1.0.0.2000** *(July 6, 2018)*
 
