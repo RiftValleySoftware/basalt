@@ -1427,8 +1427,8 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                     ) {
         $ret = [];
         $login_user = isset($in_query) && is_array($in_query) && isset($in_query['login_user']);                    // Flag saying they are only looking for login people.
-        $show_parents = isset($in_query) && is_array($in_query) && isset($in_query['show_parents']);    // Show all places in detail, as well as the parents (applies only to GET).
-        $show_details = $show_parents || (isset($in_query) && is_array($in_query) && isset($in_query['show_details']));    // Show all places in detail (applies only to GET).
+        $show_parents = isset($in_query) && is_array($in_query) && isset($in_query['show_parents']);                // Show all places in detail, as well as the parents (applies only to GET).
+        $show_details = $show_parents || (isset($in_query) && is_array($in_query) && isset($in_query['show_details']));             // Show all places in detail (applies only to GET).
         $logged_in = isset($in_query) && is_array($in_query) && isset($in_query['logged_in']) && $in_andisol_instance->manager();   // Flag that filters for only users that are logged in.
         $my_info = isset($in_path) && is_array($in_path) && (0 < count($in_path) && ('my_info' == $in_path[0]));    // Directory that specifies we are only looking for our own info.
         $writeable = isset($in_query) && is_array($in_query) && isset($in_query['writeable']);                      // Show/list only people this user can modify.
@@ -1567,7 +1567,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                         $in_http_method,            ///< REQUIRED: 'GET', 'POST', 'PUT' or 'DELETE'
                                         $in_response_type,          ///< REQUIRED: Either 'json' or 'xml' -the response type.
                                         $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
-                                        $in_query = []             ///< OPTIONAL: The query parameters, as an associative array.
+                                        $in_query = []              ///< OPTIONAL: The query parameters, as an associative array.
                                     ) {
         $ret = [];
         $show_parents = isset($in_query) && is_array($in_query) && isset($in_query['show_parents']);    // Show all places in detail, as well as the parents (applies only to GET or DELETE).

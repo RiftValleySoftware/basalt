@@ -21,7 +21,7 @@ USAGE
 
 This plugin is accessed by setting `"baseline"` as the Command in the [REST](https://restfulapi.net) URI. There are a number of other aspects to the URI that will be explained:
 
-    {GET | POST} http[s]://{SERVER URL}/{json | xml | xsd}/baseline/[{tokens | serverinfo | search[/?[search_radius= & search_longitude= & search_latitude=] | search_name= | search_tag0= | ... | search_tag9=]}]
+    {GET|POST} http[s]://{SERVER URL}/{json|xml|xsd}/baseline/[{tokens|serverinfo|search[/?[search_radius= & search_longitude= & search_latitude=]|search_name=|search_tag0=|...|search_tag9=]}]
 
 SERVER URL
 ----------
@@ -60,7 +60,7 @@ GET CALLS
 No Command
 ----------
 
-    {GET} http[s]://{SERVER URL}/{json | xml | xsd}/baseline
+    {GET} http[s]://{SERVER URL}/{json|xml|xsd}/baseline
     
 When called with `"xml"` or `"json"` as response types, this will simply return a list of the available plugins (usually "baseline," "people," "places," and "things").
 
@@ -69,7 +69,7 @@ When called with `"xsd"` as the response type, this will return the XML XSD docu
 tokens
 ------
 
-    {GET} http[s]://{SERVER URL}/{json | xml}/baseline/tokens
+    {GET} http[s]://{SERVER URL}/{json|xml}/baseline/tokens
 
 This will return a simple array of integers, listing the security tokens available to the current logged-in user. Calling this when not logged in will result in a 403 (FORBIDDEN) error.
 
@@ -78,7 +78,7 @@ The login ID of the current user is always the first element of the array.
 search
 ------
 
-    {GET} http[s]://{SERVER URL}/{json | xml}/baseline/search[?[search_radius= & search_longitude= & search_latitude=] | search_name= | search_tag0= | ... | search_tag9=]
+    {GET} http[s]://{SERVER URL}/{json|xml}/baseline/search[?[search_radius= & search_longitude= & search_latitude=]|search_name=|search_tag0=|...|search_tag9=]
 
 This allows for specialization, using the URI search specification modifiers. Calling it without these modifiers will return the entire visible database.
 
@@ -107,7 +107,7 @@ These should all be followed by floating point numbers. `search_radius` is the *
 serverinfo
 ----------
 
-    {GET} http[s]://{SERVER URL}/{json | xml}/baseline/serverinfo
+    {GET} http[s]://{SERVER URL}/{json|xml}/baseline/serverinfo
 
 This will return a structure, containing various server settings and information, such as versions and enabled features.
 
@@ -120,7 +120,7 @@ There is only one POST call allowed: `"tokens"`. This must be called when logged
 
 Calling this with the `"tokens"` resource identifier will create one single new token, and will return it in the response. It will also add it to the current logged-in user login.
 
-    {POST} http[s]://{SERVER URL}/{json | xml}/baseline/tokens
+    {POST} http[s]://{SERVER URL}/{json|xml}/baseline/tokens
 
 LICENSE
 =======

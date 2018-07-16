@@ -21,7 +21,7 @@ USAGE
 
 This plugin is accessed by setting `"people"` as the Command in the [REST](https://restfulapi.net) URI. There are a number of other aspects to the URI that will be explained:
 
-    {GET | POST | PUT | DELETE} http[s]://{SERVER URL}/{json|xml|xsd}/people/[{people|logins}/[{[INTEGER USER IDS CSV]}|[{login_ids/[STRING LOGIN IDS CSV]}][?{show_details|login_user|PUT/POST PARAMETERS -DISCUSSED BELOW}]
+    {GET|POST|PUT|DELETE} http[s]://{SERVER URL}/{json|xml|xsd}/people/[{people|logins}/[{INTEGER USER IDS CSV}|[{login_ids/[STRING LOGIN IDS CSV]}][?{show_details|show_parents|login_user|PUT/POST PARAMETERS -DISCUSSED BELOW}]
 
 MUST BE LOGGED IN
 -----------------
@@ -80,11 +80,11 @@ GET CALLS
 people
 ------
 
-    {GET} http[s]://{SERVER URL}/{json|xml}/people/people/[{[INTEGER USER IDS CSV]}|[{login_ids/[INTEGER LOGIN IDS CSV]|[STRING LOGIN IDS CSV]][?{show_details|login_user}]
+    {GET} http[s]://{SERVER URL}/{json|xml}/people/people/[{[INTEGER USER IDS CSV]}|[{login_ids/[INTEGER LOGIN IDS CSV]|[STRING LOGIN IDS CSV]][?{show_details|show_parents|login_user}]
     
 In this case, we are asking for user records (as opposed to login records). We have a number of choices as to how we can ask for these:
 
-    {GET} http[s]://{SERVER URL}/{json|xml}/people/people[?][{show_details|login_user}]
+    {GET} http[s]://{SERVER URL}/{json|xml}/people/people[?][{show_details|show_parents|login_user}]
 
 Calling `/people/people` with no extra path information.
 
@@ -106,7 +106,7 @@ For example:
 
 Will return every user visible, that also has an associated login ID, in JSON. Each user will also have a "comprehensive" information dump, including the associated login.
 
-    {GET} http[s]://{SERVER URL}/{json|xml}/people/people/{[INTEGER USER IDS CSV]}[?{show_details|login_user}]
+    {GET} http[s]://{SERVER URL}/{json|xml}/people/people/{[INTEGER USER IDS CSV]}[?{show_details|show_parents|login_user}]
 
 Calling `people/people/` with one or more integers in a CSV list. For example:
 
@@ -289,6 +289,26 @@ Specifying one of these fields as empty (nothing following the `=` sign), indica
 
     *String.* This is an arbitrary string value that can be applied to the user. It is not applied to the login.
 
+MISCELLANEOUS PARAMETERS
+------------------------
+These are additional parameters that you can use to specify various formats and information fields for resources.
+
+- `writeable`
+
+    *No Value Required -Just Add the Query.* If you add this, then only resources that can be modified by the current logged-in user will be returned. This will apply to GET, PUT and DELETE.
+
+    **NOTE:** It goes without saying (but we're saying it anyway) that this will only be useful when logged in with an API Key.
+
+- `show_details`
+
+    *No Value Required -Just Add the Query.* If you add this, then resource records will be returned, showing as much information about the resources as possible (in GET method). Otherwise, you will receive an abbreviated response.
+
+- `show_parents`
+
+    *No Value Required -Just Add the Query.* If you add this, then resource records will be returned, showing as much information about the resources as possible (in GET method), and they will also list any "parent" records that have the given record as a "child." It should be noted that specifying this can add considerable overhead to the call; slowing it down significantly. It's really designed for "focused" resource information.
+
+    **NOTE:** This only applies to user records. Logins have associated users, which are different from "parents."
+    
 DATA PAYLOAD
 ------------
 In addition to the above query arguments, you can upload arbitrary base64-encoded data to the record, which will be held in its "payload" column. This can be fairly substantial, but it's a good idea to keep the size of these payloads down.
