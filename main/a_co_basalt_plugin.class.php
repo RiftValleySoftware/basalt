@@ -372,12 +372,11 @@ abstract class A_CO_Basalt_Plugin {
         if (isset($in_query) && is_array($in_query)) {
             // See if they want to add new child data items to each user, or remove existing ones.
             // We indicate adding ones via positive integers (the item IDs), and removing via negative integers (minus the item ID).
-            if (isset($in_query['child_ids'])) {
-                $ret['child_ids'] = Array('add' => [], 'remove' => []);
+            if (isset($in_query['child_ids']) && trim($in_query['child_ids'])) {
                 $child_item_list = [];          // If we are adding new child items, their IDs go in this list.
                 $delete_child_item_list = [];   // If we are removing items, we indicate that with negative IDs, and put those in a different list (absvaled).
             
-                $child_id_list = array_map('intval', explode(',', $in_query['child_ids']));
+                $child_id_list = array_map('intval', explode(',', trim($in_query['child_ids'])));
         
                 // Child IDs are a CSV list of integers, with IDs of data records.
                 if (isset($child_id_list) && is_array($child_id_list) && count($child_id_list)) {
@@ -406,11 +405,17 @@ abstract class A_CO_Basalt_Plugin {
             
                 // If we have items we want to add, we add them to our TO DO list.
                 if (isset($child_item_list) && is_array($child_item_list) && count($child_item_list)) {
+                    if (!isset($ret['child_ids'])) {
+                        $ret['child_ids'] = Array('add' => [], 'remove' => []);
+                    }
                     $ret['child_ids']['add'] = $child_item_list;
                 }
             
                 // If we have items we want to remove, we add those to our TO DO list.
                 if (isset($delete_child_item_list) && is_array($delete_child_item_list) && count($delete_child_item_list)) {
+                    if (!isset($ret['child_ids'])) {
+                        $ret['child_ids'] = Array('add' => [], 'remove' => []);
+                    }
                     $ret['child_ids']['remove'] = $delete_child_item_list;
                 }
             }
@@ -420,11 +425,17 @@ abstract class A_CO_Basalt_Plugin {
             }    
             
             if (isset($in_query['read_token'])) {
-                $ret['read_token'] = intval($in_query['read_token']);
+                $token = intval($in_query['read_token']);
+                if ($in_andisol_instance->i_have_this_token($token)) {
+                    $ret['read_token'] = intval($in_query['read_token']);
+                }
             }
             
             if (isset($in_query['write_token'])) {
-                $ret['write_token'] = intval($in_query['write_token']);
+                $token = intval($in_query['write_token']);
+                if ($in_andisol_instance->i_have_this_token($token)) {
+                    $ret['write_token'] = intval($in_query['write_token']);
+                }
             }
             
             if (isset($in_query['longitude'])) {
