@@ -183,8 +183,8 @@ abstract class A_CO_Basalt_Plugin {
         }
         
         if (method_exists($in_object, 'owner_id')) {   // Cheap test to figure out if we can look at these things.
-            if (0 < $in_object->owner_id()) {
-                $ret['owner_id'] = $in_object->owner_id();
+            if (0 < intval($in_object->owner_id())) {
+                $ret['owner_id'] = intval($in_object->owner_id());
             }
         }
         
