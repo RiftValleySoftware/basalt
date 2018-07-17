@@ -376,7 +376,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     $password = isset($params['password']) ? $params['password'] : NULL;
                 
                     if (!$password || (strlen($password) < CO_Config::$min_pw_len)) {
-                        $password = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*~_-=+;:,.!?"), 0, CO_Config::$min_pw_len + 2);
+                        $password = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"), 0, CO_Config::$min_pw_len + 2);
                     }
                 
                     $tokens = isset($params['tokens']) ? $params['tokens'] : NULL;

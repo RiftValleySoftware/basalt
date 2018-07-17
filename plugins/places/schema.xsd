@@ -76,8 +76,8 @@
             <xs:element name="name" type="xs:string"/>
             <xs:element name="lang" type="xs:string"/>
             <xs:element minOccurs='0' name='coords' type='xs:string'/>
-            <xs:element minOccurs='0' name='address' type='xs:string'/>
             <xs:element minOccurs='0' name='distance_in_km' type='xs:float'/>
+            <xs:element minOccurs='0' name='address' type='xs:string'/>
             <xs:element minOccurs="0" name="read_token" type="xs:integer"/>
             <xs:element minOccurs="0" name="write_token" type="xs:integer"/>
             <xs:element minOccurs="0" name="last_access" type="xs:string"/>

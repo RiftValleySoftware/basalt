@@ -535,7 +535,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     eval($eval_line);
                     $parameter_name = 'search_'.$parameter_name;
                     if (isset($in_query) && is_array($in_query) && isset($in_query[$parameter_name])) {
-                        $parameter_value = trim($in_query[$parameter_name]);
+                        $parameter_value = strval(trim($in_query[$parameter_name]));
                         $tags_temp[] = $parameter_value;
                     } else {
                         $tags_temp[] = NULL;
@@ -556,7 +556,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 }
                 
                 // See if we will even be looking at our tags.
-                if(array_reduce($tags_temp, function($prev, $current) { return $prev || (NULL != $current) ? true : $prev; }, false)) {
+                if(array_reduce($tags_temp, function($prev, $current) { return $prev || (NULL !== $current) ? true : $prev; }, false)) {
                     $tags = $tags_temp;
                 }
                 
@@ -604,7 +604,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 if (isset($search_name)) {
                     $search_array['name'] = Array($search_name, 'use_like' => 1);
                 }
-                
+
                 $placelist = $in_andisol_instance->generic_search($search_array, false, $search_page_size, $search_page_number, $writeable, $search_count_only, $search_ids_only);
                 
                 if ('GET' == $in_http_method) {
