@@ -43,24 +43,6 @@ These are additional parameters that you can use to specify various formats and 
 
 SEARCH PARAMETERS
 -----------------
-We use the query arguments to request search filters on the data. You can use these searches in PUT or DELETE method calls, as well as GET, to specify lists of resources upon which to operate.
-
-**Miscellaneous Parameters**
-
-- `writeable`
-
-    *No Value Required -Just Add the Query.* If you add this, then only resources that can be modified by the current logged-in user will be returned. This will apply to GET, PUT and DELETE.
-
-    **NOTE:** It goes without saying (but we're saying it anyway) that this will only be useful when logged in with an API Key.
-
-- `show_details`
-
-    *No Value Required -Just Add the Query.* If you add this, then resource records will be returned, showing as much information about the resources as possible (in GET method). Otherwise, you will receive an abbreviated response.
-
-- `show_parents`
-
-    *No Value Required -Just Add the Query.* If you add this, then resource records will be returned, showing as much information about the resources as possible (in GET method), and they will also list any "parent" records that have the given record as a "child." It should be noted that specifying this can add considerable overhead to the call; slowing it down significantly. It's really designed for "focused" resource information.
-
 **Locality Radius Searches**
 All three of these must be used together. If you specify them, then any place resources that have a long/lat that falls within the radius will be returned.
 Resources without long/lat will not be returned.
@@ -78,6 +60,11 @@ Resources without long/lat will not be returned.
     *Floating-Point Decimal Value.* This is a value for a radius (not diameter) circle around the given longitude and latitude. It is in Kilometers.
     If the resource is "fuzzy," it is possible that the long/lat shown by the resource (which is deliberately inaccurate) may be outside the radius, but the actual resource location is within the radius.
 
+- `search_address=`
+
+    *String.* If the server is set up for geocoding, then this can be used instead of `search_longitude` and `search_latitude` (you still need `search_radius`, though). It can contain an address that will be sent to Google for geocoding.
+    This is likely to only be available to logged-in users, although it is possible for the server to be configured to allow all users to use the facility.
+    
 **String Searches**
 These searches allow you to specify a simple case-insensitive string value for the indicated resource column. You can use SQL-style wildcards (%) in the strings. Not specifying a value, but specifying the parameter name and equals sign indicates that the indicated field MUST be empty. Not specifying a field at all indicates that the value of that field is not considered in the search.
 These are actual string matches. They do not do an address lookup, and resources that don't have long/lat can be returned in these searches.
@@ -126,8 +113,8 @@ These are actual string matches. They do not do an address lookup, and resources
 
     *String.* This is an arbitrary string value that can be applied to the user. It is not applied to the login.
 
-PAGING AND SPECIAL FORMATS OF RESPONSE DATA
--------------------------------------------
+SPECIAL FORMATS OF RESPONSE DATA
+--------------------------------
 **Resource Response Format Query Parameters**
 You can ask that data be returned in integers (individual resource IDs), as opposed to ID records, or even as a single integer, which specifies the number of resources that would be returned for the given search. In either case, the responses are wrapped in the requested data format (JSON or XML).
 
@@ -141,6 +128,8 @@ You can ask that data be returned in integers (individual resource IDs), as oppo
     
     *No Value Required -Just Add the Query.* If you add this, then the response will be a single integer. It will be the number of resources that would be returned by the specified search.
 
+PAGING OF RESPONSE DATA
+-----------------------
 **Paging Query Parameters**
 These can be used for GET, PUT and DELETE.
 

@@ -525,6 +525,7 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $longitude = isset($in_query) && is_array($in_query) && isset($in_query['search_longitude']) ? floatval($in_query['search_longitude']) : NULL;
                 $latitude = isset($in_query) && is_array($in_query) && isset($in_query['search_latitude']) ? floatval($in_query['search_latitude']) : NULL;
                 $search_region_bias = isset($in_query) && is_array($in_query) && isset($in_query['search_region_bias']) ? strtolower(trim($search_region_bias)) : CO_Config::$default_region_bias;  // This is a region bias for an address lookup. Ignored if search_address is not specified.
+                $search_address = isset($in_query) && is_array($in_query) && isset($in_query['search_address']) && trim($in_query['search_address']) ? trim($in_query['search_address']) : NULL;
                 
                 $tags = [];
                 $tags_temp = [];
@@ -566,22 +567,32 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 // If we have an address, and no long/lat, we see if we can do a lookup.
                 if (isset(CO_Config::$allow_address_lookup) && CO_Config::$allow_address_lookup && CO_Config::$google_api_key) {
                     $address = isset($in_query) && is_array($in_query) && isset($in_query['search_address']) && trim($in_query['search_address']) ? trim($in_query['search_address']) : NULL;
-                    if (isset($address) && $address && !(isset($longitude) && isset($latitude))) {
+                    if (isset($search_address) && $search_address && !(isset($longitude) && isset($latitude))) {
                         if (CO_Config::$allow_general_address_lookup || $in_andisol_instance->logged_in()) {
-                            $result = self::_lookup_address($address, $search_region_bias);
+                            $result = self::_lookup_address($search_address, $search_region_bias);
                     
                             if ($result && is_array($result) && (1 < count($result))) {
                                 $longitude = $result['longitude'];
                                 $latitude = $result['latitude'];
                             }
+                        } else {
+                            header('HTTP/1.1 400 Improper Distance Search (Login Required)');
+                            exit();
                         }
                     }
+                } elseif ($search_address) {
+                    header('HTTP/1.1 400 Incomplete Distance Search');
+                    exit();
                 }
                 
                 $location_search = NULL;
-            
+                
+                // We make sure that we puke if they give us a bad distance search.
                 if (isset($radius) && isset($longitude) && isset($latitude)) {
                     $location_search = Array('radius' => $radius, 'longitude' => $longitude, 'latitude' => $latitude);
+                } elseif (isset($radius) || isset($longitude) || isset($latitude)) {
+                    header('HTTP/1.1 400 Incomplete Distance Search');
+                    exit();
                 }
                 
                 $class_search = Array('%_Place_Collection', 'use_like' => 1);
@@ -596,8 +607,8 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 
                 if (isset($location_search)) {
                     $search_array['location'] = $location_search;
-                    if (isset($address) && $address && !(isset($longitude) && isset($latitude))) {
-                        $search_array['location']['address'] = $address;
+                    if (isset($search_address) && $search_address && !(isset($longitude) && isset($latitude))) {
+                        $search_array['location']['address'] = $search_address;
                     }
                 }
                 
