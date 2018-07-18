@@ -12,6 +12,8 @@
 - Added explicit support for compressed HTTP response.
 - Made the class handler code a lot faster.
 - Added handling for removing ALL children.
+- Made removing child objects in batch mode a lot faster.
+- Added a general exception catcher (throws a 500 back at the caller).
 
 **1.0.0.2000** *(July 6, 2018)*
 

@@ -472,42 +472,46 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         $this->version = __BASALT_VERSION__;
         $this->error = NULL;
         $this->_andisol_instance = NULL;
-        // IIS puts "off" in the HTTPS field, so we need to test for that.
-        $https = ((!empty ( $_SERVER['HTTPS'] ) && (($_SERVER['HTTPS'] !== 'off') || ($port == 443)))) ? true : false;
-        if ((CO_CONFIG_HTTPS_ALL > CO_Config::$ssl_requirement_level) || $https) {
-            $this->_process_basalt_parameters();
+        try {
+            // IIS puts "off" in the HTTPS field, so we need to test for that.
+            $https = ((!empty ( $_SERVER['HTTPS'] ) && (($_SERVER['HTTPS'] !== 'off') || ($port == 443)))) ? true : false;
+            if ((CO_CONFIG_HTTPS_ALL > CO_Config::$ssl_requirement_level) || $https) {
+                $this->_process_basalt_parameters();
 
-            // If this is a login, we do nothing else. We simply handle the login.
-            if ((1 == count($this->_path)) && ('login' == $this->_path[0])) {
-                if (isset($this->_vars) && isset($this->_vars['login_id']) && isset($this->_vars['password'])) {
-                    // We have the option (default on) of requiring TLS/SSL for logging in, so we check for that now.
-                    if ($https || (CO_CONFIG_HTTPS_OFF == CO_Config::$ssl_requirement_level)) {
-                        $login_id = $this->_vars['login_id'];
-                        $password = $this->_vars['password'];
+                // If this is a login, we do nothing else. We simply handle the login.
+                if ((1 == count($this->_path)) && ('login' == $this->_path[0])) {
+                    if (isset($this->_vars) && isset($this->_vars['login_id']) && isset($this->_vars['password'])) {
+                        // We have the option (default on) of requiring TLS/SSL for logging in, so we check for that now.
+                        if ($https || (CO_CONFIG_HTTPS_OFF == CO_Config::$ssl_requirement_level)) {
+                            $login_id = $this->_vars['login_id'];
+                            $password = $this->_vars['password'];
                         
-                        // See if we have our validator in place.
-                        if (method_exists('CO_Config', 'call_login_validator_function')) {
-                            if (!CO_Config::call_login_validator_function($login_id, $password, $_SERVER)) {
-                                header('HTTP/1.1 403 Unauthorized Login');
-                                exit();
+                            // See if we have our validator in place.
+                            if (method_exists('CO_Config', 'call_login_validator_function')) {
+                                if (!CO_Config::call_login_validator_function($login_id, $password, $_SERVER)) {
+                                    header('HTTP/1.1 403 Unauthorized Login');
+                                    exit();
+                                }
                             }
-                        }
                         
-                        // We do a simple login. This will also generate an API key, which is the only response to this command.
-                        $andisol_instance = new CO_Andisol($login_id, '', $password);
+                            // We do a simple login. This will also generate an API key, which is the only response to this command.
+                            $andisol_instance = new CO_Andisol($login_id, '', $password);
                     
-                        if (isset($andisol_instance) && ($andisol_instance instanceof CO_Andisol) && $andisol_instance->logged_in()) {
-                            if (method_exists('CO_Config', 'call_log_handler_function')) {
-                                CO_Config::call_log_handler_function($andisol_instance, $_SERVER);
-                            }
-                            $login_item = $andisol_instance->get_login_item();
+                            if (isset($andisol_instance) && ($andisol_instance instanceof CO_Andisol) && $andisol_instance->logged_in()) {
+                                if (method_exists('CO_Config', 'call_log_handler_function')) {
+                                    CO_Config::call_log_handler_function($andisol_instance, $_SERVER);
+                                }
+                                $login_item = $andisol_instance->get_login_item();
                         
-                            // If we are logging in, we shortcut the process, and simply return the API key.
-                            if (isset($login_item) && ($login_item instanceof CO_Security_Login)) {
-                                $api_key = $login_item->get_api_key();
-                                // From now on, in order to access the login resources, you'll need to include the API key in the username/password fields.
-                                if (isset($api_key)) {
-                                    echo($api_key);
+                                // If we are logging in, we shortcut the process, and simply return the API key.
+                                if (isset($login_item) && ($login_item instanceof CO_Security_Login)) {
+                                    $api_key = $login_item->get_api_key();
+                                    // From now on, in order to access the login resources, you'll need to include the API key in the username/password fields.
+                                    if (isset($api_key)) {
+                                        echo($api_key);
+                                    } else {
+                                        header('HTTP/1.1 403 Unauthorized Login');
+                                    }
                                 } else {
                                     header('HTTP/1.1 403 Unauthorized Login');
                                 }
@@ -515,107 +519,107 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                                 header('HTTP/1.1 403 Unauthorized Login');
                             }
                         } else {
-                            header('HTTP/1.1 403 Unauthorized Login');
+                            header('HTTP/1.1 401 SSL Connection Required');
+                        }
+                    } else {
+                        header('HTTP/1.1 401 Credentials Required');
+                    }
+                
+                    exit();
+                } elseif ((1 == count($this->_path)) && ('logout' == $this->_path[0]))  {   // See if the user wants to log out a session.
+                    $server_secret = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : NULL;
+                    $api_key = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : NULL;
+                
+                    // See if an SSL connection is required.
+                    if ($https || (CO_CONFIG_HTTPS_LOGGED_IN_ONLY > CO_Config::$ssl_requirement_level)) {
+                        // If we don't have a valid API key/Server Secret pair, we scrag the process.
+                        if(!(isset($api_key) && $api_key && ($server_secret == Co_Config::server_secret()))) {
+                            header('HTTP/1.1 403 Cannot Logout Without Valid Credentials');
+                        } else {
+                            $andisol_instance = new CO_Andisol('', '', '', $api_key);
+                
+                            if (isset($andisol_instance) && ($andisol_instance instanceof CO_Andisol) && $andisol_instance->logged_in()) {
+                                if (method_exists('CO_Config', 'call_log_handler_function')) {
+                                    CO_Config::call_log_handler_function($andisol_instance, $_SERVER);
+                                }
+                            
+                                $login_item = $andisol_instance->get_login_item();
+                    
+                                // We "log out" by clearing the API key.
+                                if (isset($login_item) && ($login_item instanceof CO_Security_Login)) {
+                                    if ($login_item->clear_api_key()) {
+                                        header('HTTP/1.1 205 Logout Successful');
+                                    } else {    // This will probably never happen, but belt and suspenders...
+                                        header('HTTP/1.1 200 Logout Unneccessary');
+                                    }
+                                } else {    // This will probably never happen, but belt and suspenders...
+                                    header('HTTP/1.1 500 Internal Server Error');
+                                }
+                            } else {
+                                header('HTTP/1.1 403 Unauthorized Login');
+                            }
                         }
                     } else {
                         header('HTTP/1.1 401 SSL Connection Required');
                     }
-                } else {
-                    header('HTTP/1.1 401 Credentials Required');
-                }
                 
-                exit();
-            } elseif ((1 == count($this->_path)) && ('logout' == $this->_path[0]))  {   // See if the user wants to log out a session.
-                $server_secret = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : NULL;
-                $api_key = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : NULL;
-                
-                // See if an SSL connection is required.
-                if ($https || (CO_CONFIG_HTTPS_LOGGED_IN_ONLY > CO_Config::$ssl_requirement_level)) {
-                    // If we don't have a valid API key/Server Secret pair, we scrag the process.
+                    exit();
+                } else {    // Handle the rest of the requests here.
+                    // Look for authentication.
+                    $server_secret = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : NULL;   // Supplied to the client by the Server Admin.
+                    $api_key = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : NULL;             // Generated by the server for this session.
+            
+                    // If we don't have a valid API key/Server Secret pair, we just forget about API keys.
                     if(!(isset($api_key) && $api_key && ($server_secret == Co_Config::server_secret()))) {
-                        header('HTTP/1.1 403 Cannot Logout Without Valid Credentials');
-                    } else {
+                        $api_key = NULL;
+                    }
+                
+                    $https_requirement = true;
+                
+                    // Make sure we are HTTPS, or SSL is not required.
+                    switch (CO_Config::$ssl_requirement_level) {
+                        case CO_CONFIG_HTTPS_ALL:
+                            // Yeah, it's required.
+                            break;
+                    
+                        case CO_CONFIG_HTTPS_LOGGED_IN_ONLY:
+                            // Only if we have an authentication header.
+                            $https_requirement = (NULL != $api_key);
+                            break;
+                        
+                        default:
+                            // Not necessary if we are login only or off.
+                            $https_requirement = false;
+                            break;
+                    }
+                
+                    if ($https || !$https_requirement) {
                         $andisol_instance = new CO_Andisol('', '', '', $api_key);
                 
-                        if (isset($andisol_instance) && ($andisol_instance instanceof CO_Andisol) && $andisol_instance->logged_in()) {
+                        if (isset($andisol_instance) && ($andisol_instance instanceof CO_Andisol)) {
                             if (method_exists('CO_Config', 'call_log_handler_function')) {
                                 CO_Config::call_log_handler_function($andisol_instance, $_SERVER);
                             }
-                            
-                            $login_item = $andisol_instance->get_login_item();
-                    
-                            // We "log out" by clearing the API key.
-                            if (isset($login_item) && ($login_item instanceof CO_Security_Login)) {
-                                if ($login_item->clear_api_key()) {
-                                    header('HTTP/1.1 205 Logout Successful');
-                                } else {    // This will probably never happen, but belt and suspenders...
-                                    header('HTTP/1.1 200 Logout Unneccessary');
-                                }
-                            } else {    // This will probably never happen, but belt and suspenders...
-                                header('HTTP/1.1 500 Internal Server Error');
-                            }
+                            $this->_andisol_instance = $andisol_instance;
                         } else {
-                            header('HTTP/1.1 403 Unauthorized Login');
+                            header('HTTP/1.1 500 Internal Server Error');
+                            exit();
                         }
-                    }
-                } else {
-                    header('HTTP/1.1 401 SSL Connection Required');
-                }
-                
-                exit();
-            } else {    // Handle the rest of the requests here.
-                // Look for authentication.
-                $server_secret = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : NULL;   // Supplied to the client by the Server Admin.
-                $api_key = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : NULL;             // Generated by the server for this session.
-            
-                // If we don't have a valid API key/Server Secret pair, we just forget about API keys.
-                if(!(isset($api_key) && $api_key && ($server_secret == Co_Config::server_secret()))) {
-                    $api_key = NULL;
-                }
-                
-                $https_requirement = true;
-                
-                // Make sure we are HTTPS, or SSL is not required.
-                switch (CO_Config::$ssl_requirement_level) {
-                    case CO_CONFIG_HTTPS_ALL:
-                        // Yeah, it's required.
-                        break;
-                    
-                    case CO_CONFIG_HTTPS_LOGGED_IN_ONLY:
-                        // Only if we have an authentication header.
-                        $https_requirement = (NULL != $api_key);
-                        break;
-                        
-                    default:
-                        // Not necessary if we are login only or off.
-                        $https_requirement = false;
-                        break;
-                }
-                
-                if ($https || !$https_requirement) {
-                    $andisol_instance = new CO_Andisol('', '', '', $api_key);
-                
-                    if (isset($andisol_instance) && ($andisol_instance instanceof CO_Andisol)) {
-                        if (method_exists('CO_Config', 'call_log_handler_function')) {
-                            CO_Config::call_log_handler_function($andisol_instance, $_SERVER);
-                        }
-                        $this->_andisol_instance = $andisol_instance;
                     } else {
-                        header('HTTP/1.1 500 Internal Server Error');
+                        header('HTTP/1.1 401 SSL Connection Required');
                         exit();
                     }
-                } else {
-                    header('HTTP/1.1 401 SSL Connection Required');
-                    exit();
                 }
+            } else {
+                header('HTTP/1.1 401 SSL Connection Required');
+                exit();
             }
-        } else {
-            header('HTTP/1.1 401 SSL Connection Required');
+         // OK. By the time we get here, we are either logged in, or not logged in, and have a valid ANDISOL instance. We're ready to go. Put on our shades. We're on a mission for Glod.
+            $this->_process_command();
+        } catch (Exception $e) {
+            header('HTTP/1.1 500 Internal Server Error');
             exit();
         }
-        
-        // OK. By the time we get here, we are either logged in, or not logged in, and have a valid ANDISOL instance. We're ready to go. Put on our shades. We're on a mission for Glod.
-        $this->_process_command();
     }
     
     /***********************/
