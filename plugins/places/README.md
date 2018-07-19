@@ -73,19 +73,19 @@ These are actual string matches. They do not do an address lookup, and resources
 
     *String.* This is a simple resource name.
     
-- `search_venue`
+- `search_venue=`
 
     *String.* This is an arbitrary string value that names the venue of any address.
 
-- `search_street_address`
+- `search_street_address=`
 
     *String.* This is an arbitrary string value that names the street address of any address.
 
-- `search_extra_information`
+- `search_extra_information=`
 
     *String.* This is an arbitrary string value that is for the "extra information" section of any address.
 
-- `search_town`
+- `search_town=`
 
     *String.* This is an arbitrary string value that names the town/city/municipality of any address.
 
@@ -93,25 +93,25 @@ These are actual string matches. They do not do an address lookup, and resources
 
     *String.* This is an arbitrary string value that names the county or sub-province of any address.
 
-- `search_state`
+- `search_state=`
 
     *String.* This is an arbitrary string value that names the state or province of any address.
 
-- `search_postal_code`
+- `search_postal_code=`
 
     *String.* This is an arbitrary string value that names the postal code of any address.
 
-- `search_nation`
+- `search_nation=`
 
     *String.* This is an arbitrary string value that names the nation of any address.
 
 - `search_tag8=`
 
-    *String.* This is an arbitrary string value that can be applied to the user. It is not applied to the login.
+    *String.* This is an arbitrary string value that can be applied to the place.
 
 - `search_tag9=`
 
-    *String.* This is an arbitrary string value that can be applied to the user. It is not applied to the login.
+    *String.* This is an arbitrary string value that can be applied to the place.
 
 SPECIAL FORMATS OF RESPONSE DATA
 --------------------------------
@@ -139,13 +139,70 @@ Paging is another place we deviate from standard REST. In REST, you usually indi
 
 These apply to both normal resource response and ID-only resource response.
 
-- `search_page_size`
+- `search_page_size=`
 
     *Integer.* This is the number of resources to send per page. If the page size is greater than the available resources for that page, then the number of resources returned for that page will be fewer than the specified page size.
 
-- `search_page_number`
+- `search_page_number=`
 
     *Integer.* This is the 0-based index of the requested page. Only the resources for that single page will be returned. If the index is greater than the number of available pages, then nothing will be returned.
+
+POST AND PUT PARAMETERS
+-----------------------
+There are parameters that can be used to set data when creating new places (POST), or editing existing ones (PUT):
+
+- `name=`
+
+    *String.* This is a simple resource name.
+    
+- `address_venue=`
+
+    *String.* This is an arbitrary string value that names the venue of any address.
+
+- `address_street_address=`
+
+    *String.* This is an arbitrary string value that names the street address of any address.
+
+- `address_extra_information=`
+
+    *String.* This is an arbitrary string value that is for the "extra information" section of any address.
+
+- `address_town=`
+
+    *String.* This is an arbitrary string value that names the town/city/municipality of any address.
+
+- `address_county=`
+
+    *String.* This is an arbitrary string value that names the county or sub-province of any address.
+
+- `address_state=`
+
+    *String.* This is an arbitrary string value that names the state or province of any address.
+
+- `address_postal_code=`
+
+    *String.* This is an arbitrary string value that names the postal code of any address.
+
+- `address_nation=`
+
+    *String.* This is an arbitrary string value that names the nation of any address.
+
+- `tag8=`
+
+    *String.* This is an arbitrary string value that can be applied to the place.
+
+- `tag9=`
+
+    *String.* This is an arbitrary string value that can be applied to the place.
+
+- `geocode`
+
+    *No Value Required -Just Add the Query.* If this is specified, then the BAOBAB server will make its best effort to use the address information in the record to look up a longitude and latitude. It will save this long/lat (assuming it worked) in the record.
+
+- `reverse-geocode`
+
+    *No Value Required -Just Add the Query.* If this is specified, then the BAOBAB server will make its best effort to use the long/lat information in the record to look up an address. It will save this address (assuming it worked) in the record.
+
 
 LICENSE
 =======

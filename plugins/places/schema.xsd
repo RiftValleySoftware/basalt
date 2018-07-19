@@ -63,8 +63,11 @@
                         <xs:sequence maxOccurs="unbounded">
                             <xs:element minOccurs="1" maxOccurs="unbounded" name="value" type="b:place_structure"/>
                         </xs:sequence>
+                        <xs:attribute name="sequence_index" type="xs:integer"/>
                     </xs:complexType>
                 </xs:element>
+                
+                <xs:element minOccurs="1" maxOccurs="unbounded" name="new_place" type="b:place_structure"/>
 
             </xs:choice>
         </xs:complexType>

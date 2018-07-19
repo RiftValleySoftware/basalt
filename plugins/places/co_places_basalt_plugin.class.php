@@ -278,23 +278,6 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         // Take a "before" snapshot.
                         $changed_place = ['before' => $this->_get_long_place_description($place, $in_show_parents)];
                         $result = true;
-                        
-                        if ($result && isset($parameters['geocode']) && (0 != intval($parameters['geocode']))) {
-                            if (1 == intval($parameters['geocode'])) {
-                                $long_lat = $place->lookup_address();
-                                
-                                if (isset($long_lat) && is_array($long_lat) && 1 < count($long_lat)) {
-                                    $parameters['longitude'] = floatval($long_lat['longitude']);
-                                    $parameters['latitude'] = floatval($long_lat['latitude']);
-                                }
-                            } else {
-                                $address_elements = $place->geocode_long_lat();
-                                
-                                if (isset($address_elements) && is_array($address_elements) && count($address_elements)) {
-                                    $result = $place->set_address_elements($address_elements);
-                                }
-                            }
-                        }
                     
                         if ($result && isset($parameters['name'])) {
                             $result = $place->set_name($parameters['name']);
@@ -307,11 +290,11 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         if ($result && isset($parameters['lang'])) {
                             $result = $place->set_lang($parameters['lang']);
                         }
-                    
-                        if ($result && isset($parameters['longitude'])) {
+                        
+                        if (isset($parameters['longitude'])) {
                             $result = $place->set_longitude($parameters['longitude']);
                         }
-                    
+                
                         if ($result && isset($parameters['latitude'])) {
                             $result = $place->set_latitude($parameters['latitude']);
                         }
@@ -356,6 +339,25 @@ class CO_places_Basalt_Plugin extends A_CO_Basalt_Plugin {
                             $test = $place->set_address_element(7, $parameters['address_nation']);
                             if (!$test) {   // If so, we add a note to the change record.
                                 $changed_place['nation_not_changed'] = true;
+                            }
+                        }
+                        
+                        // Geocode requires that address information already be set. Geolocation requires that the long/lat already be set.
+                        if ($result && isset($parameters['geocode']) && (0 != intval($parameters['geocode']))) {
+                            if (1 == intval($parameters['geocode'])) {
+                                $long_lat = $place->lookup_address();
+                                
+                                if (isset($long_lat) && is_array($long_lat) && 1 < count($long_lat)) {
+                                    $result = $place->set_longitude(floatval($long_lat['longitude']));
+                                    if ($result) {
+                                        $result = $place->set_latitude(floatval($long_lat['latitude']));
+                                    }
+                                }
+                            } else {
+                                $address_elements = $place->geocode_long_lat();
+                                if (isset($address_elements) && is_array($address_elements) && count($address_elements)) {
+                                    $result = $place->set_address_elements($address_elements);
+                                }
                             }
                         }
                     
