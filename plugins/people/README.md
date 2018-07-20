@@ -317,9 +317,13 @@ In POST, the payload should be sent as multipart-form, but in PUT, it is sent as
 
 When queried, the payload is returned in the `"show_details"` response. If it is a large payload, it can make the response quite large (and slow).
 
-DELETE CALLS
-------------
-DELETE method calls apply to the entire found set. The orginal record values are returned as the result.
+DELETE OPERATIONS
+-----------------
+Delete is quite simple. Just select one or more resources (either by direct selection, or by a search), and specify DELETE as the HTTP method.
+
+Any records within that set that are writeable by the current login will be deleted, and a detailed report will be returned in the chosen format.
+
+**NOTE:** You can specify that a login is deleted at the same time as the user by specifying the `?login_user` query argument on a `/people/people` resource specification.
 
 LICENSE
 =======

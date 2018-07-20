@@ -203,6 +203,11 @@ There are parameters that can be used to set data when creating new places (POST
 
     *No Value Required -Just Add the Query.* If this is specified, then the BAOBAB server will make its best effort to use the long/lat information in the record to look up an address. It will save this address (assuming it worked) in the record.
 
+DELETE OPERATIONS
+-----------------
+Delete is quite simple. Just select one or more resources (either by direct selection, or by a search), and specify DELETE as the HTTP method.
+
+Any records within that set that are writeable by the current login will be deleted, and a detailed report will be returned in the chosen format.
 
 LICENSE
 =======
