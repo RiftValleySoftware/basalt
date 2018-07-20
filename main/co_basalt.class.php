@@ -403,15 +403,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
             $search_page_number = isset($in_query) && is_array($in_query) && isset($in_query['search_page_number']) ? abs(intval($in_query['search_page_number'])) : 0; // Ignored if search_page_size is 0. The page we are interested in (0-based. 0 is the first page).
             $writeable = isset($in_query) && is_array($in_query) && isset($in_query['writeable']);                                                                      // Show/list only things this user can modify.
             $search_name = isset($in_query) && is_array($in_query) && isset($in_query['search_name']) ? trim($in_query['search_name']) : NULL;                          // Search in the object name.
-            $tags = [];
-            
-            // Search for specific tag values.
-            for ($tag = 0; $tag < 10; $tag++) {
-                $tag_string = 'search_tag'.$tag;
-                $tag_value = isset($in_query) && is_array($in_query) && isset($in_query[$tag_string]) ? trim($in_query[$tag_string]) : '%';
-                $tags[] = $tag_value;
-            }
-            
+
             $search_array = [];
             
             if (isset($radius) && (0 < $radius) && isset($longitude) && isset($latitude)) {
@@ -423,8 +415,21 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                 $search_array['name'] = Array($search_name, 'use_like' => 1);
             }
             
+            $tags = [];
+            
+            $has_tag = false;
+            
+            for ($tag = 0; $tag < 10; $tag++) {
+                $tag_string = 'search_tag'.$tag;
+                $tag_value = isset($in_query) && is_array($in_query) && isset($in_query[$tag_string]) ? trim($in_query[$tag_string]) : NULL;
+                if ($tag_value !== NULL) {
+                    $has_tag = true;
+                }
+                $tags[] = $tag_value;
+            }
+            
             // If there were any specified tags, we search by tag. Otherwise, we don't bother.
-            if (array_reduce($tags, function($prev, $current) { return $prev || ('%' != $current); }, false)) {
+            if ($has_tag) {
                 $search_array['tags'] = $tags;
                 $search_array['tags']['use_like'] = 1;
             }

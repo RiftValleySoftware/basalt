@@ -414,14 +414,7 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $search_page_number = isset($in_query) && is_array($in_query) && isset($in_query['search_page_number']) ? abs(intval($in_query['search_page_number'])) : 0;  // Ignored for discrete IDs, or if search_page_size is 0. The page we are interested in (0-based. 0 is the first page).
             // The following criteria relate to the tags array. The user can set tags for searching. The description is a tag.
             $search_name = isset($in_query) && is_array($in_query) && isset($in_query['search_name']) ? trim($in_query['search_name']) : NULL;          // Search in the object name.
-            $description = isset($in_query) && is_array($in_query) && isset($in_query['search_description']) ? trim($in_query['search_description']) : '%';          // Search in our special description tag.
-            $tags = ['%', $description];
-            
-            for ($tag = 2; $tag < 10; $tag++) {
-                $tag_string = 'search_tag'.$tag;
-                $tag_value = isset($in_query) && is_array($in_query) && isset($in_query[$tag_string]) ? trim($in_query[$tag_string]) : '%';
-                $tags[] = $tag_value;
-            }
+            $description = isset($in_query) && is_array($in_query) && isset($in_query['search_description']) ? trim($in_query['search_description']) : NULL;          // Search in our special description tag.
             
             $thinglist = [];
             
@@ -448,9 +441,22 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 if (isset($search_name)) {
                     $search_array['name'] = Array($search_name, 'use_like' => 1);
                 }
+            
+                $tags = [NULL, $description];
+                
+                $has_tag = trim(strval($description)) != '';
+                
+                for ($tag = 2; $tag < 10; $tag++) {
+                    $tag_string = 'search_tag'.$tag;
+                    $tag_value = isset($in_query) && is_array($in_query) && isset($in_query[$tag_string]) ? trim($in_query[$tag_string]) : NULL;
+                    if ($tag_value !== NULL) {
+                        $has_tag = true;
+                    }
+                    $tags[] = $tag_value;
+                }
                 
                 // If there were any specified tags, we search by tag. Otherwise, we don't bother.
-                if (array_reduce($tags, function($prev, $current) { return $prev || ('%' != $current); }, false)) {
+                if ($has_tag) {
                     $search_array['tags'] = $tags;
                     $search_array['tags']['use_like'] = 1;
                 }

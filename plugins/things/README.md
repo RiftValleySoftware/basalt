@@ -16,6 +16,16 @@ The Things Plugin is a \ref BASALT [REST](https://restfulapi.net) Plugin; part o
 
 You use this plugin to access general data items in the BAOBAB server.
 
+HOW THINGS WORK
+===============
+Things are general data items; from simple integers and strings, to massive media files (the recommended max is about 2MB, but we test with much larger files). Thing data is kept in the `payload` record column. It is sent and returned as Base64 data.
+
+Like all BAOBAB resources, each thing resource has an integer ID, but they are also accessible by a string key. The key, like the ID, must be unique, but the key is something selected by the user; not the system.
+
+Also, like all BAOBAB resources, you can assign a long/lat (with location obfuscation), as well as aggregate other resources (Child IDs).
+
+Things have eight general-purpose "tags" available for use as indexing assists. The first two are used for the key and a description.
+
 LICENSE
 =======
 
