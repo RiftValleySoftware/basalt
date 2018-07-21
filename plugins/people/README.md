@@ -173,6 +173,110 @@ Gives a comprehensive dump of all logins in XML.
 
 **NOTE:** With the `people/logins` call, you can get logins that have no associated user records, and with the `people/people` call, you can get users that have no associated login records (as long as you have not accessed the users by login ID).
 
+SEARCH PARAMETERS
+-----------------
+**NOTE:** These searches are only applicable to GET. They will not be usable in PUT of DELETE calls.
+
+**Locality Radius Searches**
+All three of these must be used together. If you specify them, then any place resources that have a long/lat that falls within the radius will be returned.
+Resources without long/lat will not be returned.
+
+- `search_longitude=`
+
+    *Floating-Point Decimal Value.* This is the longitude of the resource, in degrees.
+    
+- `search_latitude=`
+
+    *Floating-Point Decimal Value.* This is the latitude of the resource, in degrees.
+    
+- `search_radius=`
+
+    *Floating-Point Decimal Value.* This is a value for a radius (not diameter) circle around the given longitude and latitude. It is in Kilometers.
+    If the resource is "fuzzy," it is possible that the long/lat shown by the resource (which is deliberately inaccurate) may be outside the radius, but the actual resource location is within the radius.
+    
+**String Searches**
+These searches allow you to specify a simple case-insensitive string value for the indicated resource column. You can use SQL-style wildcards (%) in the strings. Not specifying a value, but specifying the parameter name and equals sign indicates that the indicated field MUST be empty. Not specifying a field at all indicates that the value of that field is not considered in the search.
+These are actual string matches. They do not do an address lookup, and resources that don't have long/lat can be returned in these searches.
+
+- `search_name=`
+
+    *String.* This is a simple resource name.
+
+- `search_surname=`
+
+    *String.* This is the surname.
+
+- `search_middle_name=`
+
+    *String.* This is the middle name.
+
+- `search_given_name=`
+
+    *String.* This is the first ("given") name.
+
+- `search_nickname=`
+
+    *String.* This is the nickname.
+
+- `search_prefix=`
+
+    *String.* This is the prefix.
+
+- `search_suffix=`
+
+    *String.* This is the suffix.
+
+- `search_tag7=`
+
+    *String.* This is Tag 7.
+
+- `search_tag8=`
+
+    *String.* This is Tag 8.
+
+- `search_tag8=`
+
+    *String.* This is Tag 9.
+
+PAGING OF RESPONSE DATA
+-----------------------
+**Paging Query Parameters**
+These can be used for GET, PUT and DELETE.
+
+It is possible to request that the data be returned in "pages," where you specify a "page size," and then a "requested page of results." This allows you to focus on only a part of a large dataset, or have the response sent back in manageable-size pieces.
+
+Paging is another place we deviate from standard REST. In REST, you usually indicate pages in the resource request, but we specify paging via query parameters:
+
+These apply to both normal resource response and ID-only resource response.
+
+- `search_page_size=`
+
+    *Integer.* This is the number of resources to send per page. If the page size is greater than the available resources for that page, then the number of resources returned for that page will be fewer than the specified page size.
+
+- `search_page_number=`
+
+    *Integer.* This is the 0-based index of the requested page. Only the resources for that single page will be returned. If the index is greater than the number of available pages, then nothing will be returned.
+
+MISCELLANEOUS PARAMETERS
+------------------------
+These are additional parameters that you can use to specify various formats and information fields for resources.
+
+- `writeable`
+
+    *No Value Required -Just Add the Query.* If you add this, then only resources that can be modified by the current logged-in user will be returned. This will apply to GET, PUT and DELETE.
+
+    **NOTE:** It goes without saying (but we're saying it anyway) that this will only be useful when logged in with an API Key.
+
+- `show_details`
+
+    *No Value Required -Just Add the Query.* If you add this, then resource records will be returned, showing as much information about the resources as possible (in GET method). Otherwise, you will receive an abbreviated response.
+
+- `show_parents`
+
+    *No Value Required -Just Add the Query.* If you add this, then resource records will be returned, showing as much information about the resources as possible (in GET method), and they will also list any "parent" records that have the given record as a "child." It should be noted that specifying this can add considerable overhead to the call; slowing it down significantly. It's really designed for "focused" resource information.
+
+    **NOTE:** This only applies to user records. Logins have associated users, which are different from "parents."
+
 POST CALLS
 ----------
 You can create new users, logins, or both, if you are logged in as a Manager (not a regular user) or the "God" login. You do this by calling the basic `"people/people"` or `"people/logins"` commands with a POST method.
@@ -288,26 +392,6 @@ Specifying one of these fields as empty (nothing following the `=` sign), indica
 - `tag9=`
 
     *String.* This is an arbitrary string value that can be applied to the user. It is not applied to the login.
-
-MISCELLANEOUS PARAMETERS
-------------------------
-These are additional parameters that you can use to specify various formats and information fields for resources.
-
-- `writeable`
-
-    *No Value Required -Just Add the Query.* If you add this, then only resources that can be modified by the current logged-in user will be returned. This will apply to GET, PUT and DELETE.
-
-    **NOTE:** It goes without saying (but we're saying it anyway) that this will only be useful when logged in with an API Key.
-
-- `show_details`
-
-    *No Value Required -Just Add the Query.* If you add this, then resource records will be returned, showing as much information about the resources as possible (in GET method). Otherwise, you will receive an abbreviated response.
-
-- `show_parents`
-
-    *No Value Required -Just Add the Query.* If you add this, then resource records will be returned, showing as much information about the resources as possible (in GET method), and they will also list any "parent" records that have the given record as a "child." It should be noted that specifying this can add considerable overhead to the call; slowing it down significantly. It's really designed for "focused" resource information.
-
-    **NOTE:** This only applies to user records. Logins have associated users, which are different from "parents."
     
 DATA PAYLOAD
 ------------
