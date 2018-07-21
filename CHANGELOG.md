@@ -15,6 +15,7 @@
 - Made removing child objects in batch mode a lot faster.
 - Added a general exception catcher (throws a 500 back at the caller).
 - Corrected the places XML schema for new places.
+- Made sure that distance_in_km is always a float.
 
 **1.0.0.2000** *(July 6, 2018)*
 

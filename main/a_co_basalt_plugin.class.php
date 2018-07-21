@@ -142,7 +142,7 @@ abstract class A_CO_Basalt_Plugin {
             }
         
             if (isset($in_object->distance)) {
-                $ret['distance_in_km'] = $in_object->distance;
+                $ret['distance_in_km'] = floatval($in_object->distance);
             }
         }
 
