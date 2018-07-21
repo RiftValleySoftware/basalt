@@ -1512,8 +1512,82 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     }
                 }
             }
-        } else {    // They want the list of all of them.
-            $userlist = $in_andisol_instance->get_all_users();
+        } else {    // They want the list of all of them (or a filtered list).
+            $radius = isset($in_query) && is_array($in_query) && isset($in_query['search_radius']) && (0.0 < floatval($in_query['search_radius'])) ? floatval($in_query['search_radius']) : NULL;
+            $longitude = isset($in_query) && is_array($in_query) && isset($in_query['search_longitude']) ? floatval($in_query['search_longitude']) : NULL;
+            $latitude = isset($in_query) && is_array($in_query) && isset($in_query['search_latitude']) ? floatval($in_query['search_latitude']) : NULL;
+            $search_page_size = isset($in_query) && is_array($in_query) && isset($in_query['search_page_size']) ? abs(intval($in_query['search_page_size'])) : 0;       // Ignored for discrete IDs. This is the size of a page of results (1-based result count. 0 is no page size).
+            $search_page_number = isset($in_query) && is_array($in_query) && isset($in_query['search_page_number']) ? abs(intval($in_query['search_page_number'])) : 0; // Ignored for discrete IDs, or if search_page_size is 0. The page we are interested in (0-based. 0 is the first page).
+            $search_name = isset($in_query) && is_array($in_query) && isset($in_query['search_name']) ? trim($in_query['search_name']) : NULL;          // Search in the object name.
+            $search_surname = isset($in_query) && is_array($in_query) && isset($in_query['search_surname']) ? trim($in_query['search_surname']) : NULL; // Search in the surname.
+            $search_middle_name = isset($in_query) && is_array($in_query) && isset($in_query['search_middle_name']) ? trim($in_query['search_middle_name']) : NULL; // Search in the middle name.
+            $search_given_name = isset($in_query) && is_array($in_query) && isset($in_query['search_given_name']) ? trim($in_query['search_given_name']) : NULL; // Search in the first name.
+            $search_nickname = isset($in_query) && is_array($in_query) && isset($in_query['search_nickname']) ? trim($in_query['search_nickname']) : NULL; // Search in the nickname.
+            $search_prefix = isset($in_query) && is_array($in_query) && isset($in_query['search_prefix']) ? trim($in_query['search_prefix']) : NULL; // Search in the prefix.
+            $search_suffix = isset($in_query) && is_array($in_query) && isset($in_query['search_suffix']) ? trim($in_query['search_suffix']) : NULL; // Search in the suffix.
+            $search_tag7 = isset($in_query) && is_array($in_query) && isset($in_query['search_tag7']) ? trim($in_query['search_tag7']) : NULL; // Search in the tag.
+            $search_tag8 = isset($in_query) && is_array($in_query) && isset($in_query['search_tag8']) ? trim($in_query['search_tag8']) : NULL; // Search in the tag.
+            $search_tag9 = isset($in_query) && is_array($in_query) && isset($in_query['search_tag9']) ? trim($in_query['search_tag9']) : NULL; // Search in the tag.
+            
+            $location_search = NULL;
+            $string_search =    ($search_name !== NULL)
+                            ||  ($search_surname !== NULL)
+                            ||  ($search_middle_name !== NULL)
+                            ||  ($search_given_name !== NULL)
+                            ||  ($search_nickname !== NULL)
+                            ||  ($search_prefix !== NULL)
+                            ||  ($search_suffix !== NULL)
+                            ||  ($search_tag7 !== NULL)
+                            ||  ($search_tag8 !== NULL)
+                            ||  ($search_tag9 !== NULL);
+            
+            // We make sure that we puke if they give us a bad distance search.
+            if (isset($radius) && isset($longitude) && isset($latitude)) {
+                $location_search = Array('radius' => $radius, 'longitude' => $longitude, 'latitude' => $latitude);
+            } elseif (isset($radius) || isset($longitude) || isset($latitude)) {
+                header('HTTP/1.1 400 Incomplete Distance Search');
+                exit();
+            }
+            
+            $userlist = [];
+            if ((isset($location_search) && is_array($location_search) && (3 == count($location_search))) || (0 < $search_page_size) || $string_search) {
+                $class_search = Array('%_User_Collection', 'use_like' => 1);
+                $search_array['access_class'] = $class_search;
+                $search_array['location'] = $location_search;
+                if (isset($search_name)) {
+                    $search_array['name'] = Array($search_name, 'use_like' => 1);
+                }
+                
+                $tags_array = [NULL];
+                
+                $tags_array[] = isset($search_surname) ? $search_surname : NULL;
+                $tags_array[] = isset($search_middle_name) ? $search_middle_name : NULL;
+                $tags_array[] = isset($search_given_name) ? $search_given_name : NULL;
+                $tags_array[] = isset($search_nickname) ? $search_nickname : NULL;
+                $tags_array[] = isset($search_prefix) ? $search_prefix : NULL;
+                $tags_array[] = isset($search_suffix) ? $search_suffix : NULL;
+                $tags_array[] = isset($search_tag7) ? $search_tag7 : NULL;
+                $tags_array[] = isset($search_tag8) ? $search_tag8 : NULL;
+                $tags_array[] = isset($search_tag9) ? $search_tag9 : NULL;
+                
+                $has_tags = false;
+                foreach ($tags_array as $tag) {
+                    if (NULL !== $tag) {
+                        $has_tags = true;
+                        break;
+                    }
+                }
+                
+                if ($has_tags) {
+                    $tags_array['use_like'] = 1;
+                    $search_array['tags'] = $tags_array;
+                }
+
+                $userlist = $in_andisol_instance->generic_search($search_array, false, $search_page_size, $search_page_number, $writeable);
+            } else {
+                $userlist = $in_andisol_instance->get_all_users();
+            }
+            
             if (0 < count($userlist)) {
                 foreach ($userlist as $user) {
                     if (isset($user) && ($user instanceof CO_User_Collection) && (!$writeable || $user->user_can_write())) {
