@@ -230,6 +230,7 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     
                         if ($result && isset($parameters['key'])) {
                             $result = $thing->set_key($parameters['key']);
+                            unset($parameters['key']);  // There can only be one...
                         }
                     
                         if ($result && isset($parameters['name'])) {
