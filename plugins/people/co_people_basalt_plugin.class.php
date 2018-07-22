@@ -1607,6 +1607,10 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         }
                     }
                 }
+                
+                if ($location_search) {
+                    $ret['search_location'] = $location_search;
+                }
             }
         }
         
