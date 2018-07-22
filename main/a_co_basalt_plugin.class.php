@@ -481,6 +481,9 @@ abstract class A_CO_Basalt_Plugin {
             if (isset($in_query['remove_payload'])) { // If they did not specify a payload, maybe they want one removed?
                 $ret['remove_payload'] = true;
             } elseif (isset($in_query['payload'])) {
+                if (base64_encode(base64_decode($in_query['payload'])) == $in_query['payload']) {
+                    $in_query['payload'] = base64_decode($in_query['payload']);
+                }
                 $ret['payload'] = $in_query['payload'];
             }
         }

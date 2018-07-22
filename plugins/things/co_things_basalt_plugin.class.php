@@ -95,8 +95,21 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                             $in_query = []              ///< OPTIONAL: The query parameters, as an associative array.
                                             ) {
         $ret = [];
+        // Extract any valid key from the resource specification. Commas not allowed.
+        $thing_key = (isset($in_path) && is_array($in_path) && count($in_path) && (false === strpos(',', $in_path[0])) && !ctype_digit($in_path[0])) ? trim($in_path[0]) : NULL;
+        
         $parameters = $this->_process_parameters($in_andisol_instance, $in_query);
-        if ($in_andisol_instance->logged_in()) {    // Must be logged in to POST.
+        
+        if ($thing_key) { // Not allowed to have any numerical value.
+            $parameters['key'] = $thing_key;    // The resource specification always beats anything passed in.
+        }
+        
+        if ($in_andisol_instance->logged_in() && isset($parameters['payload']) && isset($parameters['key']) && $parameters['key'] && (false === strpos(',', $parameters['key']))) {    // Must be logged in to POST, and we can't have commas in the key.
+            if (!$in_andisol_instance->key_is_unique($parameters['key'])) {
+                header('HTTP/1.1 400 Invalid Key');
+                exit();
+            }
+            
             if ($in_andisol_instance->set_value_for_key($parameters['key'], $parameters['payload'])) {
                 $new_record = $in_andisol_instance->get_object_for_key($parameters['key']);
                 if ($new_record instanceof CO_KeyValue_CO_Collection) {
@@ -112,6 +125,12 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 header('HTTP/1.1 400 Resource Not Created');
                 exit();
             }
+        } elseif ($in_andisol_instance->logged_in() && isset($parameters['key']) && !isset($parameters['payload'])) {
+            header('HTTP/1.1 400 Invalid Payload');
+            exit();
+        } elseif ($in_andisol_instance->logged_in() && isset($parameters['key'])) {
+            header('HTTP/1.1 400 Invalid Resource Key');
+            exit();
         } else {
             header('HTTP/1.1 403 Forbidden');
             exit();
@@ -227,8 +246,9 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         // Take a "before" snapshot.
                         $changed_thing = ['before' => $this->_get_long_thing_description($thing, $in_show_parents)];
                         $result = true;
-                    
-                        if ($result && isset($parameters['key'])) {
+                        
+                        // No commas allowed in the key.
+                        if ($result && isset($parameters['key']) && (false === strpos(',', $parameters['key']))) {
                             $result = $thing->set_key($parameters['key']);
                             unset($parameters['key']);  // There can only be one...
                         }
