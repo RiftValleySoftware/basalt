@@ -185,6 +185,11 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                             // This can only go to payload.
                             if (isset($file_data) && $file_data) {
                                 $vars_final['payload'] = base64_decode($file_data);
+                            } elseif (isset ($vars_final['payload'])) {
+                                // See if the payload is already base64.
+                                if (base64_encode(base64_decode($vars_final['payload'])) == $vars_final['payload']) {
+                                    $vars_final['payload'] = base64_decode($vars_final['payload']);
+                                }
                             }
                         }
                         
