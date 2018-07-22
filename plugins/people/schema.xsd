@@ -109,6 +109,16 @@
                         </xs:choice>
                     </xs:complexType>
                 </xs:element>
+
+                <xs:element minOccurs='0' name='search_location'>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element minOccurs='0' name='radius' type='xs:float'/>
+                            <xs:element minOccurs='0' name='longitude' type='xs:float'/>
+                            <xs:element minOccurs='0' name='latitude' type='xs:float'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
             
             </xs:choice>
         </xs:complexType>
