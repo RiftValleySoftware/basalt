@@ -1,3 +1,7 @@
+**1.0.0.2002** *(TBD)*
+
+- Updated ANDISOL.
+
 **1.0.0.2001** *(July 22, 2018)*
 
 - Updated the baseline schema for people, places and things.
