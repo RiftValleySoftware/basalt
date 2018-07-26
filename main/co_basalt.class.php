@@ -389,7 +389,6 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                                                     $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                                 ) {
         $ret = [];
-        
         // No command simply means list the plugins.
         if (('GET' == $in_http_method) && (!isset($in_command) || !$in_command)) {
             $ret = Array('plugins' => CO_Config::plugin_names());
@@ -398,6 +397,19 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
             $ret = $this->_process_token_command($in_andisol_instance, $in_http_method, $in_path, $in_query);
         } elseif (('serverinfo' == $in_command) && $in_andisol_instance->god()) {   // God can ask for information about the server.
             $ret = $this->_process_serverinfo_command($in_andisol_instance, $in_http_method, $in_path, $in_query);
+        } elseif (('handlers' == $in_command) && isset($in_path[0]) && trim($in_path[0])) {
+            $id_list = explode(',', trim($in_path[0]));
+            $id_list = array_map('intval', $id_list);
+            $handlers = [];
+            foreach ($id_list as $id) {
+                if (1 < $id) {
+                    $class_name = $in_andisol_instance->get_data_access_class_by_id($id);
+                    if ($class_name) {
+                        $handler = self::_get_handler($class_name);
+                        $ret[$handler][] = $id;
+                    }
+                }
+            }
         } elseif ('search' == $in_command) {
             // For a location search, all three of these need to be specified, and radius needs to be nonzero.
             $radius = isset($in_query) && is_array($in_query) && isset($in_query['search_radius']) && (0.0 < floatval($in_query['search_radius'])) ? floatval($in_query['search_radius']) : NULL;
@@ -690,7 +702,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                                     ) {
         $ret = NULL;
         
-        if (is_array($in_path) && (1 >= count($in_path))) {
+        if (is_array($in_path) && (2 >= count($in_path))) {
             $command = isset($in_path[0]) ? strtolower(trim(array_shift($in_path))) : [];
             $ret = $this->_process_baseline_command($in_andisol_instance, $in_http_method, $command, $in_path, $in_query);
         } else {
