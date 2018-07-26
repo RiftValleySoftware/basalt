@@ -21,7 +21,7 @@ USAGE
 
 This plugin is accessed by setting `"baseline"` as the Command in the [REST](https://restfulapi.net) URI. There are a number of other aspects to the URI that will be explained:
 
-    {GET|POST} http[s]://{SERVER URL}/{json|xml|xsd}/baseline/[{tokens|serverinfo|search[/?[search_radius= & search_longitude= & search_latitude=]|search_name=|search_tag0=|...|search_tag9=]}]
+    {GET|POST} http[s]://{SERVER URL}/{json|xml|xsd}/baseline/[{tokens|serverinfo|search[/?[search_radius= & search_longitude= & search_latitude=]|search_name=|search_tag0=|...|search_tag9=]|handlers/{IDS OF RESOURCES}]
 
 SERVER URL
 ----------
@@ -50,7 +50,7 @@ The plugin will return the following information:
 
     These are the actual security tokens visible to the currently logged-in user. The response will be an array of integers.
     
-- search results
+- search/handler results
     
     These are resource IDs of data objects that fit within the search criteria given (and are visible to the current user). These will be delivered in an assocative array of integer arrays. The top-level keys will indicate which plugin to use to examine the search results in the contained array of integers.
 
@@ -112,6 +112,13 @@ serverinfo
 This will return a structure, containing various server settings and information, such as versions and enabled features.
 
 It is only accessible if you are logged in with the "God" admin.
+
+handlers
+--------
+
+    {GET} http[s]://{SERVER URL}/{json|xml}/baseline/handlers/{LIST OF INTEGER IDS}
+
+This command returns the ids provided, sorted into "handlers" (the plugins that handle those resources), in the same format as the `search` command. this is a good way to figure out how to interpret a resource ID.
 
 POST CALLS
 ----------
