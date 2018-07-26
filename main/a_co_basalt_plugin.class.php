@@ -214,7 +214,6 @@ abstract class A_CO_Basalt_Plugin {
                     $ret['raw_longitude'] = floatval($in_object->raw_longitude());
                     $ret['fuzz_factor'] = $in_object->fuzz_factor();
                 }
-            } else {
             }
         }
         
