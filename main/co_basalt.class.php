@@ -410,12 +410,15 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                     }
                 }
             }
-        } elseif (('visibility' == $in_command) && isset($in_path[0]) && trim($in_path[0]) && $in_andisol_instance->logged_in()) {
+        } elseif (('visibility' == $in_command) /*&& isset($in_path[0]) && trim($in_path[0])*/ && $in_andisol_instance->logged_in()) {
             if ('token' == trim($in_path[0])) {
                 $token = intval(trim($in_path[1]));
-                if ((0 < $token) && $in_andisol_instance->get_chameleon_instance()->i_have_this_token($token)) {
-                    $ret['token']['token'] = $token;
-                    $ret['token']['login_ids'] = $in_andisol_instance->get_chameleon_instance()->get_all_login_objects_with_access($token);
+                if ((0 <= $token) && $in_andisol_instance->get_chameleon_instance()->i_have_this_token($token)) {
+                    $ids = $in_andisol_instance->get_chameleon_instance()->get_all_login_objects_with_access($token);
+                    if (count($ids)) {
+                        $ret['token']['token'] = $token;
+                        $ret['token']['login_ids'] = array_map(function($item){ return intval($item->id()); }, $ids);
+                    }
                 } else {
                     header('HTTP/1.1 400 Invalid Token');
                     exit();
@@ -427,12 +430,31 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                     $record = $in_andisol_instance->get_single_data_record_by_id($id);
                 
                     if ($record) {
-                        $read_login_records = $in_andisol_instance->get_chameleon_instance()->get_all_login_objects_with_access($record->read_security_id());
-                        $write_login_records = $in_andisol_instance->get_chameleon_instance()->get_all_login_objects_with_access($record->read_security_id());
+                        $read_login_records = $in_andisol_instance->get_chameleon_instance()->get_all_login_objects_with_access($record->read_security_id);
+                        $write_login_records = $in_andisol_instance->get_chameleon_instance()->get_all_login_objects_with_access($record->write_security_id);
                         $ret['id']['id'] = $id;
                         $ret['id']['writeable'] = $record->user_can_write();
-                        $ret['id']['read_login_ids'] = array_map(function($item){ return intval($item->id()); }, $read_login_records);
-                        $ret['id']['write_login_ids'] = array_map(function($item){ return intval($item->id()); }, $write_login_records);
+                        $read_login_records = array_map(function($item){ return intval($item->id()); }, $read_login_records);
+                        $write_login_records = array_map(function($item){ return intval($item->id()); }, $write_login_records);
+                        
+                        if (count($write_login_records)) {
+                            foreach ($write_login_records as $id) {
+                                if (!in_array($id, $read_login_records)) {
+                                    $read_login_records[] = $id;
+                                }
+                            }
+                            
+                            sort($write_login_records);
+                            sort($read_login_records);
+                        }
+                        
+                        if (count($read_login_records)) {
+                            $ret['id']['read_login_ids'] = $read_login_records;
+                        }
+                        
+                        if (count($write_login_records)) {
+                            $ret['id']['write_login_ids'] = $write_login_records;
+                        }
                     }
                 } else {
                     header('HTTP/1.1 400 Invalid ID');
@@ -731,7 +753,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                                     ) {
         $ret = NULL;
         
-        if (is_array($in_path) && (2 >= count($in_path))) {
+        if (is_array($in_path) && (3 >= count($in_path))) {
             $command = isset($in_path[0]) ? strtolower(trim(array_shift($in_path))) : [];
             $ret = $this->_process_baseline_command($in_andisol_instance, $in_http_method, $command, $in_path, $in_query);
         } else {

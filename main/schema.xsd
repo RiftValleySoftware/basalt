@@ -126,8 +126,8 @@
     <xs:element name='token'>
         <xs:complexType>
             <xs:sequence>
-                <xs:element name='token' type='xs:integer'/>
-                <xs:element ref='b:login_ids'/>
+                <xs:element minOccurs='0' name='token' type='xs:integer'/>
+                <xs:element minOccurs='0' ref='b:login_ids'/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -136,7 +136,7 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element name='id' type='xs:integer'/>
-                <xs:element name='writeable' type='xs:integer'/>
+                <xs:element minOccurs='0' name='writeable' type='xs:integer'/>
                 <xs:element minOccurs='0' ref='b:read_login_ids'/>
                 <xs:element minOccurs='0' ref='b:write_login_ids'/>
             </xs:sequence>
