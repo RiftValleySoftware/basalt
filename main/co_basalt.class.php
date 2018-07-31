@@ -410,6 +410,35 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                     }
                 }
             }
+        } elseif (('visibility' == $in_command) && isset($in_path[0]) && trim($in_path[0]) && $in_andisol_instance->logged_in()) {
+            if ('token' == trim($in_path[0])) {
+                $token = intval(trim($in_path[1]));
+                if ((0 < $token) && $in_andisol_instance->get_chameleon_instance()->i_have_this_token($token)) {
+                    $ret['token']['token'] = $token;
+                    $ret['token']['login_ids'] = $in_andisol_instance->get_chameleon_instance()->get_all_login_objects_with_access($token);
+                } else {
+                    header('HTTP/1.1 400 Invalid Token');
+                    exit();
+                }
+            } else {
+                $id = intval(trim($in_path[0]));
+                // The ID must be generally valid, and we need to be able to see it.
+                if ((1 < $id) && $in_andisol_instance->get_chameleon_instance()->can_i_see_this_data_record($id)) {
+                    $record = $in_andisol_instance->get_single_data_record_by_id($id);
+                
+                    if ($record) {
+                        $read_login_records = $in_andisol_instance->get_chameleon_instance()->get_all_login_objects_with_access($record->read_security_id());
+                        $write_login_records = $in_andisol_instance->get_chameleon_instance()->get_all_login_objects_with_access($record->read_security_id());
+                        $ret['id']['id'] = $id;
+                        $ret['id']['writeable'] = $record->user_can_write();
+                        $ret['id']['read_login_ids'] = array_map(function($item){ return intval($item->id()); }, $read_login_records);
+                        $ret['id']['write_login_ids'] = array_map(function($item){ return intval($item->id()); }, $write_login_records);
+                    }
+                } else {
+                    header('HTTP/1.1 400 Invalid ID');
+                    exit();
+                }
+            }
         } elseif ('search' == $in_command) {
             // For a location search, all three of these need to be specified, and radius needs to be nonzero.
             $radius = isset($in_query) && is_array($in_query) && isset($in_query['search_radius']) && (0.0 < floatval($in_query['search_radius'])) ? floatval($in_query['search_radius']) : NULL;

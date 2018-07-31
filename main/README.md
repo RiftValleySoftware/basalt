@@ -54,6 +54,10 @@ The plugin will return the following information:
     
     These are resource IDs of data objects that fit within the search criteria given (and are visible to the current user). These will be delivered in an assocative array of integer arrays. The top-level keys will indicate which plugin to use to examine the search results in the contained array of integers.
 
+- visibility results
+
+    These will be records with an ID (either a token or record ID), and lists of associated login IDs.
+    
 GET CALLS
 ---------
 
@@ -119,6 +123,13 @@ handlers
     {GET} http[s]://{SERVER URL}/{json|xml}/baseline/handlers/{LIST OF INTEGER IDS}
 
 This command returns the ids provided, sorted into "handlers" (the plugins that handle those resources), in the same format as the `search` command. this is a good way to figure out how to interpret a resource ID.
+
+visibility
+----------
+
+    {GET} http[s]://{SERVER URL}/{json|xml}/baseline/visibility/[{SINGLE INTEGER}|token/{SINGLE INTEGER}]
+
+This command allows you to get the login IDs that can see (and write) individual records (`SIMPLE INTEGER`), or that have a security token (`token/INTEGER`). You can only test one record or token at a time. Note that if you do not have access to some logins, their IDs will not be included in the response; meaning that the response may be incomplete. This is only available if logged in, and you must have the token, or have at least read access to the record indicated by the ID.
 
 POST CALLS
 ----------
