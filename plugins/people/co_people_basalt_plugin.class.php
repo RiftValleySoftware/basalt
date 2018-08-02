@@ -1438,6 +1438,9 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         }
         
         if ($login_user) {  // Same for login_user.
+            if (!$in_andisol_instance->logged_in()) {   // You can't look for users by login, if you, yourself, are not logged in.
+                return [];
+            }
             $show_details = true;
         }
         
