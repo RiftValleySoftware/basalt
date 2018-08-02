@@ -2,6 +2,7 @@
 
 - Updated ANDISOL.
 - Added a 'visibility' command to the baseline plugin. This is a way to test records and tokens.
+- Fixed a bug in the description and name specification in the things plugin text search.
 
 **1.0.0.2001** *(July 22, 2018)*
 

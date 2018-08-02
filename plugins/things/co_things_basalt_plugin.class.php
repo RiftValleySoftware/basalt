@@ -433,9 +433,6 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $search_ids_only = isset($in_query) && is_array($in_query) && isset($in_query['search_ids_only']);      // Ignored for discrete IDs. If true, then the response will be an array of integers, denoting resource IDs.
             $search_page_size = isset($in_query) && is_array($in_query) && isset($in_query['search_page_size']) ? abs(intval($in_query['search_page_size'])) : 0;           // Ignored for discrete IDs. This is the size of a page of results (1-based result count. 0 is no page size).
             $search_page_number = isset($in_query) && is_array($in_query) && isset($in_query['search_page_number']) ? abs(intval($in_query['search_page_number'])) : 0;  // Ignored for discrete IDs, or if search_page_size is 0. The page we are interested in (0-based. 0 is the first page).
-            // The following criteria relate to the tags array. The user can set tags for searching. The description is a tag.
-            $search_name = isset($in_query) && is_array($in_query) && isset($in_query['search_name']) ? trim($in_query['search_name']) : NULL;          // Search in the object name.
-            $description = isset($in_query) && is_array($in_query) && isset($in_query['search_description']) ? trim($in_query['search_description']) : NULL;          // Search in our special description tag.
             
             $thinglist = [];
             
@@ -453,21 +450,24 @@ class CO_things_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 
                 $class_search = Array('%_KeyValue_CO_Collection', 'use_like' => 1);
             
-                $search_array['access_class'] = $class_search;
+                $search_array = ['access_class' => $class_search];
                 
                 if (isset($location_search)) {
                     $search_array['location'] = $location_search;
                 }
                 
+                $search_name = isset($in_query) && is_array($in_query) && isset($in_query['search_name']) ? trim($in_query['search_name']) : NULL;          // Search in the object name.
+                
                 if (isset($search_name)) {
                     $search_array['name'] = Array($search_name, 'use_like' => 1);
                 }
-            
-                $tags = [NULL, $description];
                 
-                $has_tag = trim(strval($description)) != '';
+                $tags = [NULL];
                 
-                for ($tag = 2; $tag < 10; $tag++) {
+                $in_query['search_tag1'] = isset($in_query) && is_array($in_query) && isset($in_query['search_description']) ? trim($in_query['search_description']) : NULL;
+                $has_tag = false;
+                
+                for ($tag = 1; $tag < 10; $tag++) {
                     $tag_string = 'search_tag'.$tag;
                     $tag_value = isset($in_query) && is_array($in_query) && isset($in_query[$tag_string]) ? trim($in_query[$tag_string]) : NULL;
                     if ($tag_value !== NULL) {
