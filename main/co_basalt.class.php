@@ -60,6 +60,50 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
     
     /***********************/
     /**
+    \returns CSV data, as an indexed array of rows, with each row being an associative array. No header.
+     */
+    protected static function _extract_csv_data(    $in_text_data   ///< REQUIRED: The text data to be parsed as new records for the databases.
+                                                ) {
+        // This little beauty is pretty much lifted wholesale from the str_getcsv comments, here: http://php.net/manual/en/function.str-getcsv.php
+        function parse_csv ($csv_string, $delimiter = ",", $skip_empty_lines = true, $trim_fields = true) {
+            return array_map(
+                function ($line) use ($delimiter, $trim_fields) {   // NOTE: "use" here is similar to the Swift "capture" keyword: https://littlegreenviper.com/blah-blah-blah/closures-context-and-capture/#capture-the-flag 
+                    return array_map(
+                        function ($field) {
+                            return str_replace('!!Q!!', '"', utf8_decode(urldecode($field)));
+                        },
+                        $trim_fields ? array_map('trim', explode($delimiter, $line)) : explode($delimiter, $line)
+                    );
+                },
+                preg_split(
+                    $skip_empty_lines ? ($trim_fields ? '/( *\R)+/s' : '/\R+/s') : '/\R/s',
+                    preg_replace_callback(
+                        '/"(.*?)"/s',
+                        function ($field) {
+                            return urlencode(utf8_encode($field[1]));
+                        },
+                        $enc = preg_replace('/(?<!")""/', '!!Q!!', $csv_string)
+                    )
+                )
+            );
+        }
+        
+        $csv_array = parse_csv($in_text_data);
+        
+        if (isset($csv_array) && is_array($csv_array) && (1 < count($csv_array))) {
+            // Now, we have the CSV data, but it hasn't been turned into an associative array yet.
+            array_walk($csv_array, function(&$a) use ($csv_array) { $a = array_combine($csv_array[0], $a); });
+            array_shift($csv_array); // remove column header
+        } else {
+            header('HTTP/1.1 400 Invalid Bulk Data');
+            exit();
+        }
+        
+        return $csv_array;
+    }
+    
+    /***********************/
+    /**
     This method goes through the passed-in REST query parameters and request paths, and sets up our local instance property with the decoded versions.
     At the end of this method, the internal $_path property will be an array, containing path components, and, if provided, the $_vars property will have any query parameters.
     If provided, the query array will be an associative array, with the key being the query element key, and the value being its value.
@@ -393,6 +437,8 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         if (('GET' == $in_http_method) && (!isset($in_command) || !$in_command)) {
             $ret = Array('plugins' => CO_Config::plugin_names());
             array_unshift($ret['plugins'], $this->plugin_name());
+        } elseif (('POST' == $in_http_method) && $this->_andisol_instance->god() && ('bulk-loader' == $in_command)) {  // This is the "bulk-loader." You must be logged in as God.
+            $ret = $this->_baseline_bulk_loader();
         } elseif ('tokens' == $in_command) {   // If we are viewing or editing the tokens, then we deal with that here.
             $ret = $this->_process_token_command($in_andisol_instance, $in_http_method, $in_path, $in_query);
         } elseif (('serverinfo' == $in_command) && $in_andisol_instance->god()) {   // God can ask for information about the server.
@@ -518,6 +564,51 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
             if (isset($location_search)) {
                 $ret['search_location'] = $location_search;
             }
+        }
+        
+        return $ret;
+    }
+    
+    /***********************/
+    /**
+    This is a special processing routine that is used to facilitate bulk-loading a BAOBAB server.
+    
+    The caller must be logged in as a "God" admin, and they upload a CSV file. This file will have certain columns that will be used by this routine to instantiate new records.
+    
+    This is the only Baseline command that is called via 'POST'.
+    
+    \returns the new records, in complete form.
+     */
+    protected function _baseline_bulk_loader() {
+        $ret = NULL;
+        
+        if ($this->_andisol_instance->god()) {
+            if ('POST' == $this->_request_type) {   // We must be a POST. There is only the 'loader' command, no query parameters, and no resource path. Just a simple POST, authenticated as "God," and a 'payload' of a CSV file.
+                if (isset($_FILES['payload']) && (!isset($_FILES['payload']['error']) || is_array($_FILES['payload']['error']))) {  // Look for any errors in the payload.
+                    header('HTTP/1.1 400 '.print_r($_FILES['payload']['error'], true));
+                    exit();
+                } elseif (isset($_FILES['payload'])) {
+                    $file_data = base64_decode(file_get_contents($_FILES['payload']['tmp_name'])); // We extract the CSV data. It should have been sent as Base64-encoded UTF-8 text, so we decode it first.
+                    
+                    $csv_data = self::_extract_csv_data($file_data);
+                    if (isset($csv_data) && is_array($csv_data) && count($csv_data)) {
+                        $ret = ['bulk-loader' => []];   // Prep a response.
+                        
+                        foreach ($csv_data as $row) {
+                            $ret['bulk-loader'][] = ['input' => $row];
+                        }
+                    } else {
+                        header('HTTP/1.1 400 Invalid Bulk Data');
+                        exit();
+                    }
+                }
+            } else {
+                header('HTTP/1.1 400 Improper HTTP Method');
+                exit();
+            }
+        } else {
+            header('HTTP/1.1 403 Unauthorized User');
+            exit();
         }
         
         return $ret;
