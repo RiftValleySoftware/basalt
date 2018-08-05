@@ -64,36 +64,17 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
      */
     protected static function _extract_csv_data(    $in_text_data   ///< REQUIRED: The text data to be parsed as new records for the databases.
                                                 ) {
-        // This little beauty is pretty much lifted wholesale from the str_getcsv comments, here: http://php.net/manual/en/function.str-getcsv.php
-        function parse_csv ($csv_string, $delimiter = ",", $skip_empty_lines = true, $trim_fields = true) {
-            return array_map(
-                function ($line) use ($delimiter, $trim_fields) {   // NOTE: "use" here is similar to the Swift "capture" keyword: https://littlegreenviper.com/blah-blah-blah/closures-context-and-capture/#capture-the-flag 
-                    return array_map(
-                        function ($field) {
-                            return str_replace('!!Q!!', '"', utf8_decode(urldecode($field)));
-                        },
-                        $trim_fields ? array_map('trim', explode($delimiter, $line)) : explode($delimiter, $line)
-                    );
-                },
-                preg_split(
-                    $skip_empty_lines ? ($trim_fields ? '/( *\R)+/s' : '/\R+/s') : '/\R/s',
-                    preg_replace_callback(
-                        '/"(.*?)"/s',
-                        function ($field) {
-                            return urlencode(utf8_encode($field[1]));
-                        },
-                        $enc = preg_replace('/(?<!")""/', '!!Q!!', $csv_string)
-                    )
-                )
-            );
-        }
-        
-        $csv_array = parse_csv($in_text_data);
-        
-        if (isset($csv_array) && is_array($csv_array) && (1 < count($csv_array))) {
-            // Now, we have the CSV data, but it hasn't been turned into an associative array yet.
-            array_walk($csv_array, function(&$a) use ($csv_array) { $a = array_combine($csv_array[0], $a); });
-            array_shift($csv_array); // remove column header
+        $csv_array = [];
+        $in_text_data = explode("\n", $in_text_data);
+        if (isset($in_text_data) && is_array($in_text_data) && (1 < count($in_text_data))) {
+            $keys = str_getcsv(array_shift($in_text_data));
+            foreach ($in_text_data as $row) {
+                    $row = str_getcsv($row);
+                    $row = array_map(function($a) { return ('NULL' == $a) ? NULL : $a; }, $row);
+                    if (count($row) == count($keys)) {
+                        $csv_array[] = array_combine($keys, $row);
+                    }
+            }
         } else {
             header('HTTP/1.1 400 Invalid Bulk Data');
             exit();
@@ -433,11 +414,12 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                                                     $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                                 ) {
         $ret = [];
+        
         // No command simply means list the plugins.
         if (('GET' == $in_http_method) && (!isset($in_command) || !$in_command)) {
             $ret = Array('plugins' => CO_Config::plugin_names());
             array_unshift($ret['plugins'], $this->plugin_name());
-        } elseif (('POST' == $in_http_method) && $this->_andisol_instance->god() && ('bulk-loader' == $in_command)) {  // This is the "bulk-loader." You must be logged in as God.
+        } elseif (('POST' == $in_http_method) && $this->_andisol_instance->god() && ('bulk-loader' == $in_command) && CO_Config::$enable_bulk_upload) {  // This is the "bulk-loader." It is POST-only, you must be logged in as God, and the variable needs to be true in the config.
             $ret = $this->_baseline_bulk_loader();
         } elseif ('tokens' == $in_command) {   // If we are viewing or editing the tokens, then we deal with that here.
             $ret = $this->_process_token_command($in_andisol_instance, $in_http_method, $in_path, $in_query);
@@ -582,7 +564,8 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
     protected function _baseline_bulk_loader() {
         $ret = NULL;
         
-        if ($this->_andisol_instance->god()) {
+        // Have to be "God," and the variable in the config needs to be set.
+        if ($this->_andisol_instance->god() && CO_Config::$enable_bulk_upload) {
             if ('POST' == $this->_request_type) {   // We must be a POST. There is only the 'loader' command, no query parameters, and no resource path. Just a simple POST, authenticated as "God," and a 'payload' of a CSV file.
                 if (isset($_FILES['payload']) && (!isset($_FILES['payload']['error']) || is_array($_FILES['payload']['error']))) {  // Look for any errors in the payload.
                     header('HTTP/1.1 400 '.print_r($_FILES['payload']['error'], true));
@@ -592,10 +575,12 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                     
                     $csv_data = self::_extract_csv_data($file_data);
                     if (isset($csv_data) && is_array($csv_data) && count($csv_data)) {
-                        $ret = ['bulk-loader' => []];   // Prep a response.
+                        $ret = [];   // Prep a response.
                         
                         foreach ($csv_data as $row) {
-                            $ret['bulk-loader'][] = ['input' => $row];
+                            $row_result = ['input-id' => intval($row['id'])];
+                            $row_result['output-id'] = $this->_process_bulk_row($row);
+                            $ret[] = $row_result;
                         }
                     } else {
                         header('HTTP/1.1 400 Invalid Bulk Data');
@@ -610,8 +595,31 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
             header('HTTP/1.1 403 Unauthorized User');
             exit();
         }
-        
         return $ret;
+    }
+    
+    /***********************/
+    /**
+     */
+    protected function _process_bulk_row(   $in_row_data    ///< REQUIRED: The associative array that describes this row. It is in 
+                                        ) {
+        $access_class = $in_row_data['access_class'];
+        
+        $new_record = $this->_andisol_instance->get_chameleon_instance()->make_new_blank_record($access_class);
+        
+        if (isset($new_record) && ($new_record instanceof $access_class)) {
+            $in_row_data['id'] = $new_record->id();
+            
+            $new_record->load_from_db($in_row_data);
+            if (!$new_record->update_db()) {
+                header('HTTP/1.1 500 Internal Server Error');
+                exit();
+            }
+            return $new_record->id();
+        } else {
+            header('HTTP/1.1 400 Invalid Bulk Data');
+            exit();
+        }
     }
     
     /***********************/
