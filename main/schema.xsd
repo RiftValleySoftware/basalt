@@ -10,6 +10,7 @@
                 <xs:element minOccurs="0" ref='b:serverinfo'/>
                 <xs:element minOccurs="0" ref='b:token'/>
                 <xs:element minOccurs="0" ref='b:id'/>
+                <xs:element minOccurs="0" ref='b:bulk_upload'/>
             </xs:choice>
         </xs:complexType>
     </xs:element>
@@ -70,6 +71,22 @@
                 <xs:element minOccurs='0' name='radius' type='xs:float'/>
                 <xs:element minOccurs='0' name='longitude' type='xs:float'/>
                 <xs:element minOccurs='0' name='latitude' type='xs:float'/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name='bulk_upload'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs='unbounded' name='value'>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name='input_id' type='xs:integer'/>
+                            <xs:element name='output_id' type='xs:integer'/>
+                        </xs:sequence>
+                        <xs:attribute name='sequence_index' use='required' type='xs:integer'/>
+                    </xs:complexType>
+                </xs:element>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

@@ -578,9 +578,9 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                         $ret = [];   // Prep a response.
                         
                         foreach ($csv_data as $row) {
-                            $row_result = ['input-id' => intval($row['id'])];
-                            $row_result['output-id'] = $this->_process_bulk_row($row);
-                            $ret[] = $row_result;
+                            $row_result = ['input_id' => intval($row['id'])];
+                            $row_result['output_id'] = $this->_process_bulk_row($row);
+                            $ret['bulk_upload'][] = $row_result;
                         }
                     } else {
                         header('HTTP/1.1 400 Invalid Bulk Data');
