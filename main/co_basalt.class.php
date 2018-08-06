@@ -69,11 +69,19 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         if (isset($in_text_data) && is_array($in_text_data) && (1 < count($in_text_data))) {
             $keys = str_getcsv(array_shift($in_text_data));
             foreach ($in_text_data as $row) {
-                    $row = str_getcsv($row);
-                    $row = array_map(function($a) { return ('NULL' == $a) ? NULL : $a; }, $row);
-                    if (count($row) == count($keys)) {
-                        $csv_array[] = array_combine($keys, $row);
+                $row_temp = str_getcsv($row);
+                $row = [];
+                foreach ($row_temp as $element) {
+                    if (('"NULL"' == $element) || ('NULL' == $element) || ("'NULL'" == $element) || !trim($element)) {
+                        $element = NULL;
                     }
+                    
+                    $row[] = $element;
+                }
+                if (count($row) == count($keys)) {
+                    $row = array_combine($keys, $row);
+                    $csv_array[] = $row;
+                }
             }
         } else {
             header('HTTP/1.1 400 Invalid Bulk Data');
