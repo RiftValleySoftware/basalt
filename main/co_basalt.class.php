@@ -578,7 +578,8 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                         $ret = ['bulk_upload' => []];   // Prep a response.
                         $records = [];
                         $data_records = [];
-                        $records_match = [];
+                        $security_ids = [];
+                        $data_ids = [];
                         
                         // This complex little dance, is so that we make sure that any tokens that used the old ID scheme are moved to the new scheme.
                         foreach ($csv_data as $row) {
@@ -587,7 +588,9 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                             $new_record = $this->_process_bulk_row($row);
                             // Here's where we track the old scheme. We make a record of each security node that we read.
                             if ($new_record instanceof CO_Security_Node) {
-                                $records_match[$in_id] = intval($new_record->id()); // This is a translation table for the IDs. We save all new security records; whether or not they are a login, as every record is a token.
+                                $security_ids[$in_id] = intval($new_record->id());  // This is a translation table for the IDs. We save all new security records; whether or not they are a login, as every record is a token.
+                            } else {
+                                $data_ids[$in_id] = intval($new_record->id());      // We do the same for data IDs.
                             }
                         
                             $records[] = $new_record; // Save the record.
@@ -604,8 +607,8 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                                 
                                     foreach ($ids as $id) {
                                         // This has the added benefit of removing any ones that don't apply to the dataset.
-                                        if (isset($records_match[$id]) && (1 < $records_match[$id])) {
-                                            $new_ids[] = $records_match[$id];
+                                        if (isset($security_ids[$id]) && (1 < $security_ids[$id])) {
+                                            $new_ids[] = $security_ids[$id];
                                         }
                                     }
                                 
@@ -614,14 +617,44 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                                 }
                             }
                             
+                            if (method_exists($object, 'owner_id')) {      // We look to see if there is an "owner" record column.
+                                $id = $object->owner_id();   // If so, we translate that.
+                                if (isset($data_ids[$id]) && (1 < $data_ids[$id])) {
+                                    $object->set_owner_id(intval($data_ids[$id]));
+                                }
+                            }
+                            
+                            $context = $object->context;    // Get any context.
+
+                            if (method_exists($object, 'children_ids')) {      // We look to see if there is an "owner" record column.
+                                $old_ids = $object->children_ids(true);
+                                if (isset($old_ids) && is_array($old_ids) && count($old_ids)) {
+                                    $object->deleteAllChildren();
+                                    $new_ids = [];
+                                    foreach ($old_ids as $id) {
+                                        if (isset($data_ids[$id]) && (1 < $data_ids[$id])) {
+                                            $new_ids[] = intval($data_ids[$id]);
+                                        }
+                                    }
+                                    
+                                    if (isset($new_ids) && is_array($new_ids) && count($new_ids)) {
+                                        if (!$object->set_children_ids($new_ids)) {
+                                            header('HTTP/1.1 500 Internal Server Error');
+                                            exit();
+                                        }
+                                    }
+                                }
+                            }
+                            
                             $read = $object->read_security_id;
                             
                             if (1 < $read) {
-                                $read = $records_match[$read];
+                                $read = $security_ids[$read];
                             }
+                            
                             // All objects have read and write tokens that need to be translated.
                             $object->set_read_security_id($read);
-                            $object->set_write_security_id($records_match[$object->write_security_id]);
+                            $object->set_write_security_id($security_ids[$object->write_security_id]);
                         }
                     } else {
                         header('HTTP/1.1 400 Invalid Bulk Data');
