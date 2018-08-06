@@ -557,7 +557,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
     
     The caller must be logged in as a "God" admin, and they upload a CSV file. This file will have certain columns that will be used by this routine to instantiate new records.
     
-    This is the only Baseline command that is called via 'POST'.
+    This is only of of two Baseline commands called via 'POST'.
     
     \returns the new records, in complete form.
      */
@@ -575,12 +575,53 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                     
                     $csv_data = self::_extract_csv_data($file_data);
                     if (isset($csv_data) && is_array($csv_data) && count($csv_data)) {
-                        $ret = [];   // Prep a response.
+                        $ret = ['bulk_upload' => []];   // Prep a response.
+                        $records = [];
+                        $data_records = [];
+                        $records_match = [];
                         
+                        // This complex little dance, is so that we make sure that any tokens that used the old ID scheme are moved to the new scheme.
                         foreach ($csv_data as $row) {
-                            $row_result = ['input_id' => intval($row['id'])];
-                            $row_result['output_id'] = $this->_process_bulk_row($row);
+                            $in_id = intval($row['id']);
+                            $row_result = ['input_id' => $in_id];
+                            $new_record = $this->_process_bulk_row($row);
+                            // Here's where we track the old scheme. We make a record of each security node that we read.
+                            if ($new_record instanceof CO_Security_Node) {
+                                $records_match[$in_id] = intval($new_record->id()); // This is a translation table for the IDs. We save all new security records; whether or not they are a login, as every record is a token.
+                            }
+                        
+                            $records[] = $new_record; // Save the record.
+                            $row_result['output_id'] = $new_record->id();
                             $ret['bulk_upload'][] = $row_result;
+                        }
+                        
+                        // After we're done, we go back through the records, looking for ones with tokens. We then translate each set of tokens.
+                        foreach ($records as $object) {
+                            if (method_exists($object, 'ids')) {    // We look at the token properties of security IDs.
+                                $ids = $object->ids();
+                                if (isset($ids) && is_array($ids) && count($ids)) { // Look for tokens.
+                                    $new_ids = [];
+                                
+                                    foreach ($ids as $id) {
+                                        // This has the added benefit of removing any ones that don't apply to the dataset.
+                                        if (isset($records_match[$id]) && (1 < $records_match[$id])) {
+                                            $new_ids[] = $records_match[$id];
+                                        }
+                                    }
+                                
+                                    // Replace the object's IDs with the new ones.
+                                    $object->set_ids($new_ids);
+                                }
+                            }
+                            
+                            $read = $object->read_security_id;
+                            
+                            if (1 < $read) {
+                                $read = $records_match[$read];
+                            }
+                            // All objects have read and write tokens that need to be translated.
+                            $object->set_read_security_id($read);
+                            $object->set_write_security_id($records_match[$object->write_security_id]);
                         }
                     } else {
                         header('HTTP/1.1 400 Invalid Bulk Data');
@@ -615,7 +656,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                 header('HTTP/1.1 500 Internal Server Error');
                 exit();
             }
-            return $new_record->id();
+            return $new_record;
         } else {
             header('HTTP/1.1 400 Invalid Bulk Data');
             exit();
