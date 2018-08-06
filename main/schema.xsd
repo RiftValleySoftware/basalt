@@ -82,6 +82,7 @@
                     <xs:complexType>
                         <xs:sequence>
                             <xs:element name='input_id' type='xs:integer'/>
+                            <xs:element name='access_class' type='xs:string'/>
                             <xs:element name='output_id' type='xs:integer'/>
                         </xs:sequence>
                         <xs:attribute name='sequence_index' use='required' type='xs:integer'/>

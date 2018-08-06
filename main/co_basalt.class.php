@@ -571,6 +571,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
      */
     protected function _baseline_bulk_loader() {
         $ret = NULL;
+        set_time_limit(3600);   // Give us plenty of time.
         
         // Have to be "God," and the variable in the config needs to be set.
         if ($this->_andisol_instance->god() && CO_Config::$enable_bulk_upload) {
@@ -602,6 +603,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                             }
                         
                             $records[] = $new_record; // Save the record.
+                            $row_result['access_class'] = get_class($new_record);
                             $row_result['output_id'] = $new_record->id();
                             $ret['bulk_upload'][] = $row_result;
                         }
@@ -654,6 +656,15 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                                 }
                             }
                             
+                            if ($object instanceof CO_User_Collection) {
+                                $old_id = intval($object->tags()[0]);
+                                $new_id = $security_ids[$old_id];
+                                
+                                if ($new_id) {
+                                    $object->set_tag(0, $new_id);
+                                }
+                            }
+                            
                             $read = $object->read_security_id;
                             
                             if (1 < $read) {
@@ -662,7 +673,11 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                             
                             // All objects have read and write tokens that need to be translated.
                             $object->set_read_security_id($read);
-                            $object->set_write_security_id($security_ids[$object->write_security_id]);
+                            if (0 < $object->write_security_id) {
+                                $object->set_write_security_id($security_ids[$object->write_security_id]);
+                            } else {
+                                $object->set_write_security_id(-1);
+                            }
                         }
                     } else {
                         header('HTTP/1.1 400 Invalid Bulk Data');
