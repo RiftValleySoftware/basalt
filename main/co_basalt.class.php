@@ -90,6 +90,37 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         
         return $csv_array;
     }
+        
+    /***********************/
+    /**
+    This static routine formats one line to a CSV string, then outputs it.
+     */
+    protected static function _output_one_line( $in_line,       ///< REQUIRED: The data line, as an associative array.
+                                                $in_header_row  ///< Required: The header row, as an array of strings.
+                                            ) {
+        $empty_array = array_fill(0, count($in_header_row), 'NULL');
+        $template = array_combine($in_header_row, $empty_array);
+        
+        // What we do, is go through each component of the line, format it for CSV, then add it to the "template" array.
+        foreach ($in_line as $key => $value) {
+            if (!trim($value) || ('api_key' == $key)) { // We don't back up API keys or empty strings.
+                $value = 'NULL';
+            } else {
+                // Massage for proper CSV format.
+                $needs_quotes = preg_match('|[\s"]|', $value);
+                $value = str_replace("'", "''", $value);
+                $value = str_replace('"', '""', $value);
+                if ($needs_quotes) {
+                    $value = "\"$value\"";
+                }
+            }
+            
+            $template[$key] = $value;
+        }
+        
+        // Send it out.
+        echo(implode(',', $template)."\n");
+    }
     
     /***********************/
     /**
@@ -149,7 +180,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                 $this->_path = Array('logout');
             } else { // We handle the rest
                 // Get the response type.
-                if (('json' == $response_type) || ('xml' == $response_type) || ('xsd' == $response_type)) {
+                if (('json' == $response_type) || ('xml' == $response_type) || ('xsd' == $response_type) || ('csv' == $response_type)) {
                     array_shift($paths);
                 
                     $this->_response_type = $response_type;
@@ -295,9 +326,6 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         
             switch ($this->_response_type) {
                 case 'xsd':
-                    $header .= 'Content-Type: text/xml';
-                    break;
-
                 case 'xml':
                     $header .= 'Content-Type: text/xml';
                     break;
@@ -433,6 +461,8 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
             $ret = $this->_process_token_command($in_andisol_instance, $in_http_method, $in_path, $in_query);
         } elseif (('serverinfo' == $in_command) && $in_andisol_instance->god()) {   // God can ask for information about the server.
             $ret = $this->_process_serverinfo_command($in_andisol_instance, $in_http_method, $in_path, $in_query);
+        } elseif (('backup' == $in_command) && $in_andisol_instance->god() && ('GET' == $in_http_method)) {   // God can ask for a backup of the server (open wide).
+            $ret = $this->_baseline_fetch_backup($in_andisol_instance);
         } elseif (('handlers' == $in_command) && isset($in_path[0]) && trim($in_path[0])) {
             $id_list = explode(',', trim($in_path[0]));
             $id_list = array_map('intval', $id_list);
@@ -557,6 +587,40 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         }
         
         return $ret;
+    }
+    
+    /***********************/
+    /**
+    This is a special "God Only" method that fetches a backup of the entire set of databases as a CSV dump. It directly outputs CSV data, and bypasses the return type filtering.
+     */
+    protected function _baseline_fetch_backup(  $in_andisol_instance    ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                            ) {
+        $ret = NULL;
+        set_time_limit(3600);   // Give us plenty of time.
+        
+        // Have to be "God," and the variable in the config needs to be set.
+        if ($in_andisol_instance->god()) {
+            $backup = $in_andisol_instance->get_chameleon_instance()->fetch_backup();
+            
+            if (isset($backup) && is_array($backup) && (2 == count($backup)) && isset($backup['security']) && is_array($backup['security']) && count($backup['security']) && isset($backup['data']) && is_array($backup['data']) && count($backup['data'])) {
+                $header_row = ['id','api_key','login_id','access_class','last_access','read_security_id','write_security_id','object_name','access_class_context','owner','longitude','latitude','tag0','tag1','tag2','tag3','tag4','tag5','tag6','tag7','tag8','tag9','ids','payload'];
+                header('Content-Type: text/csv');
+                echo(implode(',', $header_row)."\n");
+                foreach ($backup['security'] as $line) {
+                    self::_output_one_line($line, $header_row);
+                }
+                foreach ($backup['data'] as $line) {
+                    self::_output_one_line($line, $header_row);
+                }
+                exit();
+            } else {
+                header('HTTP/1.1 500 Internal Server Error');
+                exit();
+            }
+        } else {
+            header('HTTP/1.1 403 Unauthorized User');
+            exit();
+        }
     }
     
     /***********************/
@@ -948,7 +1012,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
      */
     public function process_command(    $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases (ignored).
                                         $in_http_method,        ///< REQUIRED: 'GET' or 'POST' are the only allowed values.
-                                        $in_response_type,      ///< REQUIRED: 'json', 'xml' or 'xsd' -the response type.
+                                        $in_response_type,      ///< REQUIRED: 'json', 'csv', 'xml' or 'xsd' -the response type.
                                         $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings. For the baseline, this should be exactly one element.
                                         $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
                                     ) {
