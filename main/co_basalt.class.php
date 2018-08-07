@@ -678,6 +678,11 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                             } else {
                                 $object->set_write_security_id(-1);
                             }
+                            
+                            if (!$object->clear_batch_mode()) {
+                                header('HTTP/1.1 500 Internal Server Error');
+                                exit();
+                            }
                         }
                     } else {
                         header('HTTP/1.1 400 Invalid Bulk Data');
@@ -706,7 +711,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         
         if (isset($new_record) && ($new_record instanceof $access_class)) {
             $in_row_data['id'] = $new_record->id();
-            
+            $new_record->set_batch_mode();
             $new_record->load_from_db($in_row_data);
             if (!$new_record->update_db()) {
                 header('HTTP/1.1 500 Internal Server Error');
