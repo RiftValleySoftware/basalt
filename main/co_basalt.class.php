@@ -107,7 +107,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                 $value = 'NULL';
             } else {
                 // Massage for proper CSV format.
-                $needs_quotes = preg_match('|[\s"]|', $value);
+                $needs_quotes = preg_match('|[\s",]|', $value);
                 $value = str_replace("'", "''", $value);
                 $value = str_replace('"', '""', $value);
                 if ($needs_quotes) {
@@ -719,7 +719,7 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                                     }
                                 }
                             }
-                            
+
                             if ($object instanceof CO_User_Collection) {
                                 $old_id = intval($object->tags()[0]);
                                 $new_id = $security_ids[$old_id];
@@ -770,6 +770,11 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
     protected function _process_bulk_row(   $in_row_data    ///< REQUIRED: The associative array that describes this row. It is in 
                                         ) {
         $access_class = $in_row_data['access_class'];
+        
+        // Make sure that we don't step on any logins.
+        if ($this->_andisol_instance->get_chameleon_instance()->check_login_exists_by_login_string($in_row_data['login_id'])) {
+            $in_row_data['login_id'] .= '-copy';
+        }
         
         $new_record = $this->_andisol_instance->get_chameleon_instance()->make_new_blank_record($access_class);
         
