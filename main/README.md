@@ -227,7 +227,7 @@ The columns are (empty columns should be filled with 'NULL'):
 
     This is a string, containing comma-delimited integers that represent security database tokens, to be applied to a login, as its "token pool." This is a security database column. As noted in the `id` description, this will be translated by the upload process, and should be in the scope/context of the CSV file, not the destination server.
 
-Stringa that contain spaces or other whitespace, commas (`,`) or double-quotes (`"`) should be enclosed in double-quotes.
+Strings that contain spaces or other whitespace, commas (`,`) or double-quotes (`"`) should be enclosed in double-quotes.
 
 Double-quotes (`"`) and single-quotes (`'`) should be escaped by doubling (`""` or `''`).
 
