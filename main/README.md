@@ -21,7 +21,7 @@ USAGE
 
 This plugin is accessed by setting `"baseline"` as the Command in the [REST](https://restfulapi.net) URI. There are a number of other aspects to the URI that will be explained:
 
-    {GET|POST} http[s]://{SERVER URL}/{json|xml|xsd}/baseline/[{tokens|serverinfo|search[/?[search_radius= & search_longitude= & search_latitude=]|search_name=|search_tag0=|...|search_tag9=]|handlers/{IDS OF RESOURCES}]
+    {GET|POST} http[s]://{SERVER URL}/{json|xml|xsd|csv}/baseline/[{tokens|serverinfo|search[/?[search_radius= & search_longitude= & search_latitude=]|search_name=|search_tag0=|...|search_tag9=]|handlers/{IDS OF RESOURCES}]
 
 SERVER URL
 ----------
@@ -36,6 +36,8 @@ RESPONSE TYPE
 This is the requested response type. It is required, and will generally be either `"json"` or `"xml"`, depending on what type of response you want.
 
 It can also be `"xsd"`, but be aware that specifying this will ignore all other parameters, and simply return the XML for the plugin's schema.
+
+`"csv"` is a special case. It can only be specified for the "God Mode" `"backup"` command.
 
 TYPES OF RECORDS
 ----------------
@@ -57,6 +59,10 @@ The plugin will return the following information:
 - visibility results
 
     These will be records with an ID (either a token or record ID), and lists of associated login IDs.
+    
+- CSV Backup Data.
+
+    This will only be returned by the "God Mode" `"backup"` command. It is a large string of CSV data that represents all the data in both databases of the server. It will be in a format suitable for the `"bulk-loader"` command.
     
 GET CALLS
 ---------
@@ -131,14 +137,101 @@ visibility
 
 This command allows you to get the login IDs that can see (and write) individual records (`SIMPLE INTEGER`), or that have a security token (`token/INTEGER`). You can only test one record or token at a time. Note that if you do not have access to some logins, their IDs will not be included in the response; meaning that the response may be incomplete. This is only available if logged in, and you must have the token, or have at least read access to the record indicated by the ID.
 
+backup
+------
+
+    {GET} http[s]://{SERVER URL}/csv/baseline/backup
+    
+This command can ONLY be called if you are logged in as the "God" admin (main admin). Calling this will return a large CSV string, with the entire contents of the server (both databases). The format will be the same as the `"bulk-loader"` command.
+
 POST CALLS
 ----------
 
-There is only one POST call allowed: `"tokens"`. This must be called when logged in as at least a manager.
+tokens
+------
+
+The `"tokens"` command must be called when logged in as at least a manager.
 
 Calling this with the `"tokens"` resource identifier will create one single new token, and will return it in the response. It will also add it to the current logged-in user login.
 
     {POST} http[s]://{SERVER URL}/{json|xml}/baseline/tokens
+    
+bulk-loader
+-----------
+
+The `"bulk-loader"` command requires that the login be the "God" admin, and that a variable in the configuration be set to allow upload. You must set the `$enable_bulk_upload` variable in the configuration file to `true` in order for this command to work.
+
+    {POST} http[s]://{SERVER URL}/{json|xml}/baseline/bulk-loader (You must also attach a CSV file as the multipart-form variable in "payload")
+
+This is a way to upload bulk data to a BAOBAB server. It requires that a CSV file be attached in the POST multipart-form variable (labeled as "payload"). The format of this CSV file is exactly the same as that returned from the `"backup"` command:
+
+    id, api_key, login_id, access_class, last_access, read_security_id, write_security_id, object_name, access_class_context, owner, longitude, latitude, tag0, tag1, tag2, tag3, tag4, tag5, tag6, tag7, tag8, tag9, ids, payload
+    
+Depending on the class in the 'access_class' column, either the security or data databes will be affected by a given row. Note that columns correspond to BOTH databases, so some columns will be ignored.
+
+The columns are (empty columns should be filled with 'NULL'):
+
+- `id`
+
+    This is the integer ID of the resource. It will likely be changed to one relevant to the server, but it must be valid for the CSV file (for example, if this resources is a "child" of another resource, or is a login associated with a user, then they must be the same ID). Upon successful upload, the ID translation will be returned in the response.
+    
+- `api_key`
+
+    This is always NULL, and will be ignored, if supplied. It is a security database-only column.
+    
+- `login_id`
+
+    This is a security database string login ID, and should be set to NULL for data database resources. If there is a duplicate login ID on the system already, this will have ' - copy' appended to it. If there is still a duplicate, you will get a 500 (Internal Server Error) response.
+    
+- `access_class`
+
+    This is the class of the resource. This will also be used to determin which database the resource will be entered into.
+    
+- `last_access`
+
+    This is the date of the last access, it is a string, in `YYYY-MM-DD HH:MM:SS` format.
+    
+- `read_security_id`
+
+    This is the integer security token (in CSV ID terms) to be applied to the record's read permission. As noted in the `id` description, this will be translated by the upload process, and should be in the scope/context of the CSV file, not the destination server.
+    
+- `write_security_id`
+
+    This is the integer security token (in CSV ID terms) to be applied to the record's write permission. As noted in the `id` description, this will be translated by the upload process, and should be in the scope/context of the CSV file, not the destination server.
+    
+- `object_name`
+
+    This is a string, with the name of the object.
+    
+- `access_class_context`
+
+    This is a string, containing the serialized `comtext` property of the class instance for this record.
+    
+- `owner`
+
+    This is the integer ID of another record that is designated an "owner" of this record (data database only). As noted in the `id` description, this will be translated by the upload process, and should be in the scope/context of the CSV file, not the destination server.
+    
+- `longitude`
+
+    This is the data database floating-point longitude of the record. It is in degrees longitude.
+    
+- `latitude`
+
+    This is the data database floating-point latitude of the record. It is in degrees latitude.
+    
+- `tag0` - `tag9`
+
+    These are string values for tags (data database only).
+    
+- `ids`
+
+    This is a string, containing comma-delimited integers that represent security database tokens, to be applied to a login, as its "token pool." This is a security database column. As noted in the `id` description, this will be translated by the upload process, and should be in the scope/context of the CSV file, not the destination server.
+
+Stringa that contain spaces or other whitespace, commas (`,`) or double-quotes (`"`) should be enclosed in double-quotes.
+
+Double-quotes (`"`) and single-quotes (`'`) should be escaped by doubling (`""` or `''`).
+
+If you put 'NULL' in as a column value, that will be translated to NULL in the database.
 
 LICENSE
 =======

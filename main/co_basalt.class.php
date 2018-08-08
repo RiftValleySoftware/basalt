@@ -1025,6 +1025,11 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
         
         if (is_array($in_path) && (3 >= count($in_path))) {
             $command = isset($in_path[0]) ? strtolower(trim(array_shift($in_path))) : [];
+            // Backup needs God Admin, GET method, and CSV response format.
+            if ((('csv' == $in_response_type) && ('backup' != $in_command)) || (('backup' == $in_command) && (!$in_andisol_instance->god() || ('GET' != $in_http_method) || ('csv' != $in_response_type)))) {
+                header('HTTP/1.1 400 Improper Baseline Command');
+                exit();
+            }
             $ret = $this->_process_baseline_command($in_andisol_instance, $in_http_method, $command, $in_path, $in_query);
         } else {
             header('HTTP/1.1 400 Improper Baseline Command');
