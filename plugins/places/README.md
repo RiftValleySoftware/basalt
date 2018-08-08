@@ -154,7 +154,35 @@ There are parameters that can be used to set data when creating new places (POST
 - `name=`
 
     *String.* This is a simple resource name.
+
+- `lang=`
+
+    *String.* This is the language identifier.
+
+- `longitude=`
+
+    *Floating-Point Decimal Value.* This is the longitude of the resource, in degrees.
     
+- `latitude=`
+    
+    *Floating-Point Decimal Value.* This is the latitude of the resource, in degrees.
+
+- `fuzz_factor=`
+    
+    *Floating-Point Decimal Value.* This is the value, in kilometers, of the location obfuscation. Setting this to zero (empty) will turn location obfuscation off.
+
+- `can_see_through_the_fuzz=`
+    
+    *Integer.* This is a security token that is allowed to see the "true" location of a location-obfuscated place.
+    
+- `read_token=`
+    
+    *Integer.* This is a security token that is allowed to see this resource. You are allowed to set this to 0 (everyone can see) or 1 (all logged-in users can see, but only logged-in users).
+    
+- `write_token=`
+    
+    *Integer.* This is a security token that is allowed to modify this resource. You can set this to 1 (all logged-in users can modify), but not 0.
+
 - `address_venue=`
 
     *String.* This is an arbitrary string value that names the venue of any address.

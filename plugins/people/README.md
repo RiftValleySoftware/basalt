@@ -316,6 +316,10 @@ Specifying one of these fields as empty (nothing following the `=` sign), indica
 
     *String.* This is a simple resource name. If supplied to a request that includes a login, the `"object_name"` column in both resources (assuming write permissions on both) will be set to the given value.
 
+- `lang=`
+
+    *String.* This is the language identifier.
+
 - `password=`
 
     *String.* This is a new password for the user login. This will not be applied to standalone user objects (objects with no associated login).
