@@ -26,7 +26,7 @@ This plugin is accessed by setting `"people"` as the Command in the [REST](https
 MUST BE LOGGED IN
 -----------------
 
-This plugin will return an empty set, unless the user is logged in, and has the requisite security tokens to view (writing is not handled by this plugin, so write permission is not required) various user and login items.
+This plugin will return an empty set, unless the user is logged in, and has the requisite security tokens to see and/or modify the resource.
 
 SERVER URL
 ----------
