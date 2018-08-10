@@ -4,6 +4,9 @@
 - Added a 'visibility' command to the baseline plugin. This is a way to test records and tokens.
 - Fixed a bug in the description and name specification in the things plugin text search.
 - Added the 'bulk-loader' baseline command.
+- Added the 'backup' baseline command.
+- Improved the API documentation.
+- Tightened up the security and robustness of the user creation and deletion.
 
 **1.0.0.2001** *(July 22, 2018)*
 

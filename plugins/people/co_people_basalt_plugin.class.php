@@ -299,15 +299,15 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             }
         }
         
-        if ('POST' == $in_http_method) {
+        if (('POST' == $in_http_method) && $in_andisol_instance->manager()) {
             $ret = $this->_handle_edit_logins_post($in_andisol_instance, $in_path, $in_query);
         } elseif (isset($logins_to_edit) && is_array($logins_to_edit) && count($logins_to_edit)) {
-            if ('DELETE' == $in_http_method) {
+            if (('DELETE' == $in_http_method) && $in_andisol_instance->manager()) {
                 if (!$also_delete_user) {
                     $in_show_parents = false;   // Doesn't count, unless we are deleting a user. Logins can't have parents.
                 }
                 $ret = $this->_handle_edit_logins_delete($in_andisol_instance, $logins_to_edit, $in_query, $also_delete_user, $in_show_parents);
-            } elseif ('PUT' == $in_http_method) {   // Of course, there's always an exception. People can edit their own users.;
+            } elseif ('PUT' == $in_http_method) {   // Of course, there's always an exception. People can edit their own users.
                 $ret = $this->_handle_edit_logins_put($in_andisol_instance, $logins_to_edit, $in_query);
             }
         }
@@ -438,34 +438,43 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                                 ) {
         $ret = [];
         
-        $ret = Array ('deleted_logins' => []);
+        if ($in_andisol_instance->manager()) { // Only managers can delete.
+            $ret = Array ('deleted_logins' => []);
         
-        if ($in_also_delete_user) {
-            $ret['deleted_users'] = [];
-        }
+            if ($in_also_delete_user) {
+                $ret['deleted_users'] = [];
+            }
         
-        foreach ($in_logins_to_edit as $login_object) {
-            if ($login_object->id() != CO_Config::god_mode_id()) {
-                if ($in_also_delete_user) {
-                    $user_object = $login_object->get_user_object();
-                    if ($user_object->user_can_write()) {
-                        $ret['deleted_users'][] = $this->_get_long_user_description($user_object);
-                        if (!$user_object->delete_from_db()) {
-                            header('HTTP/1.1 400 Unable to Delete User');
-                            exit();
+            foreach ($in_logins_to_edit as $login_object) {
+                if ($login_object->id() != CO_Config::god_mode_id()) {  // Can't delete God.
+                    if ($in_also_delete_user) { // Do we want to delete any associated user object?
+                        $user_object = $login_object->get_user_object();
+                        if (isset($user_object) && $user_object->user_can_write()) {
+                            $desc = $this->_get_long_user_description($user_object);
+                            if (!$user_object->delete_from_db()) {
+                                header('HTTP/1.1 400 Unable to Delete User');
+                                exit();
+                            } else {
+                                $ret['deleted_users'][] = $desc;
+                            }
                         }
                     }
-                }
                 
-                $ret['deleted_logins'][] = $this->_get_long_description($login_object);
-                if (!$login_object->delete_from_db()) {
-                    header('HTTP/1.1 400 Unable to Delete Login');
+                    $desc = $this->_get_long_description($login_object);
+                    if (!$login_object->delete_from_db()) {
+                        header('HTTP/1.1 400 Unable to Delete Login');
+                        exit();
+                    } else {
+                        $ret['deleted_logins'][] = $desc;
+                    }
+                } else {
+                    header('HTTP/1.1 400 Cannot Delete Main Admin Login');
                     exit();
                 }
-            } else {
-                header('HTTP/1.1 400 Cannot Delete Main Admin Login');
-                exit();
             }
+        } else {
+            header('HTTP/1.1 403 Forbidden');
+            exit();
         }
         
         return $ret;
