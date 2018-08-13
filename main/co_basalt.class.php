@@ -110,6 +110,8 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                 $needs_quotes = preg_match('|[\s",]|', $value);
                 $value = str_replace("'", "''", $value);
                 $value = str_replace('"', '""', $value);
+                $value = str_replace('\\""', '""', $value);
+                $value = str_replace('\\\\', '\\', $value);
                 if ($needs_quotes) {
                     $value = "\"$value\"";
                 }
