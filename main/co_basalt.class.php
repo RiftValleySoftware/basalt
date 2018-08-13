@@ -874,6 +874,18 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                 } elseif ((1 == count($this->_path)) && ('logout' == $this->_path[0]))  {   // See if the user wants to log out a session.
                     $server_secret = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : NULL;
                     $api_key = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : NULL;
+                    
+                    if (!$server_secret || !$api_key) {
+                        $auth = explode('&', $_SERVER['QUERY_STRING']);
+                        foreach ($auth as $query) {
+                            $exp = explode('=', $query);
+                            if ('login_server_secret' == $exp[0]) {
+                                $server_secret = trim($exp[1]);
+                            } elseif ('login_api_key' == $exp[0]) {
+                                $api_key = trim($exp[1]);
+                            }
+                        }
+                    }
                 
                     // See if an SSL connection is required.
                     if ($https || (CO_CONFIG_HTTPS_LOGGED_IN_ONLY > CO_Config::$ssl_requirement_level)) {
@@ -917,15 +929,12 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                     
                     if (!$server_secret || !$api_key) {
                         $auth = explode('&', $_SERVER['QUERY_STRING']);
-                        $new = [];
                         foreach ($auth as $query) {
                             $exp = explode('=', $query);
                             if ('login_server_secret' == $exp[0]) {
                                 $server_secret = trim($exp[1]);
                             } elseif ('login_api_key' == $exp[0]) {
                                 $api_key = trim($exp[1]);
-                            } else {
-                                $new[] = $query;
                             }
                         }
                     }
