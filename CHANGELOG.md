@@ -7,6 +7,7 @@
 - Added the 'backup' baseline command.
 - Improved the API documentation.
 - Tightened up the security and robustness of the user creation and deletion.
+- Added the ability to extract the API Key and Server Secret from GET parameters, as FastCGI won't provide them in the AUTH header section.
 
 **1.0.0.2001** *(July 22, 2018)*
 
