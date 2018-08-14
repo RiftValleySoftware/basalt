@@ -100,6 +100,10 @@ Once you have successfully logged in, the server will respond with a simple text
 Example in [a PHP cURL](http://php.net/manual/en/function.curl-setopt.php) implementation (where "$api_key" contains the string returned from the login call):
 
     curl_setopt($curl, CURLOPT_USERPWD, "$api_key:$api_key");
+    
+However, this won't work with FastCGI, so we also have the option to attach them as URI query arguments:
+
+    {GET|PUT|POST|DELETE} http[s]://{SERVER URL}/{RESOURCE PATH}?login_server_secret={SERVER SECRET STRING}&login_api_key={API KEY STRING}
 
 The API key is timed with a fixed clock. The time is determined by the server, but the default is 1 hour (60 minutes) for standard logins, and 10 minutes for the "God" login (the superuser). The clock is not reset during use, so it is an absolute time limit. Once you log in, the clock starts ticking, whether or not you access the server afterwards.
 
