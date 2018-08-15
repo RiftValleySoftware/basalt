@@ -123,6 +123,24 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $ret['nickname'] = $test_string;
         }
         
+        $tags = $in_user_object->tags();
+        if (isset($tags) && is_array($tags) && count($tags)) {
+            $test_string = $tags[7];
+            if (isset($test_string) && trim($test_string)) {
+                $ret['tag7'] = $test_string;
+            }
+            
+            $test_string = $tags[8];
+            if (isset($test_string) && trim($test_string)) {
+                $ret['tag8'] = $test_string;
+            }
+            
+            $test_string = $tags[9];
+            if (isset($test_string) && trim($test_string)) {
+                $ret['tag9'] = $test_string;
+            }
+        }
+        
         $ret['is_manager'] = $in_user_object->is_manager();
         
         $ret['is_main_admin'] = $in_user_object->is_god();
@@ -1019,6 +1037,14 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                             case 'tag9':
                                 $result = $user->set_tag(9, $value);
                                 $user_changed = true;
+                                break;
+                            
+                            // Only God can associate a new login at this point.
+                            case 'login_id':
+                                if ($in_andisol_instance->god()) {
+                                    $result = $user->set_login(intval($value));
+                                    $user_changed = true;
+                                }
                                 break;
                         }
                     }
