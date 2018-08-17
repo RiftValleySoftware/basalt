@@ -543,8 +543,8 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $write_token = intval($params['write_token']);
         }
         
-        if (isset($params['tokens']) && is_array($params['tokens']) && count($params['tokens'])) {
-            $tokens = array_filter(array_map('intval', $params['tokens']), function($i){ return 1 < $i;});
+        if (isset($params['tokens'])) {
+            $tokens = array_map('intval', $params['tokens']);
         }
         
         $result = true;
@@ -614,7 +614,47 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             }
             
             if ($result && $tokens && $login_instance->user_can_edit_ids()) {
-                $result = $login_instance->set_ids($tokens);
+                $add_list = [];
+                $delete_list = [];
+                foreach ($tokens as $token) {
+                    $token = intval($token);
+                    if ($in_andisol_instance->i_have_this_token(abs($token))) {
+                        if (0 > $token) {
+                            $token = abs($token);
+                            $delete_list[] = $token;
+                        } else {
+                            $add_list[] = $token;
+                        }
+                    }
+                }
+                
+                // Look for any shared IDs (should not happen).
+                $matches = array_intersect($add_list, $delete_list);
+
+                foreach ($add_list as $token) {
+                    if (!in_array($token, $matches)) {  // We do not process any IDs that are in both.
+                        $result = $login_instance->add_id($token);
+                        if (!$result) {
+                            break;
+                        } else {
+                            $login_changed = true;
+                        }
+                    }
+                }
+                
+                if ($result) {
+                    foreach ($delete_list as $token) {
+                        if (!in_array($token, $matches)) {  // We do not process any IDs that are in both.
+                            $result = $login_instance->remove_id($token);
+                            if (!$result) {
+                                break;
+                            } else {
+                                $login_changed = true;
+                            }
+                        }
+                    }
+                }
+                
                 if ($result) {
                     $login_changed = true;
                 }
@@ -652,23 +692,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         if (isset($in_query) && is_array($in_query) && count($in_query)) {
 
             if (isset($in_query['tokens'])) {
-                $tokens_temp = array_map('intval', explode(',', $in_query['tokens']));
-                $tokens = [];
-            
-                if ($in_andisol_instance->god()) {  // God is on the TSA Pre-Check list.
-                    $tokens = $tokens_temp;
-                } else {    // Otherwise, we need to make sure that we have only tokens that we own.
-                    // BADGER deals with this, but we trust no one.
-                    $my_tokens = array_map('intval', $in_andisol_instance->get_login_item()->ids());
-                    $tokens_temp = array_intersect($my_tokens, $tokens_temp);
-                    foreach ($tokens_temp as $token) {
-                        if ((1 < $token) && ($token != $in_andisol_instance->get_login_item()->id())) {
-                            $tokens[] = $token;
-                        }
-                    }
-                }
-                
-                $ret['tokens'] = $tokens;
+                $ret['tokens'] = array_map('intval', explode(',', $in_query['tokens']));
             }
             
             // Next, we see if we want to change the password.
