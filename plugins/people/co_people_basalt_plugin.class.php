@@ -544,15 +544,33 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         }
         
         if (isset($params['tokens'])) {
-            $tokens = array_map('intval', $params['tokens']);
+            $tokens = array_filter(array_map('intval', $params['tokens']), function($i) { return intval($i) > 0; } );
         }
         
-        $result = true;
-        
         foreach ($in_logins_to_edit as $login_instance) {
+            $result = true;
             $login_report = Array('before' => $this->_get_long_description($login_instance));
             $login_changed = false;
             $changed_password = NULL;
+            $can_edit = $login_instance->user_can_edit_ids();
+
+            // We ignore attempts to set tokens that we don't own.
+            if (isset($tokens) && $can_edit) {
+                $new_tokens = [];
+                
+                foreach ($tokens as $token) {
+                    $token = intval($token);
+                    if ($in_andisol_instance->i_have_this_token(abs($token))) {
+                        $new_tokens[] = $token;
+                    }
+                }
+                
+                $result = $login_instance->set_ids($new_tokens);
+                
+                if ($result) {
+                    $login_changed = true;
+                }
+            }
                             
             // This is a rare and special occasion. The login change may fail, as it's possible to assign a login that already exists.
             // Additionally, this will only apply to the FIRST login encountered, as, by definition, login strings are unique.
@@ -608,53 +626,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             
             if ($result && $write_token) {
                 $result = $login_instance->set_write_security_id($write_token);
-                if ($result) {
-                    $login_changed = true;
-                }
-            }
-            
-            if ($result && $tokens && $login_instance->user_can_edit_ids()) {
-                $add_list = [];
-                $delete_list = [];
-                foreach ($tokens as $token) {
-                    $token = intval($token);
-                    if ($in_andisol_instance->i_have_this_token(abs($token))) {
-                        if (0 > $token) {
-                            $token = abs($token);
-                            $delete_list[] = $token;
-                        } else {
-                            $add_list[] = $token;
-                        }
-                    }
-                }
-                
-                // Look for any shared IDs (should not happen).
-                $matches = array_intersect($add_list, $delete_list);
-
-                foreach ($add_list as $token) {
-                    if (!in_array($token, $matches)) {  // We do not process any IDs that are in both.
-                        $result = $login_instance->add_id($token);
-                        if (!$result) {
-                            break;
-                        } else {
-                            $login_changed = true;
-                        }
-                    }
-                }
-                
-                if ($result) {
-                    foreach ($delete_list as $token) {
-                        if (!in_array($token, $matches)) {  // We do not process any IDs that are in both.
-                            $result = $login_instance->remove_id($token);
-                            if (!$result) {
-                                break;
-                            } else {
-                                $login_changed = true;
-                            }
-                        }
-                    }
-                }
-                
                 if ($result) {
                     $login_changed = true;
                 }
