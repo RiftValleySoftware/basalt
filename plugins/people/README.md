@@ -173,6 +173,13 @@ Gives a comprehensive dump of all logins in XML.
 
 **NOTE:** With the `people/logins` call, you can get logins that have no associated user records, and with the `people/people` call, you can get users that have no associated login records (as long as you have not accessed the users by login ID).
 
+Special Manager-Only Test Login Call
+------------------------------------
+
+    {GET} http[s]://example.com/entrypoint.php/{json|xml}/people/logins/<LOGIN ID STRING>?test
+    
+Can only be called by managers. This tests to see if a given login string is in use (Remember that they need to be unique to the system). It returns true, if it is (even if the manager is not authorized to see the login). The response does not contain the tested login (for security reasons).
+
 SEARCH PARAMETERS
 -----------------
 **NOTE:** These searches are only applicable to GET. They will not be usable in PUT of DELETE calls. They are also only applicable to `people` objects (users, not logins).

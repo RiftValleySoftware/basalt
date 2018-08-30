@@ -10,6 +10,7 @@
 - Added the ability to extract the API Key and Server Secret from GET parameters, as FastCGI won't provide them in the AUTH header section.
 - Addressed a warning in the people plugin.
 - Made the methods for changing login id token lists more flexible and secure.
+- Added a manager-only login exists test.
 
 **1.0.0.2001** *(July 22, 2018)*
 
