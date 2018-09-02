@@ -11,6 +11,7 @@
 - Addressed a warning in the people plugin.
 - Made the methods for changing login id token lists more flexible and secure.
 - Added a manager-only login exists test.
+- Fixed a bug, where the check for a comma in the thing key always came up snake-eyes; even when there was a comma.
 
 **1.0.0.2001** *(July 22, 2018)*
 
