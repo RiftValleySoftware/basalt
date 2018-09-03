@@ -1,4 +1,4 @@
-**1.0.0.2002** *(TBD)*
+**1.0.0.3000** *(September 3, 2018)*
 
 - Updated ANDISOL.
 - Added a 'visibility' command to the baseline plugin. This is a way to test records and tokens.
