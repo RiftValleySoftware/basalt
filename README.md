@@ -95,11 +95,11 @@ AUTHENTICATION
 --------------
 In order to log into the BAOBAB server, you must call it once with a basic username/password combination, in a simple GET call. The server can be configured to require that this always be [TLS (SSL/HTTPS)](https://en.wikipedia.org/wiki/Transport_Layer_Security).
 
-Once you have successfully logged in, the server will respond with a simple text resonse, containing a timed API key. You will then place this API key in BOTH the user and password fields of the [HTTP authorization header](https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.8) of subsequent calls.
+Once you have successfully logged in, the server will respond with a simple text resonse, containing a timed API key. You will then place this API key in the password field of the [HTTP authorization header](https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.8) of subsequent calls (the Server Secret goes in the user field).
 
-Example in [a PHP cURL](http://php.net/manual/en/function.curl-setopt.php) implementation (where "$api_key" contains the string returned from the login call):
+Example in [a PHP cURL](http://php.net/manual/en/function.curl-setopt.php) implementation (where "$api_key" contains the string returned from the login call, and "$server_secret" contains the server secret, provided by the server administrator):
 
-    curl_setopt($curl, CURLOPT_USERPWD, "$api_key:$api_key");
+    curl_setopt($curl, CURLOPT_USERPWD, "$server_secret:$api_key");
     
 However, this won't work with FastCGI, so we also have the option to attach them as URI query arguments:
 
@@ -132,7 +132,7 @@ The query parameters are:
     
 This is only called once, and cannot be combined with any other commands. The only operation permitted is a simple login.
 
-The response will be a simple string. This will be a 64-character random token that should be applied in the username AND password sections of the [HTTP authorization header](https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.8) header of subsequent calls.
+The response will be a simple string. This will be a 32-character (or 40-character, for "God" logins) random token that should be applied in the username AND password sections of the [HTTP authorization header](https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.8) header of subsequent calls.
     
 **Logout Call:**
 
@@ -146,7 +146,7 @@ This is a call that should be made while a valid API key has been assigned to a 
 
 - `{RESPONSE TYPE}`
 
-    This is `"xml"`, `"json"` or `"xsd"`. If it is `"xsd"`, then commands and query parameters will be ignored. The response will be an [XML Schema](https://www.w3.org/XML/Schema) document.
+    This is `"xml"`, `"json"`, `"csv"` or `"xsd"`. If it is `"xsd"`, then commands and query parameters will be ignored. The response will be an [XML Schema](https://www.w3.org/XML/Schema) document. `"csv"` is a special case for "God-Mode-Only" backup requests.
     
 - `{PLUGIN}`
 
