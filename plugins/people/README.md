@@ -182,7 +182,7 @@ Can only be called by managers. This tests to see if a given login string is in 
 
 SEARCH PARAMETERS
 -----------------
-**NOTE:** These searches are only applicable to GET. They will not be usable in PUT of DELETE calls. They are also only applicable to `people` objects (users, not logins).
+**NOTE:** These searches are only applicable to GET. They will not be usable in PUT or DELETE calls. They are also only applicable to `people` objects (users, not logins).
 
 **Locality Radius Searches**
 All three of these must be used together. If you specify them, then any place resources that have a long/lat that falls within the radius will be returned.
