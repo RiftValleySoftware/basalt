@@ -1,3 +1,7 @@
+**1.0.0.3002** *(October 29, 2018)*
+
+- Updated ANDISOL.
+
 **1.0.0.3001** *(September 4, 2018)*
 
 - The HTTPS Port wasn't being sensed properly.
