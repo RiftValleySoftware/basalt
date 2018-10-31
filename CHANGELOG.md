@@ -1,3 +1,7 @@
+**1.0.0.3003** *(October 31, 2018)*
+
+- Happy Halloweeen! Boo! I fixed a bug, where additional parameters to login and user POST transactions were not being saved in the record.
+
 **1.0.0.3002** *(October 29, 2018)*
 
 - Updated ANDISOL.
