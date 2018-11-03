@@ -3,7 +3,7 @@
 /**
     BASALT Extension Layer
 
-    © Copyright 2018, Little Green Viper Software Development LLC/The Great Rift Valley Software Company
+    © Copyright 2018, The Great Rift Valley Software Company
     
     LICENSE:
     

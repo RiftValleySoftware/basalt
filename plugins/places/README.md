@@ -240,8 +240,8 @@ Any records within that set that are writeable by the current login will be dele
 LICENSE
 =======
 
-![Little Green Viper Software Development LLC](images/viper.png)
-© Copyright 2018, Little Green Viper Software Development LLC/The Great Rift Valley Software Company
+![The Great Rift Valley Software Company LLC](images/viper.png)
+© Copyright 2018, The Great Rift Valley Software Company
 
 LICENSE:
 
@@ -252,8 +252,8 @@ publish all modificanions, derivative products and license notices, along with t
 
 UNDER SPECIAL LICENSE, DIRECTLY FROM LITTLE GREEN VIPER OR THE GREAT RIFT VALLEY SOFTWARE COMPANY:
 It is NOT to be reused or combined into any application, nor is it to be redistributed, republished or sublicensed,
-unless done so, specifically WITH SPECIFIC, WRITTEN PERMISSION from Little Green Viper Software Development LLC,
+unless done so, specifically WITH SPECIFIC, WRITTEN PERMISSION from The Great Rift Valley Software Company LLC,
 or The Great Rift Valley Software Company.
 
-Little Green Viper Software Development: https://littlegreenviper.com
+The Great Rift Valley Software Company: https://riftvalleysoftware.com
 The Great Rift Valley Software Company: https://riftvalleysoftware.com
