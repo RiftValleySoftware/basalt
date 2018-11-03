@@ -52,6 +52,13 @@ function basalt_test_0001($in_login = NULL, $in_hashed_password = NULL, $in_pass
     } else {
         echo('<pre style="color:green">'.prettify_json($result).'</pre>');
     }
+    echo('<h3>Next, we add \'/baseline/version\':</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/baseline/version', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
 }
 
 // --------------------
@@ -71,6 +78,13 @@ function basalt_test_0002($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
     echo('<h3>Next, we add \'/baseline\':</h3>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/baseline', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+    echo('<h3>Next, we add \'/baseline/version\':</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/baseline/version', NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {

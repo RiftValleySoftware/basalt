@@ -1,3 +1,7 @@
+**1.0.0.3004** *(November 3, 2018)*
+
+- Added the baseline/version command.
+
 **1.0.0.3003** *(October 31, 2018)*
 
 - Switched to MIT License.
