@@ -21,7 +21,7 @@ USAGE
 
 This plugin is accessed by setting `"baseline"` as the Command in the [REST](https://restfulapi.net) URI. There are a number of other aspects to the URI that will be explained:
 
-    {GET|POST} http[s]://{SERVER URL}/{json|xml|xsd|csv}/baseline/[{tokens|serverinfo|search[/?[search_radius= & search_longitude= & search_latitude=]|search_name=|search_tag0=|...|search_tag9=]|handlers/{IDS OF RESOURCES}]
+    {GET|POST} http[s]://{SERVER URL}/{json|xml|xsd|csv}/baseline/[{version|tokens|serverinfo|search[/?[search_radius= & search_longitude= & search_latitude=]|search_name=|search_tag0=|...|search_tag9=]|handlers/{IDS OF RESOURCES}]
 
 SERVER URL
 ----------
@@ -75,6 +75,29 @@ No Command
 When called with `"xml"` or `"json"` as response types, this will simply return a list of the available plugins (usually "baseline," "people," "places," and "things").
 
 When called with `"xsd"` as the response type, this will return the XML XSD document for this plugin. The schema is comprehensive, specifying all possible response types.
+
+version
+-------
+
+    {GET} http[s]://{SERVER URL}/{json|xml}/baseline/version
+
+This will return a string, with a simple [semantic version](https://semver.org) in it. The format will be:
+
+    MAJOR . MINOR . PATCH . BUILD
+    
+The `"BUILD"` number will be a 4-digit (leading zeroes) number, that has the following format, to indicate the stage of the server:
+
+- `0000`...`0999`
+This is a "development" release. It should be considered unstable and incomplete.
+
+- `1000`...`1999`
+This is an "alpha" release. It should be considered stable, untested but complete.
+
+- `2000`...`2999`
+This is a "beta" release. It should be considered stable, tested, complete, but not yet approved for final release. This is usually when non-developers are asked to test the system.
+
+- `3000` or greater
+This is "release." It is considered tested, stable, and ready for release.
 
 tokens
 ------

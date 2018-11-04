@@ -1,4 +1,4 @@
-**1.0.0.3004** *(November 3, 2018)*
+**1.0.0.3004** *(November 4, 2018)*
 
 - Added the baseline/version command.
 
