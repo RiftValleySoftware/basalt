@@ -190,7 +190,7 @@ BAOBAB does not encrypt stored data. However, there is no reason that the data c
 LICENSE
 =======
 
-![The Great Rift Valley Software Company LLC](images/viper.png)
+![The Great Rift Valley Software Company](images/RiftValleySimpleCorpLogo.png)
 © Copyright 2018, The Great Rift Valley Software Company
 
 LICENSE:

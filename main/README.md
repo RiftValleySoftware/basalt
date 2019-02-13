@@ -259,7 +259,7 @@ If you put 'NULL' in as a column value, that will be translated to NULL in the d
 LICENSE
 =======
 
-![The Great Rift Valley Software Company LLC](images/viper.png)
+![The Great Rift Valley Software Company](images/RiftValleySimpleCorpLogo.png)
 © Copyright 2018, The Great Rift Valley Software Company
 
 LICENSE:
