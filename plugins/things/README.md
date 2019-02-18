@@ -187,23 +187,27 @@ ENCRYPTION
 
 BAOBAB does not encrypt stored data. However, there is no reason that the data cannot be encrypted separately and stored in encrypted form. Access to the data is controlled by the standard security token system.
 
+![The Great Rift Valley Software Company](images/RiftValleySimpleCorpLogo.png)
+
 LICENSE
 =======
 
-![The Great Rift Valley Software Company](images/RiftValleySimpleCorpLogo.png)
 © Copyright 2018, The Great Rift Valley Software Company
 
 LICENSE:
 
-FOR OPEN-SOURCE (COMMERCIAL OR FREE):
-This code is released as open source under the GNU Plublic License (GPL), Version 3.
-You may use, modify or republish this code, as long as you do so under the terms of the GPL, which requires that you also
-publish all modificanions, derivative products and license notices, along with this code.
+MIT License
 
-UNDER SPECIAL LICENSE, DIRECTLY FROM LITTLE GREEN VIPER OR THE GREAT RIFT VALLEY SOFTWARE COMPANY:
-It is NOT to be reused or combined into any application, nor is it to be redistributed, republished or sublicensed,
-unless done so, specifically WITH SPECIFIC, WRITTEN PERMISSION from The Great Rift Valley Software Company LLC,
-or The Great Rift Valley Software Company.
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy,
+modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
 
-The Great Rift Valley Software Company: https://riftvalleysoftware.com
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 The Great Rift Valley Software Company: https://riftvalleysoftware.com

@@ -190,13 +190,13 @@ This is a way to upload bulk data to a BAOBAB server. It requires that a CSV fil
 
     id, api_key, login_id, access_class, last_access, read_security_id, write_security_id, object_name, access_class_context, owner, longitude, latitude, tag0, tag1, tag2, tag3, tag4, tag5, tag6, tag7, tag8, tag9, ids, payload
     
-Depending on the class in the 'access_class' column, either the security or data databes will be affected by a given row. Note that columns correspond to BOTH databases, so some columns will be ignored.
+Depending on the class in the 'access_class' column, either the security or data database will be affected by a given row. Note that columns correspond to BOTH databases, so some columns will be ignored.
 
 The columns are (empty columns should be filled with 'NULL'):
 
 - `id`
 
-    This is the integer ID of the resource. It will likely be changed to one relevant to the server, but it must be valid for the CSV file (for example, if this resources is a "child" of another resource, or is a login associated with a user, then they must be the same ID). Upon successful upload, the ID translation will be returned in the response.
+    This is the integer ID of the resource. It will likely be changed to one relevant to the server, but it must be valid for the CSV file (for example, if this resource is a "child" of another resource, or is a login associated with a user, then they must be the same ID). Upon successful upload, the ID translation will be returned in the response.
     
 - `api_key`
 
@@ -204,7 +204,7 @@ The columns are (empty columns should be filled with 'NULL'):
     
 - `login_id`
 
-    This is a security database string login ID, and should be set to NULL for data database resources. If there is a duplicate login ID on the system already, this will have ' - copy' appended to it. If there is still a duplicate, you will get a 500 (Internal Server Error) response.
+    This is a security database string login ID, and should be set to NULL for data database resources. If there is a duplicate login ID on the system already, the Login ID will have ' - copy' appended to it when stored in the database. If there is still a duplicate, you will get a 500 (Internal Server Error) response.
     
 - `access_class`
 
@@ -256,23 +256,27 @@ Double-quotes (") and single-quotes (') should be escaped by doubling ("" or '')
 
 If you put 'NULL' in as a column value, that will be translated to NULL in the database.
 
+![The Great Rift Valley Software Company](images/RiftValleySimpleCorpLogo.png)
+
 LICENSE
 =======
 
-![The Great Rift Valley Software Company](images/RiftValleySimpleCorpLogo.png)
 © Copyright 2018, The Great Rift Valley Software Company
 
 LICENSE:
 
-FOR OPEN-SOURCE (COMMERCIAL OR FREE):
-This code is released as open source under the GNU Plublic License (GPL), Version 3.
-You may use, modify or republish this code, as long as you do so under the terms of the GPL, which requires that you also
-publish all modificanions, derivative products and license notices, along with this code.
+MIT License
 
-UNDER SPECIAL LICENSE, DIRECTLY FROM LITTLE GREEN VIPER OR THE GREAT RIFT VALLEY SOFTWARE COMPANY:
-It is NOT to be reused or combined into any application, nor is it to be redistributed, republished or sublicensed,
-unless done so, specifically WITH SPECIFIC, WRITTEN PERMISSION from The Great Rift Valley Software Company LLC,
-or The Great Rift Valley Software Company.
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy,
+modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
 
-The Great Rift Valley Software Company: https://riftvalleysoftware.com
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 The Great Rift Valley Software Company: https://riftvalleysoftware.com
