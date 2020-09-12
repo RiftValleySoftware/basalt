@@ -1,3 +1,7 @@
+**1.0.1.3000** *(September 12, 2020)*
+
+- Fixed a possible security issue with the God Mode login (bad touch).
+
 **1.0.0.3004** *(November 4, 2018)*
 
 - Added the baseline/version command.
