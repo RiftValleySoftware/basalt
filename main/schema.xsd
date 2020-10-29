@@ -32,6 +32,15 @@
         </xs:complexType>
     </xs:element>
     
+    <xs:element name='count_access_to'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs='0' name='token' type='xs:integer'/>
+                <xs:element minOccurs='0' name='access' type='xs:integer'/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
     <xs:element name='people'>
         <xs:complexType>
             <xs:sequence>

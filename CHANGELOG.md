@@ -1,3 +1,7 @@
+**1.0.3.3000** *(October 29, 2020)*
+
+- Added Support for counting token access.
+
 **1.0.2.3000** *(October 27, 2020)*
 
 - Updated ANDISOL.
