@@ -3,6 +3,7 @@
             <xs:choice maxOccurs="unbounded">
                 <xs:element minOccurs="0" ref='b:plugins'/>
                 <xs:element minOccurs="0" ref='b:tokens'/>
+                <xs:element minOccurs="0" ref='b:count_access_to'/>
                 <xs:element minOccurs="0" ref='b:people'/>
                 <xs:element minOccurs="0" ref='b:places'/>
                 <xs:element minOccurs="0" ref='b:things'/>
