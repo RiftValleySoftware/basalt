@@ -1,3 +1,7 @@
+**1.0.5.3000** *(November 6, 2020)*
+
+- Added some calls to avoid BASALT accessing the CHAMELEON instance directly. ANDISOL is supposed to provide direct access to everything beneath, in an opaque manner.
+
 **1.0.4.3000** *(November 5, 2020)*
 
 - Added Support for getting user IDs for token access.
