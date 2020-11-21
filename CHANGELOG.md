@@ -1,3 +1,7 @@
+**1.0.7.3000** *(November 21, 2020)*
+
+- Updated ANDISOL (Fixes iss ue with converting users while logged in as God).
+
 **1.0.6.3000** *(November 7, 2020)*
 
 - Added an ob GZ handler to the main entrypoint, just for the heck of it.
