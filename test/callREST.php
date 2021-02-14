@@ -11,7 +11,7 @@
 /// If __DISPLAY_BASICS__ is set to true, then the call_REST_API function will display the basic URI and API key as echos.
 define ('__DISPLAY_BASICS__', true);
 
-$config_file_path = dirname(__FILE__).'/test/config/s_config.class.php';
+$config_file_path = dirname(__FILE__).'/config/s_config.class.php';
 
 date_default_timezone_set ( 'UTC' );
 
