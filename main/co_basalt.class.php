@@ -374,16 +374,28 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
             header($header);
         }
         
-        $handler = null;
+        $ob_stat = ob_get_status();
+        $use_ob = true;
+        if (is_array($ob_stat) && isset($ob_stat['level']) && 0 < $ob_stat['level']) {
+            $use_ob = false;
+        }
+       
+        if ($use_ob) {
+            $handler = null;
         
-        if ( zlib_get_coding_type() === false )
-            {
-            $handler = "ob_gzhandler";
-            }
+            if ( zlib_get_coding_type() === false )
+                {
+                $handler = "ob_gzhandler";
+                }
         
-        ob_start($handler);
+            ob_start($handler);
+        }
+        
         echo($result);
-		ob_end_flush();
+        
+        if ($use_ob) {
+		    ob_end_flush();
+		}
         exit();
     }
     

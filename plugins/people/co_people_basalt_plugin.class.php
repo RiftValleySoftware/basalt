@@ -247,7 +247,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             }
         } else {    // They want the list of all of them.
             $login_id_list = $in_andisol_instance->get_all_login_users();
-            if ($is_manager) {
+            if ($in_andisol_instance->manager()) {
                 $login_id_list = $in_andisol_instance->get_all_logins();
                 if (0 < count($login_id_list)) {
                     foreach ($login_id_list as $login_instance) {
