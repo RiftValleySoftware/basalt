@@ -89,6 +89,7 @@ class CO_Config {
                                                     */
                                                     
     static private $_server_secret = 'Supercalifragilisticexpialidocious';  ///< This is a random string of characters that must be presented in the authentication header, along with the temporary API key.
+    static private $_use_personal_tokens = true;    ///< Set to true, if we are enabling the use of personal tokens.
     
     static $lang = 'en';                            ///< The default language for the server.
     static $min_pw_len = 8;                         ///< The minimum password length.
