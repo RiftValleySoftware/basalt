@@ -29,6 +29,8 @@ This is the function that is used by the BASALT testing facility to make REST ca
 
 It is provided as an example of making REST calls to BAOBAB, and to provide guidance for programmers creating their own REST clients.
 
+NOTE: The test server should not be running FastCGI for these tests, as we don't attach the auth as inline parameters.
+
 \returns the resulting transfer from the server, as a string of bytes.
  */
 function call_REST_API( $method,                /**< REQUIRED:  This is the method to call. It should be one of:
