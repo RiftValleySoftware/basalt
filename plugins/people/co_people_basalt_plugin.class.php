@@ -74,6 +74,10 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         $ret['is_manager'] = $in_login_object->is_manager();
         $ret['is_main_admin'] = $in_login_object->is_god();
         $ret['security_tokens'] = $in_login_object->get_access_object()->god_mode() && $in_login_object->is_god() ? $in_login_object->get_access_object()->get_all_tokens() : $in_login_object->ids();
+        $personal_tokens = $in_login_object->personal_ids();
+        if (isset($personal_tokens) && is_array($personal_tokens) && count($personal_tokens)) {
+            $ret['personal_tokens'] = $in_login_object->personal_ids();
+        }
         
         $api_key = $in_login_object->get_api_key();
         $key_age = $in_login_object->get_api_key_age_in_seconds();
@@ -707,7 +711,50 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
         return $ret;
     }
-            
+
+    /***********************/
+    /**
+    This handles personal tokens.
+    
+    \returns an array, with the results.
+     */
+    protected function _handle_personal_ids(    $in_andisol_instance,   ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                                $in_path = [],          ///< OPTIONAL: The REST path, as an array of strings.
+                                                $in_query = []          ///< OPTIONAL: The query parameters, as an associative array.
+                                            ) {
+        $ret = [];
+        $my_info = isset($in_path) && is_array($in_path) && (0 < count($in_path) && ('my_info' == $in_path[0]) && $in_andisol_instance->logged_in());    // This is a directory that specifies only our own user.
+        if (isset($in_path) && is_array($in_path) && (1 < count($in_path) && isset($in_path[0]))) {    // See if they are looking for people associated with string login IDs.
+            $personal_id_list = array_unique(array_map('intval', array_map('trim', explode(',', $in_path[1]))));
+            sort($personal_id_list);
+        } elseif ($my_info) {
+            $ret['my_info'] = $in_andisol_instance->get_personal_security_ids();
+        } elseif ($in_andisol_instance->god()) {
+            $ret = $in_andisol_instance->get_all_personal_ids_except_for_id();
+        } else {
+            header('HTTP/1.1 403 Not Permitted');   // Ah-Ah-Aaaahh! You didn't say the magic word!
+            exit();
+        }
+        
+        return $ret;
+    }
+
+    /***********************/
+    /**
+    This handles the edit (POST, PUT and DELETE) functions for personal tokens.
+    
+    \returns an array, with the results.
+     */
+    protected function _handle_edit_personal_ids(   $in_andisol_instance,       ///< REQUIRED: The ANDISOL instance to use as the connection to the RVP databases.
+                                                    $in_http_method,            ///< REQUIRED: 'POST', 'PUT' or 'DELETE'
+                                                    $in_path = [],              ///< OPTIONAL: The REST path, as an array of strings.
+                                                    $in_query = []              ///< OPTIONAL: The query parameters, as an associative array.
+                                        ) {
+        $ret = [];
+                
+        return $ret;
+    }
+                
     /***********************/
     /**
     This builds a list of the requested parameters for the login edit operation.
@@ -1753,14 +1800,12 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                         $in_query = []              ///< OPTIONAL: The query parameters, as an associative array.
                                     ) {
         $ret = [];
-        $show_parents = isset($in_query) && is_array($in_query) && isset($in_query['show_parents']);    // Show all places in detail, as well as the parents (applies only to GET or DELETE).
-        
-        // For the default (no user ID), we simply return a list of commands. We also only allow GET to do this.
+        // For the default (no user ID, login or personal ID), we simply return a list of commands. We also only allow GET to do this.
         if (0 == count($in_path)) {
             if ('GET' == $in_http_method) {
                 $ret = ['people'];
                 if ($in_andisol_instance->logged_in()) {
-                    $ret[] = 'logins';
+                    $ret[] = ['logins', 'personal_ids'];
                 }
             } else {
                 header('HTTP/1.1 400 Incorrect HTTP Request Method');
@@ -1768,7 +1813,10 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             }
         } else {
             $main_command = $in_path[0];    // Get the main command.
+            $show_parents = isset($in_query) && is_array($in_query) && isset($in_query['show_parents']);    // Show all users/logins in detail, as well as the parents (applies only to GET or DELETE, and not for personal tokens).
+        
             array_shift($in_path);
+            
             switch (strtolower($main_command)) {
                 case 'people':
                     if ('GET' == $in_http_method) {
@@ -1785,6 +1833,13 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         $ret['logins'] = $this->_handle_logins($in_andisol_instance, $in_path, $in_query);
                     } else {
                         $ret['logins'] = $this->_handle_edit_logins($in_andisol_instance, $in_http_method, $in_path, $in_query, $show_parents);
+                    }
+                    break;
+                case 'personal_ids':
+                    if ('GET' == $in_http_method) {
+                        $ret['personal_ids'] = $this->_handle_personal_ids($in_andisol_instance, $in_path, $in_query);
+                    } else {
+                        $ret['personal_ids'] = $this->_handle_edit_personal_ids($in_andisol_instance, $in_http_method, $in_path, $in_query);
                     }
                     break;
             }
