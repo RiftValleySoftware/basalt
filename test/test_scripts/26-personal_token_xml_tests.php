@@ -28,21 +28,14 @@
 
 require_once(dirname(dirname(__FILE__)).'/run_basalt_tests.php');
 
-basalt_run_tests(186, 'PERSONAL TOKEN XML TESTS', 'EXPLAIN');
+basalt_run_tests(190, 'PERSONAL TOKEN XML TESTS', 'EXPLAIN');
 
 // -------------------------- DEFINITIONS AND TESTS -----------------------------------
 
-function basalt_test_define_0186() {
-    basalt_run_single_direct_test(186, 'TEST', 'EXPLAIN', 'personal_id_test', 'admin', '', CO_Config::god_mode_password());
+function basalt_test_define_0190() {
+    basalt_run_single_direct_test(190, 'TEST', 'EXPLAIN', 'personal_id_test', 'admin', '', CO_Config::god_mode_password());
 }
 
-function basalt_test_0186($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
-}
-
-function basalt_test_define_0187() {
-    basalt_run_single_direct_test(187, 'TEST', 'EXPLAIN', 'personal_id_test', 'admin', '', CO_Config::god_mode_password());
-}
-
-function basalt_test_0187($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+function basalt_test_0190($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
 }
 ?>

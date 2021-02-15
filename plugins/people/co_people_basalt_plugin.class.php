@@ -73,10 +73,13 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         $ret['login_id'] = $in_login_object->login_id;
         $ret['is_manager'] = $in_login_object->is_manager();
         $ret['is_main_admin'] = $in_login_object->is_god();
-        $ret['security_tokens'] = $in_login_object->get_access_object()->god_mode() && $in_login_object->is_god() ? $in_login_object->get_access_object()->get_all_tokens() : $in_login_object->ids();
+        $security_tokens = $in_login_object->get_access_object()->god_mode() && $in_login_object->is_god() ? $in_login_object->get_access_object()->get_all_tokens() : $in_login_object->ids();
+        if (isset($security_tokens) && is_array($security_tokens) && count($security_tokens)) {
+            $ret['security_tokens'] = $security_tokens;
+        }
         $personal_tokens = $in_login_object->personal_ids();
         if (isset($personal_tokens) && is_array($personal_tokens) && count($personal_tokens)) {
-            $ret['personal_tokens'] = $in_login_object->personal_ids();
+            $ret['personal_tokens'] = $personal_tokens;
         }
         
         $api_key = $in_login_object->get_api_key();
