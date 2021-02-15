@@ -93,10 +93,10 @@ class CO_Config {
     
     static $lang = 'en';                            ///< The default language for the server.
     static $min_pw_len = 8;                         ///< The minimum password length.
-    static $session_timeout_in_seconds = 2;         ///< Two-Second API key timeout.
-    static $god_session_timeout_in_seconds  = 1;    ///< API key session timeout for the "God Mode" login, in seconds (integer value). Default is 10 minutes.
-    static $api_key_includes_ip_address = true;     ///< If true (default is false), then the API key will include the user's IP address in the generation.
-    static $block_logins_for_valid_api_key = true;  ///< If this is true, then users cannot log in if there is an active API key in place for that user (forces the user to log out, first).
+    static $session_timeout_in_seconds = 3600;         ///< Two-Second API key timeout.
+    static $god_session_timeout_in_seconds  = 600;    ///< API key session timeout for the "God Mode" login, in seconds (integer value). Default is 10 minutes.
+    static $api_key_includes_ip_address = false;    ///< If true (default is false), then the API key will include the user's IP address in the generation.
+    static $block_logins_for_valid_api_key = false; ///< If this is true, then users cannot log in if there is an active API key in place for that user (forces the user to log out, first).
     static $ssl_requirement_level  = CO_CONFIG_HTTPS_OFF;   /** This is the level of SSL/TLS required for transactions with the server. The possible values are:
                                                                 - CO_CONFIG_HTTPS_OFF (0)               ///< This means that SSL is not required for ANY transacation. It is recommended this level be selected for testing only.
                                                                 - CO_CONFIG_HTTPS_LOGIN_ONLY (1)        ///< SSL is only required for the initial 'login' call.
@@ -120,7 +120,7 @@ class CO_Config {
     This is the Google API key. It's required for CHAMELEON to do address lookups and other geocoding tasks.
     CHAMELEON requires this to have at least the Google Geocoding API enabled.
     */
-    static $google_api_key = 'AIzaSyAPCtPBLI24J6qSpkpjngXAJtp8bhzKzK8';
+    static $google_api_key = 'AIzaSyC5meofXldluts0UPGp6Zg234-U989u1pY';
     
     /**
     This flag, if set to true (default is false), will allow REST users to send in an address as part of a location search.
