@@ -21,7 +21,7 @@ USAGE
 
 This plugin is accessed by setting `"people"` as the Command in the [REST](https://restfulapi.net) URI. There are a number of other aspects to the URI that will be explained:
 
-    {GET|POST|PUT|DELETE} http[s]://{SERVER URL}/{json|xml|xsd}/people/[{people|logins}/[{INTEGER USER IDS CSV}|[{login_ids/[STRING LOGIN IDS CSV]}][?{show_details|show_parents|login_user|PUT/POST PARAMETERS -DISCUSSED BELOW}]
+    {GET|POST|PUT|DELETE} http[s]://{SERVER URL}/{json|xml|xsd}/people/[{people|logins|personal_ids}/[{INTEGER USER IDS CSV}|[{login_ids/[STRING LOGIN IDS CSV]}]|{INTEGER PERSONAL IDS CSV}[/my_info][?{show_details|show_parents|login_user|PUT/POST PARAMETERS -DISCUSSED BELOW}]
 
 MUST BE LOGGED IN
 -----------------
@@ -172,6 +172,13 @@ Gives a comprehensive dump of all logins in XML.
 **NOTE:** As above, you can have **EITHER** a CSV list of strings (login IDs) **OR** integers (login record IDs); but not a combination of both.
 
 **NOTE:** With the `people/logins` call, you can get logins that have no associated user records, and with the `people/people` call, you can get users that have no associated login records (as long as you have not accessed the users by login ID).
+
+personal_ids
+------
+
+We can also get personal token record information; which we do by appending `personal_ids` to the `people` command, like so:
+
+    {GET} http[s]://{SERVER URL}/{json|xml}/people/personal_ids/[INTEGER PERSONAL IDS CSV]|my_info
 
 Special Manager-Only Test Login Call
 ------------------------------------
