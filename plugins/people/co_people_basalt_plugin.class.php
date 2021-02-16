@@ -728,7 +728,19 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         $ret = [];
         $my_info = isset($in_path) && is_array($in_path) && (0 < count($in_path) && ('my_info' == $in_path[0]) && $in_andisol_instance->logged_in());    // This is a directory that specifies only our own user.
         if ($my_info) {
-            $ret['my_info'] = $in_andisol_instance->get_personal_security_ids();
+            $tokens = $in_andisol_instance->get_personal_security_ids();
+            if (isset($tokens) && is_array($tokens) && count($tokens)) {
+                $ret['my_info']['tokens'] = $tokens;
+            }
+            
+            $user_list = $in_andisol_instance->get_logins_that_have_any_of_my_ids();
+            $ret_temp = [];
+            foreach ($user_list as $key => $value) {
+                $ret_temp[] = ["id" => $key, "tokens" => $value];
+            }
+            if (count($ret_temp)) {
+                $ret['my_info']['personal_token_users'] = $ret_temp;
+            }
         } elseif ($in_andisol_instance->god()) {
             $all_logins = $in_andisol_instance->get_all_logins();
             
@@ -742,13 +754,6 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 }
                 $ret = ["personal_token_users" => $ret_temp];
             }
-        } elseif (isset($in_query['personal_token_users'])) {
-            $user_list = $in_andisol_instance->get_logins_that_have_any_of_my_ids();
-            $ret_temp = [];
-            foreach ($user_list as $key => $value) {
-                $ret_temp[] = ["id" => $key, "tokens" => $value];
-            }
-            $ret['personal_token_users'] = $ret_temp;
         } else {
             header('HTTP/1.1 403 Not Permitted');   // Ah-Ah-Aaaahh! You didn't say the magic word!
             exit();
@@ -769,7 +774,47 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                                     $in_query = []              ///< OPTIONAL: The query parameters, as an associative array.
                                         ) {
         $ret = [];
-                
+        
+        if ('PUT' == $in_http_method) {
+            if (isset($in_path) && is_array($in_path) && (0 < count($in_path)) && trim($in_path[0])) {
+                $token_list = array_map('intval', explode(",",trim($in_path[0])));
+            }
+            if (isset($in_query) && is_array($token_list) && count($token_list)) {
+                if (is_array($in_query) && isset($in_query['assign_tokens_to_user']) && isset($in_query['assign_tokens_to_user'])) {
+                    $results = [];
+                    $user_id = intval($in_query['assign_tokens_to_user']);
+                    
+                    foreach ($token_list as $token) {
+                        if ($in_andisol_instance->add_personal_token_from_current_login($user_id, $token)) {
+                            $results[] = $token;
+                        }
+                    }
+                    
+                    $ret['assign_tokens_to_user'] = ['id' => $user_id, 'tokens' => $results];
+                } elseif (is_array($in_query) && isset($in_query['remove_tokens_from_user']) && isset($in_query['remove_tokens_from_user'])) {
+                    $results = [];
+                    $user_id = intval($in_query['remove_tokens_from_user']);
+                    
+                    foreach ($token_list as $token) {
+                        if ($in_andisol_instance->remove_personal_token_from_this_login($user_id, $token)) {
+                            $results[] = $token;
+                        }
+                    }
+                    
+                    $ret['remove_tokens_from_user'] = ['id' => $user_id, 'tokens' => $results];
+                } else {
+                    header('HTTP/1.1 400 Incorrect Command Structure');
+                    exit();
+                }
+            } else {
+                header('HTTP/1.1 400 No Personal IDs');
+                exit();
+            }
+        } else {
+            header('HTTP/1.1 400 Incorrect HTTP Request Method');
+            exit();
+        }
+        
         return $ret;
     }
                 
@@ -1853,7 +1898,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         $ret['logins'] = $this->_handle_edit_logins($in_andisol_instance, $in_http_method, $in_path, $in_query, $show_parents);
                     }
                     break;
-                case 'personal_ids':
+                case 'personal_tokens':
                     if ('GET' == $in_http_method) {
                         $ret['personal_tokens'] = $this->_handle_personal_ids($in_andisol_instance, $in_path, $in_query);
                     } else {
