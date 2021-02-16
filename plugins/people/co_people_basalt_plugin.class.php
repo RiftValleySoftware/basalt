@@ -792,16 +792,32 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     
                     $ret['assign_tokens_to_user'] = ['id' => $user_id, 'tokens' => $results];
                 } elseif (is_array($in_query) && isset($in_query['remove_tokens_from_user']) && isset($in_query['remove_tokens_from_user'])) {
-                    $results = [];
+                    $ret_temp = [];
                     $user_id = intval($in_query['remove_tokens_from_user']);
                     
                     foreach ($token_list as $token) {
                         if ($in_andisol_instance->remove_personal_token_from_this_login($user_id, $token)) {
-                            $results[] = $token;
+                            $ret_temp[] = $token;
                         }
                     }
                     
-                    $ret['remove_tokens_from_user'] = ['id' => $user_id, 'tokens' => $results];
+                    $ret['remove_tokens_from_user'] = ['id' => $user_id, 'tokens' => $ret_temp];
+                } elseif (is_array($in_query) && isset($in_query['remove_all_these_tokens_from_all_users']) && isset($in_query['remove_all_these_tokens_from_all_users'])) {
+                    $user_list = $in_andisol_instance->get_logins_that_have_any_of_my_ids();
+                    $ret_temp = [];
+                    foreach ($user_list as $user_id => $token_list) {
+                        $ret_temp2 = [];
+                        foreach ($token_list as $token) {
+                            if ($in_andisol_instance->remove_personal_token_from_this_login($user_id, $token)) {
+                                $ret_temp2[] = $token;
+                            }
+                        }
+                        if (count($ret_temp2)) {
+                            $ret_temp[] = ["id" => $user_id, "tokens" => $ret_temp2];
+                        }
+                    }
+                    
+                    $ret = ["remove_all_these_tokens_from_all_users" => $ret_temp];
                 } else {
                     header('HTTP/1.1 400 Incorrect Command Structure');
                     exit();
