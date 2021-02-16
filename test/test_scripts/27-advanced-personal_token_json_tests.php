@@ -28,20 +28,24 @@
 
 require_once(dirname(dirname(__FILE__)).'/run_basalt_tests.php');
 
-basalt_run_tests(190, 'ADVANCED PERSONAL TOKEN JSON TESTS', 'OVERALL-EXPLAIN');
+basalt_run_tests(190, 'ADVANCED PERSONAL TOKEN JSON TESTS', 'In these tests, we add and remove personal tokens to other IDs.');
 
 // --------------------------------- DEFINITIONS ---------------------------------------
 
 function basalt_test_define_0190() {
-    basalt_run_single_direct_test(190, 'PASS-Assign Token To User', 'Log in as \'Tertiary Login\', and assign one of our tokens (10) to \'Admin Login 4\'.', 'personal_id_test', 'tertiary', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(190, 'PASS-Assign Single Token To Single User', 'Log in as \'Tertiary Login\', and assign one of our tokens (10) to \'Admin Login 4\'.', 'personal_id_test', 'tertiary', '', 'CoreysGoryStory');
 }
 
 function basalt_test_define_0191() {
-    basalt_run_single_direct_test(191, 'PASS-Discrete Token Removal From Multiple Users', 'Log in as \'Tertiary Login\', and remove a previously assigned token (11) from \'Secondary Login\' and \'Admin Login 4\'.', 'personal_id_test', 'tertiary', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(191, 'PASS-Assign Multiple Tokens To Multiple Users', 'Log in as \'Tertiary Login\', and assign both of our tokens (10,11) to \'Admin Login 4\'.', 'personal_id_test', 'tertiary', '', 'CoreysGoryStory');
 }
 
 function basalt_test_define_0192() {
-    basalt_run_single_direct_test(192, 'PASS-Bulk Token Removal From Multiple Users', 'Log in as \'Tertiary Login\', and remove two previously assigned tokens (10,11) from \'Secondary Login\' and \'Admin Login 4\'.', 'personal_id_test', 'tertiary', '', 'CoreysGoryStory');
+    basalt_run_single_direct_test(192, 'PASS-Discrete Token Removal From Multiple Users', 'Log in as \'Tertiary Login\', and remove a previously assigned token (11) from \'Secondary Login\' and \'Admin Login 4\'.', 'personal_id_test', 'tertiary', '', 'CoreysGoryStory');
+}
+
+function basalt_test_define_0193() {
+    basalt_run_single_direct_test(193, 'PASS-Bulk Token Removal From Multiple Users', 'Log in as \'Tertiary Login\', and remove two previously assigned tokens (10,11) from \'Secondary Login\' and \'Admin Login 4\'.', 'personal_id_test', 'tertiary', '', 'CoreysGoryStory');
 }
 
 // ----------------------------------- TESTS -------------------------------------------
@@ -106,6 +110,93 @@ function basalt_test_0190($in_login = NULL, $in_hashed_password = NULL, $in_pass
 }
 
 function basalt_test_0191($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    echo('<h3>The first thing we do, is log in as \'Secondary Login\', and observe the list of security IDs. Note that \'10\' and \'11\' are already assigned:</h3>');
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=secondary&password=CoreysGoryStory', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/logins/my_info', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+    
+    echo('<h3>The next thing we do, is log in as \'Admin Login 4\', and observe the list of security IDs. Note that \'10\' is not one of them:</h3>');
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=four&password=CoreysGoryStory', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/logins/my_info', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+    
+    echo('<h3>Next, we log in as \'Tertiary User\', and observe the list of personal tokens. Note that \'10\' is not assigned to ID 5 (\'Admin Login 4\'):</h3>');
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/personal_tokens/my_info', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+    echo('<h3>Now, we assign personal ID 10 and 11 to user ID 3 and user ID 5 (\'Secondary Login\' and \'Admin Login 4\').<br />Note that \'Secondary Login\' reports successful assignment, even though it was not changed,<br />and \'Admin Login 4\' reports that \'11\' was added; even though it was already there:</h3>');
+    $result = call_REST_API('PUT', 'http://localhost/basalt/test/basalt_runner.php/json/people/personal_tokens/10,11?assign_tokens_to_user=3,5', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+    echo('<h3>We observe our list of personal tokens again. Note that \'10\' is now assigned to ID 5 (\'Admin Login 4\'). This is the only actual change:</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/personal_tokens/my_info', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+    
+    echo('<h3>Now, log in as \'Secondary Login\', and observe the list of security IDs. Note no changes:</h3>');
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=secondary&password=CoreysGoryStory', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/logins/my_info', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+    
+    echo('<h3>Finally, log in as \'Admin Login 4\', and observe the list of security IDs. Note that \'10\' is now one of them:</h3>');
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=four&password=CoreysGoryStory', NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/logins/my_info', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
+}
+
+function basalt_test_0192($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     echo('<h3>The first thing we do, is log in as \'Secondary Login\', and observe the list of security IDs. Note that \'11\' is one of them:</h3>');
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=secondary&password=CoreysGoryStory', NULL, NULL, $result_code);
@@ -199,7 +290,7 @@ function basalt_test_0191($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
 }
 
-function basalt_test_0192($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+function basalt_test_0193($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     echo('<h3>The first thing we do, is log in as \'Secondary Login\', and observe the list of security IDs. Note that \'10\' and \'11\' are among them:</h3>');
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id=secondary&password=CoreysGoryStory', NULL, NULL, $result_code);

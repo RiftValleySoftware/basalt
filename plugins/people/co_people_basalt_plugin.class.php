@@ -780,17 +780,23 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $token_list = array_map('intval', explode(",",trim($in_path[0])));
             }
             if (isset($in_query) && is_array($token_list) && count($token_list)) {
-                if (is_array($in_query) && isset($in_query['assign_tokens_to_user']) && isset($in_query['assign_tokens_to_user'])) {
+                if (is_array($in_query) && isset($in_query['assign_tokens_to_user'])) {
                     $results = [];
-                    $user_id = intval($in_query['assign_tokens_to_user']);
+                    $user_ids = array_map('intval', explode(",", $in_query['assign_tokens_to_user']));
                     
-                    foreach ($token_list as $token) {
-                        if ($in_andisol_instance->add_personal_token_from_current_login($user_id, $token)) {
-                            $results[] = $token;
+                    foreach($user_ids as $user_id) {
+                        $ret_temp2 = [];
+                        foreach ($token_list as $token) {
+                            if ($in_andisol_instance->add_personal_token_from_current_login($user_id, $token)) {
+                                $ret_temp2[] = $token;
+                            }
+                        }
+                        if (count($ret_temp2)) {
+                            $ret_temp[] = ["id" => $user_id, "tokens" => $ret_temp2];
                         }
                     }
                     
-                    $ret['assign_tokens_to_user'] = ['id' => $user_id, 'tokens' => $results];
+                    $ret['assign_tokens_to_user'] = $ret_temp;
                 } elseif (is_array($in_query) && isset($in_query['remove_tokens_from_user']) && isset($in_query['remove_tokens_from_user'])) {
                     $ret_temp = [];
                     $user_id = intval($in_query['remove_tokens_from_user']);
