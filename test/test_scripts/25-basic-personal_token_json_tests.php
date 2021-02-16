@@ -139,7 +139,7 @@ function basalt_test_0187($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
     }
     echo('<h3>We log in as \'Tertiary\', and ask who has any of our personal tokens. We should get two results, of 3 (10,11), and 5 (11):</h3>');
-    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/personal_ids?check_personal_token_users', NULL, $api_result, $result_code);
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/personal_ids?personal_token_users', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {

@@ -740,9 +740,9 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                         $ret_temp[] = ["id" => $login->id(), "tokens" => $tokens];
                     }
                 }
-                $ret = ["all_personal_tokens" => $ret_temp];
+                $ret = ["personal_token_users" => $ret_temp];
             }
-        } elseif (isset($in_query['check_personal_token_users'])) {
+        } elseif (isset($in_query['personal_token_users'])) {
             $user_list = $in_andisol_instance->get_logins_that_have_any_of_my_ids();
             $ret_temp = [];
             foreach ($user_list as $key => $value) {
