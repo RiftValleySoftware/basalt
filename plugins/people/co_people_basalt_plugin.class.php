@@ -727,13 +727,28 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                                             ) {
         $ret = [];
         $my_info = isset($in_path) && is_array($in_path) && (0 < count($in_path) && ('my_info' == $in_path[0]) && $in_andisol_instance->logged_in());    // This is a directory that specifies only our own user.
-        if (isset($in_path) && is_array($in_path) && (1 < count($in_path) && isset($in_path[0]))) {    // See if they are looking for people associated with string login IDs.
-            $personal_id_list = array_unique(array_map('intval', array_map('trim', explode(',', $in_path[1]))));
-            sort($personal_id_list);
-        } elseif ($my_info) {
+        if ($my_info) {
             $ret['my_info'] = $in_andisol_instance->get_personal_security_ids();
         } elseif ($in_andisol_instance->god()) {
-            $ret = $in_andisol_instance->get_all_personal_ids_except_for_id();
+            $all_logins = $in_andisol_instance->get_all_logins();
+            
+            if (isset($all_logins) && is_array($all_logins) && count($all_logins)) {
+                $ret_temp = [];
+                foreach ($all_logins as $login) {
+                    $tokens = $login->personal_ids();
+                    if (isset($tokens) && is_array($tokens) && count($tokens)) {
+                        $ret_temp[] = ["id" => $login->id(), "tokens" => $tokens];
+                    }
+                }
+                $ret = ["all_personal_tokens" => $ret_temp];
+            }
+        } elseif (isset($in_query['check_personal_token_users'])) {
+            $user_list = $in_andisol_instance->get_logins_that_have_any_of_my_ids();
+            $ret_temp = [];
+            foreach ($user_list as $key => $value) {
+                $ret_temp[] = ["id" => $key, "tokens" => $value];
+            }
+            $ret['personal_token_users'] = $ret_temp;
         } else {
             header('HTTP/1.1 403 Not Permitted');   // Ah-Ah-Aaaahh! You didn't say the magic word!
             exit();
@@ -1808,7 +1823,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             if ('GET' == $in_http_method) {
                 $ret = ['people'];
                 if ($in_andisol_instance->logged_in()) {
-                    $ret[] = ['logins', 'personal_ids'];
+                    $ret[] = ['logins', 'personal_tokens'];
                 }
             } else {
                 header('HTTP/1.1 400 Incorrect HTTP Request Method');
@@ -1840,9 +1855,9 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     break;
                 case 'personal_ids':
                     if ('GET' == $in_http_method) {
-                        $ret['personal_ids'] = $this->_handle_personal_ids($in_andisol_instance, $in_path, $in_query);
+                        $ret['personal_tokens'] = $this->_handle_personal_ids($in_andisol_instance, $in_path, $in_query);
                     } else {
-                        $ret['personal_ids'] = $this->_handle_edit_personal_ids($in_andisol_instance, $in_http_method, $in_path, $in_query);
+                        $ret['personal_tokens'] = $this->_handle_edit_personal_ids($in_andisol_instance, $in_http_method, $in_path, $in_query);
                     }
                     break;
             }

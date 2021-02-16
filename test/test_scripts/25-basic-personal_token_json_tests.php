@@ -24,17 +24,31 @@
 
     The Great Rift Valley Software Company: https://riftvalleysoftware.com
 */
-// ------------------------------ MAIN CODE -------------------------------------------
+// ---------------------------------- MAIN CODE ----------------------------------------
 
 require_once(dirname(dirname(__FILE__)).'/run_basalt_tests.php');
 
 basalt_run_tests(184, 'BASIC PERSONAL TOKEN JSON TESTS', 'We simply make sure that we can read (GET) information about personal tokens.');
 
-// -------------------------- DEFINITIONS AND TESTS -----------------------------------
+// --------------------------------- DEFINITIONS ---------------------------------------
 
 function basalt_test_define_0184() {
     basalt_run_single_direct_test(184, 'PASS-God Admin-Check All Tokens And Listing', 'We log in as the \'God\' admin, make sure the listing is correct, make sure that we can see all the tokens, and that we don\'t have any.', 'personal_id_test', 'admin', '', CO_Config::god_mode_password());
 }
+
+function basalt_test_define_0185() {
+    basalt_run_single_direct_test(185, 'FAIL-Non-God Admin-Check All Tokens And Listing', 'We log in as the \'Secondary\' admin (non-manager), make sure the listing is correct, that we can\'t see all the tokens, and that we list the ones we have.', 'personal_id_test', 'secondary', '', 'CoreysGoryStory');
+}
+
+function basalt_test_define_0186() {
+    basalt_run_single_direct_test(186, 'FAIL-Non-God Admin-Check All Tokens And Listing', 'We log in as the \'Tertiary\' admin (manager), make sure the listing is correct, that we can\'t see all the tokens, and that we list the ones we have.', 'personal_id_test', 'tertiary', '', 'CoreysGoryStory');
+}
+
+function basalt_test_define_0187() {
+    basalt_run_single_direct_test(187, 'PASS-Non-God Admin-Check Who Has My Tokens', 'We log in as the \'Tertiary\' admin (manager), and check who has our personal tokens.', 'personal_id_test', 'tertiary', '', 'CoreysGoryStory');
+}
+
+// ----------------------------------- TESTS -------------------------------------------
 
 function basalt_test_0184($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
@@ -72,10 +86,6 @@ function basalt_test_0184($in_login = NULL, $in_hashed_password = NULL, $in_pass
     } else {
         echo('<pre style="color:green">'.prettify_json($result).'</pre>');
     }
-}
-
-function basalt_test_define_0185() {
-    basalt_run_single_direct_test(185, 'FAIL-Non-God Admin-Check All Tokens And Listing', 'We log in as the \'Secondary\' admin (non-manager), make sure the listing is correct, that we can\'t see all the tokens, and that we list the ones we have.', 'personal_id_test', 'secondary', '', 'CoreysGoryStory');
 }
 
 function basalt_test_0185($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
@@ -116,11 +126,24 @@ function basalt_test_0185($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
 }
 
-function basalt_test_define_0186() {
-    basalt_run_single_direct_test(186, 'FAIL-Non-God Admin-Check All Tokens And Listing', 'We log in as the \'Tertiary\' admin (manager), make sure the listing is correct, that we can\'t see all the tokens, and that we list the ones we have.', 'personal_id_test', 'tertiary', '', 'CoreysGoryStory');
-}
-
 function basalt_test_0186($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     basalt_test_0185($in_login, $in_hashed_password, $in_password);
+}
+
+function basalt_test_0187($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+    echo('<h3>We log in as \'Tertiary\', and ask who has any of our personal tokens. We should get two results, of 3 (10,11), and 5 (11):</h3>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/json/people/personal_ids?check_personal_token_users', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_json($result).'</pre>');
+    }
 }
 ?>
