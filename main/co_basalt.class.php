@@ -417,10 +417,15 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
             } elseif (('GET' == $in_http_method) && isset($in_query['types'])) {    // If we added "types," then we want a catalog.
                 $tokens = $in_andisol_instance->get_available_tokens();
                 $personal_login_array = [];
+
+                $ret_temp = [];
                 // If we are logged in as God, then we can actually get a list of the "owners" of personal tokens.
                 if ($in_andisol_instance->god()) {
                     $personal_login_array = $in_andisol_instance->get_logins_with_personal_ids();
+                } else {    // If not God, then
+                    $personal_login_array = [$in_andisol_instance->current_login()->id() => $in_andisol_instance->get_personal_security_ids()];
                 }
+                
                 foreach ($tokens as $token) {
                     $id = NULL;
                     
@@ -432,19 +437,24 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                     }
                     
                     $temp_ret = ['id' => $token];
-                    if ($in_andisol_instance->is_this_a_personal_id($token)) {
-                        $temp_ret['type'] = 'personal';
-                        if (isset($id)) {
+                    if (isset($id)) {
+                        if ($in_andisol_instance->god()) {
+                            $temp_ret['type'] = 'personal';
                             $temp_ret['login_id'] = $id;
+                        } else {
+                            $temp_ret['type'] = 'my_personal';
                         }
-                    } elseif ($in_andisol_instance->is_this_a_login_id($token)) {
+                    } elseif ($in_andisol_instance->is_this_a_personal_id($token)) {    // This will tell us that we have the token, only on sufferance of someone else.
+                        $temp_ret['type'] = 'other_personal';
+                    } elseif ($in_andisol_instance->is_this_a_login_id($token) && $in_andisol_instance->god()) {    // Only God can know whether an ID is a login.
                         $temp_ret['type'] = 'login';
                     } else {
                         $temp_ret['type'] = 'token';
                     }
                     
-                    $ret[] = $temp_ret;
+                    $ret_temp[] = $temp_ret;
                 }
+                $ret['tokens'] = $ret_temp;
             } elseif (('GET' == $in_http_method) && isset($in_query['count_access_to']) && (isset($in_path) && is_array($in_path) && count($in_path))) {    // Ask for a response that counts all logins that have access to a given token.
                 $ids = array_map('trim', explode(',', $in_path[0]));
                 $ids = array_map('trim', $ids);

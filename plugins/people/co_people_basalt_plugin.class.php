@@ -780,8 +780,16 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $token_list = array_map('intval', explode(",",trim($in_path[0])));
             }
             if (isset($in_query) && is_array($token_list) && count($token_list)) {
+                // Assign tokens directly to a user. This can only be done by the God Admin, and it completely replaces all the personal tokens of that user.
+                if (is_array($in_query) && isset($in_query['set_user_tokens']) && $in_query['set_user_tokens'] && $in_andisol_instance->god()) {
+                    $user_id = intval($in_query['set_user_tokens']);
+                    $tokens = $in_andisol_instance->set_personal_ids($user_id, $token_list);
+                    
+                    if (count($tokens)) {
+                        $ret['set_user_tokens'] = ['id' => $user_id, 'tokens' => $tokens];
+                    }
                 // Assign tokens from our pool, to another user.
-                if (is_array($in_query) && isset($in_query['assign_tokens_to_user'])) {
+                } elseif (is_array($in_query) && isset($in_query['assign_tokens_to_user'])) {
                     $results = [];
                     $user_ids = array_map('intval', explode(",", $in_query['assign_tokens_to_user']));
                     
