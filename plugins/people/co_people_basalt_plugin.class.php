@@ -780,6 +780,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                 $token_list = array_map('intval', explode(",",trim($in_path[0])));
             }
             if (isset($in_query) && is_array($token_list) && count($token_list)) {
+                // Assign tokens from our pool, to another user.
                 if (is_array($in_query) && isset($in_query['assign_tokens_to_user'])) {
                     $results = [];
                     $user_ids = array_map('intval', explode(",", $in_query['assign_tokens_to_user']));
@@ -797,6 +798,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     }
                     
                     $ret['assign_tokens_to_user'] = $ret_temp;
+                // Remove one or more of our tokens from another user.
                 } elseif (is_array($in_query) && isset($in_query['remove_tokens_from_user']) && isset($in_query['remove_tokens_from_user'])) {
                     $ret_temp = [];
                     $user_id = intval($in_query['remove_tokens_from_user']);
@@ -808,6 +810,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
                     }
                     
                     $ret['remove_tokens_from_user'] = ['id' => $user_id, 'tokens' => $ret_temp];
+                // Remove one or more of our tokens, from all other users that have the token.
                 } elseif (is_array($in_query) && isset($in_query['remove_all_these_tokens_from_all_users']) && isset($in_query['remove_all_these_tokens_from_all_users'])) {
                     $user_list = $in_andisol_instance->get_logins_that_have_any_of_my_ids();
                     $ret_temp = [];
