@@ -412,8 +412,39 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                                                 ) {
         $ret = NULL;
         if ($in_andisol_instance->logged_in()) {    // We also have to be logged in to have any access to tokens.
-            if (('GET' == $in_http_method) && (!isset($in_path) || !is_array($in_path) || !count($in_path))) {   // Do we just want a list of our tokens, or count access to a token?
+            if (('GET' == $in_http_method) && !isset($in_query['types']) && (!isset($in_path) || !is_array($in_path) || !count($in_path))) {   // Do we just want a list of our tokens, or count access to a token?
                 $ret = ['tokens' => $in_andisol_instance->get_available_tokens()];
+            } elseif (('GET' == $in_http_method) && isset($in_query['types'])) {    // If we added "types," then we want a catalog.
+                $tokens = $in_andisol_instance->get_available_tokens();
+                $personal_login_array = [];
+                // If we are logged in as God, then we can actually get a list of the "owners" of personal tokens.
+                if ($in_andisol_instance->god()) {
+                    $personal_login_array = $in_andisol_instance->get_logins_with_personal_ids();
+                }
+                foreach ($tokens as $token) {
+                    $id = NULL;
+                    
+                    foreach ($personal_login_array as $key => $ids) {
+                        if (in_array($token, $ids)) {
+                            $id = $key;
+                            break;
+                        }
+                    }
+                    
+                    $temp_ret = ['id' => $token];
+                    if ($in_andisol_instance->is_this_a_personal_id($token)) {
+                        $temp_ret['type'] = 'personal';
+                        if (isset($id)) {
+                            $temp_ret['login_id'] = $id;
+                        }
+                    } elseif ($in_andisol_instance->is_this_a_login_id($token)) {
+                        $temp_ret['type'] = 'login';
+                    } else {
+                        $temp_ret['type'] = 'token';
+                    }
+                    
+                    $ret[] = $temp_ret;
+                }
             } elseif (('GET' == $in_http_method) && isset($in_query['count_access_to']) && (isset($in_path) && is_array($in_path) && count($in_path))) {    // Ask for a response that counts all logins that have access to a given token.
                 $ids = array_map('trim', explode(',', $in_path[0]));
                 $ids = array_map('trim', $ids);

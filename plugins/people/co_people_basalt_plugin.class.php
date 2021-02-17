@@ -1525,7 +1525,11 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         $settings_list = $this->_build_user_mod_list($in_andisol_instance, 'POST', $in_query);   // First, build up a list of the settings for the new user.
 
         if ($in_login_user) {  // Create a user/login pair.
-            $password = $in_andisol_instance->create_new_user($login_id, $password, $name, $tokens, 0, $is_manager);
+            // The number of personal tokens to initialize with the login.
+            // If this is not specified, it is zero. Also, it only applies to new logins; not users.
+            $number_of_personal_tokens = (isset($in_query['number_of_personal_tokens']) && trim($in_query['number_of_personal_tokens'])) ? intval(trim($in_query['number_of_personal_tokens'])) : 0;
+
+            $password = $in_andisol_instance->create_new_user($login_id, $password, $name, $tokens, 0, $is_manager, $number_of_personal_tokens);
         
             if ($password) {
                 $user = $in_andisol_instance->get_user_from_login_string($login_id);
@@ -1677,7 +1681,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
             $show_details = true;
         }
         
-        if (isset($in_query['get_all_visible_users'])) {    // The first thing we check for, is to see if this is a simple request to return the IDs and names of all visible users.
+        if (isset($in_query['get_all_visible_users'])) {    // The next thing we check for, is to see if this is a simple request to return the IDs and names of all visible users.
             $ret['get_all_visible_users'] = $in_andisol_instance->get_all_visible_users();
         } elseif (isset($in_query['get_all_visible_logins'])) { // The next thing we check for, is to see if this is a simple request to return the IDs, names, and login ID of all visible logins.
             $ret['get_all_visible_logins'] = $in_andisol_instance->get_all_visible_logins();
@@ -1856,7 +1860,7 @@ class CO_people_Basalt_Plugin extends A_CO_Basalt_Plugin {
         
         return $ret;
     }
-        
+    
     /***********************/
     /**
     \returns a string, with our plugin name.
