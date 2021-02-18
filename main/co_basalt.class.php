@@ -438,14 +438,12 @@ class CO_Basalt extends A_CO_Basalt_Plugin {
                     
                     $temp_ret = ['id' => $token];
                     if (isset($id)) {
+                        $temp_ret['type'] = 'personal';
                         if ($in_andisol_instance->god()) {
-                            $temp_ret['type'] = 'personal';
                             $temp_ret['login_id'] = $id;
-                        } else {
-                            $temp_ret['type'] = 'my_personal';
                         }
                     } elseif ($in_andisol_instance->is_this_a_personal_id($token)) {    // This will tell us that we have the token, only on sufferance of someone else.
-                        $temp_ret['type'] = 'other_personal';
+                        $temp_ret['type'] = 'assigned';
                     } elseif ($in_andisol_instance->is_this_a_login_id($token) && $in_andisol_instance->god()) {    // Only God can know whether an ID is a login.
                         $temp_ret['type'] = 'login';
                     } else {
