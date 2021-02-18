@@ -1,246 +1,369 @@
-        <xs:complexType>
-            <xs:sequence>
-                <xs:choice minOccurs='0' maxOccurs='unbounded'>
-                    <xs:element ref='b:personal_tokens'/>
-                    <xs:element ref='b:logins'/>
-                    <xs:element ref='b:changed_users'/>
-                    <xs:element ref='b:changed_users'/>
-                    <xs:element ref='b:value'/>
-                    <xs:element ref='b:deleted_users'/>
-                    <xs:element ref='b:new_user'/>
-                </xs:choice>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name='logins'>
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element ref='b:my_info'/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name='changed_users'>
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element ref='b:value'/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name='deleted_users'>
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element ref='b:value'/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name='new_user'>
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element ref='b:id'/>
-                <xs:element ref='b:name'/>
-                <xs:element ref='b:lang'/>
-                <xs:element ref='b:read_token'/>
-                <xs:element ref='b:write_token'/>
-                <xs:element ref='b:last_access'/>
-                <xs:element ref='b:writeable'/>
-                <xs:sequence minOccurs='0'>
-                    <xs:element ref='b:children'/>
-                    <xs:element ref='b:payload_type'/>
-                    <xs:element ref='b:payload'/>
-                    <xs:element ref='b:surname'/>
-                    <xs:element ref='b:middle_name'/>
-                    <xs:element ref='b:given_name'/>
-                    <xs:element ref='b:prefix'/>
-                    <xs:element ref='b:suffix'/>
-                    <xs:element ref='b:nickname'/>
-                </xs:sequence>
-                <xs:element ref='b:associated_login'/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name='associated_login'>
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element ref='b:id'/>
-                <xs:element ref='b:name'/>
-                <xs:element ref='b:lang'/>
-                <xs:element ref='b:login_id'/>
-                <xs:element ref='b:read_token'/>
-                <xs:element ref='b:write_token'/>
-                <xs:element ref='b:last_access'/>
-                <xs:element ref='b:writeable'/>
-                <xs:element ref='b:user_object_id'/>
-                <xs:element ref='b:security_tokens'/>
-                <xs:element ref='b:personal_tokens'/>
-                <xs:element ref='b:password'/>
-                <xs:element ref='b:current_api_key'/>
-                <xs:element ref='b:api_key'/>
-                <xs:element ref='b:api_key_age_in_seconds'/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name='user_object_id' type='xs:integer'/>
-    <xs:element name='password' type='xs:NCName'/>
-    <xs:element name='personal_tokens'>
-        <xs:complexType>
-            <xs:choice>
-                <xs:element maxOccurs='unbounded' ref='b:value'/>
-                <xs:sequence>
-                    <xs:element ref='b:remove_tokens_from_user'/>
-                    <xs:element ref='b:remove_all_these_tokens_from_all_users'/>
-                    <xs:element ref='b:assign_tokens_to_user'/>
-                    <xs:element ref='b:my_info'/>
-                </xs:sequence>
+
+    <xs:element name="people">
+        <xs:complexType mixed="true">
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="value">
+                    <xs:complexType mixed="true">
+                        <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                                <xs:attribute name="sequence_index" use="required" type="xs:integer"/>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+                
+                <xs:element minOccurs="0" name="personal_tokens">
+                    <xs:complexType mixed="true">
+                        <xs:choice>
+                    
+                            <xs:element name="my_info">
+                                <xs:complexType>
+                                    <xs:sequence maxOccurs="unbounded">
+                                        <xs:element minOccurs="0" ref="b:value"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            
+                            <xs:element name="personal_token_users">
+                                <xs:complexType>
+                                    <xs:sequence maxOccurs="unbounded">
+                                        <xs:element minOccurs="0" ref="b:token_user"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                    
+                            <xs:element name="all_personal_tokens">
+                                <xs:complexType>
+                                    <xs:sequence maxOccurs="unbounded">
+                                        <xs:element minOccurs="0" ref="b:value"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                
+                <xs:element minOccurs="0" name="people">
+                    <xs:complexType mixed="true">
+                        <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    
+                            <xs:element minOccurs="0" maxOccurs="1" name="my_info" type="b:user_structure"/>
+                        
+                            <xs:element minOccurs="0" maxOccurs="1" name="new_user" type="b:user_structure"/>
+                        
+                            <xs:element minOccurs="0" maxOccurs="unbounded" name="value" type="b:user_structure"/>
+                        
+                            <xs:element minOccurs="0" name="changed_users">
+                                <xs:complexType>
+                                    <xs:sequence maxOccurs="unbounded">
+                                        <xs:element minOccurs="1" maxOccurs="unbounded" name="value">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                            
+                                                    <xs:element name="before" type="b:user_structure"/>
+                                                
+                                                    <xs:element name="after" type="b:user_structure"/>
+                                                
+                                                </xs:sequence>
+                                                <xs:attribute name="sequence_index" type="xs:integer"/>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        
+                            <xs:element minOccurs="0" name="deleted_logins">
+                                <xs:complexType mixed="true">
+                                    <xs:sequence maxOccurs="unbounded">
+                                        <xs:element minOccurs="0" maxOccurs="unbounded" name="value" type="b:login_structure"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        
+                            <xs:element minOccurs="0" name="deleted_users">
+                                <xs:complexType mixed="true">
+                                    <xs:sequence maxOccurs="unbounded">
+                                        <xs:element minOccurs="0" maxOccurs="unbounded" name="value" type="b:user_structure"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+
+                            <xs:element minOccurs='0' name='search_location'>
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element minOccurs='0' name='radius' type='xs:float'/>
+                                        <xs:element minOccurs='0' name='longitude' type='xs:float'/>
+                                        <xs:element minOccurs='0' name='latitude' type='xs:float'/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+        
+                <xs:element minOccurs="0" name="logins">
+                    <xs:complexType mixed="true">
+                        <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    
+                            <xs:element minOccurs="0" name="login_exists" type="xs:integer"/>
+                            
+                            <xs:element minOccurs="0" maxOccurs="1" name="my_info" type="b:login_structure"/>
+                        
+                            <xs:element minOccurs="0" maxOccurs="1" name="new_login" type="b:login_structure"/>
+                        
+                            <xs:element minOccurs="0" maxOccurs="unbounded" name="value" type="b:login_structure"/>
+                        
+                            <xs:element minOccurs="0" name="changed_logins">
+                                <xs:complexType mixed="true">
+                                    <xs:sequence maxOccurs="unbounded">
+                                        <xs:element minOccurs="1" maxOccurs="unbounded" name="value">
+                                            <xs:complexType mixed="true">
+                                                <xs:sequence maxOccurs="unbounded">
+                                            
+                                                    <xs:element name="before" type="b:login_structure"/>
+                                                
+                                                    <xs:element name="after" type="b:login_structure"/>
+                                                
+                                                </xs:sequence>
+                                                <xs:attribute name="sequence_index" type="xs:integer"/>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        
+                            <xs:element minOccurs="0" name="deleted_logins">
+                                <xs:complexType mixed="true">
+                                    <xs:sequence maxOccurs="unbounded">
+                                        <xs:element minOccurs="0" maxOccurs="unbounded" name="value" type="b:login_structure"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        
+                            <xs:element minOccurs="0" name="deleted_users">
+                                <xs:complexType mixed="true">
+                                    <xs:sequence maxOccurs="unbounded">
+                                        <xs:element minOccurs="0" maxOccurs="unbounded" name="value" type="b:user_structure"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                    
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+            
             </xs:choice>
         </xs:complexType>
     </xs:element>
-    <xs:element name='remove_tokens_from_user'>
+
+    <xs:complexType mixed="true" name="user_structure">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="id" type="xs:integer"/>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="lang" type="xs:string"/>
+            <xs:element minOccurs='0' name='coords' type='xs:string'/>
+            <xs:element minOccurs='0' name='distance_in_km' type='xs:float'/>
+            <xs:element minOccurs="0" name="read_token" type="xs:integer"/>
+            <xs:element minOccurs="0" name="write_token" type="xs:integer"/>
+            <xs:element minOccurs="0" name="writeable" type="xs:integer"/>
+            <xs:element minOccurs="0" name="owner_id" type="xs:integer"/>
+            <xs:element minOccurs='0' name='latitude' type='xs:float'/>
+            <xs:element minOccurs='0' name='longitude' type='xs:float'/>
+            <xs:element minOccurs='0' name='fuzzy' type='xs:integer'/>
+            <xs:element minOccurs='0' name='raw_latitude' type='xs:float'/>
+            <xs:element minOccurs='0' name='raw_longitude' type='xs:float'/>
+            <xs:element minOccurs='0' name='fuzz_factor' type='xs:float'/>
+            <xs:element minOccurs="0" name="children">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:choice minOccurs="0" maxOccurs="unbounded">
+                        
+                            <xs:element minOccurs="0" name="people">
+                                <xs:complexType>
+                                    <xs:sequence maxOccurs="unbounded">
+                                        <xs:element minOccurs="1" maxOccurs="unbounded" name="value">
+                                            <xs:complexType mixed="true">
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:integer">
+                                                        <xs:attribute name="sequence_index" use="required" type="xs:integer"/>
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        
+                            <xs:element minOccurs="0" name="places">
+                                <xs:complexType>
+                                    <xs:sequence maxOccurs="unbounded">
+                                        <xs:element minOccurs="1" maxOccurs="unbounded" name="value">
+                                            <xs:complexType mixed="true">
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:integer">
+                                                        <xs:attribute name="sequence_index" use="required" type="xs:integer"/>
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        
+                            <xs:element minOccurs="0" name="things">
+                                <xs:complexType>
+                                    <xs:sequence maxOccurs="unbounded">
+                                        <xs:element minOccurs="1" maxOccurs="unbounded" name="value">
+                                            <xs:complexType mixed="true">
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:integer">
+                                                        <xs:attribute name="sequence_index" use="required" type="xs:integer"/>
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            
+                        </xs:choice>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element minOccurs="0" name="parents">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:choice minOccurs="0" maxOccurs="unbounded">
+                        
+                            <xs:element minOccurs="0" name="people">
+                                <xs:complexType>
+                                    <xs:sequence maxOccurs="unbounded">
+                                        <xs:element minOccurs="1" maxOccurs="unbounded" name="value">
+                                            <xs:complexType mixed="true">
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:integer">
+                                                        <xs:attribute name="sequence_index" use="required" type="xs:integer"/>
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        
+                            <xs:element minOccurs="0" name="places">
+                                <xs:complexType>
+                                    <xs:sequence maxOccurs="unbounded">
+                                        <xs:element minOccurs="1" maxOccurs="unbounded" name="value">
+                                            <xs:complexType mixed="true">
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:integer">
+                                                        <xs:attribute name="sequence_index" use="required" type="xs:integer"/>
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        
+                            <xs:element minOccurs="0" name="things">
+                                <xs:complexType>
+                                    <xs:sequence maxOccurs="unbounded">
+                                        <xs:element minOccurs="1" maxOccurs="unbounded" name="value">
+                                            <xs:complexType mixed="true">
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:integer">
+                                                        <xs:attribute name="sequence_index" use="required" type="xs:integer"/>
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            
+                        </xs:choice>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element minOccurs="0" name="last_access" type="xs:string"/>
+            <xs:element name="payload_type" type="xs:string"/>
+            <xs:element name="payload" type="xs:base64Binary"/>
+            <xs:element minOccurs="0" name="surname" type="xs:string"/>
+            <xs:element minOccurs="0" name="middle_name" type="xs:string"/>
+            <xs:element minOccurs="0" name="given_name" type="xs:string"/>
+            <xs:element minOccurs="0" name="prefix" type="xs:string"/>
+            <xs:element minOccurs="0" name="suffix" type="xs:string"/>
+            <xs:element minOccurs="0" name="nickname" type="xs:string"/>
+            <xs:element minOccurs="0" name="is_manager" type="xs:integer"/>
+            <xs:element minOccurs="0" name="is_main_admin" type="xs:integer"/>
+            <xs:element minOccurs="0" name="current_login" type="xs:integer"/>
+            <xs:element minOccurs="0" name="associated_login" type="b:login_structure"/>
+            <xs:element minOccurs="0" name="associated_login_id" type="xs:integer"/>
+        </xs:choice>
+        <xs:attribute name="sequence_index" type="xs:integer"/>
+    </xs:complexType>
+
+    <xs:complexType name="login_structure">
+        <xs:sequence>
+            <xs:element name="id" type="xs:integer"/>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="lang" type="xs:string"/>
+            <xs:element minOccurs="0" maxOccurs="1" name="login_id" type="xs:NCName"/>
+            <xs:element minOccurs="0" maxOccurs="1" name="read_token" type="xs:integer"/>
+            <xs:element minOccurs="0" maxOccurs="1" name="write_token" type="xs:integer"/>
+            <xs:element minOccurs="0" maxOccurs="1" name="last_access" type="xs:string"/>
+            <xs:element minOccurs="0" maxOccurs="1" name="writeable" type="xs:integer"/>
+            <xs:element minOccurs="0" maxOccurs="1" name="current_login" type="xs:integer"/>
+            <xs:element minOccurs="0" maxOccurs="1" name="user_object_id" type="xs:integer"/>
+            <xs:element minOccurs="0" maxOccurs="1" name="is_manager" type="xs:integer"/>
+            <xs:element minOccurs="0" maxOccurs="1" name="is_main_admin" type="xs:integer"/>
+            <xs:element minOccurs="0" maxOccurs="1" name='security_tokens'>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs='unbounded' ref='b:value'/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" name='personal_tokens'>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs='unbounded' ref='b:value'/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" name="current_api_key" type="xs:integer"/>
+            <xs:element minOccurs="0" maxOccurs="1" name="api_key" type="xs:string"/>
+            <xs:element minOccurs="0" maxOccurs="1" name="api_key_age_in_seconds" type="xs:integer"/>
+            <xs:element minOccurs="0" maxOccurs="1" name="password" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="sequence_index" type="xs:integer"/>
+    </xs:complexType>
+    
+    <xs:element name='token_user'>
         <xs:complexType>
             <xs:sequence>
-                <xs:element ref='b:id'/>
-                <xs:element ref='b:tokens'/>
+                <xs:element name="id" type="xs:integer"/>
+                <xs:element name='tokens'>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element maxOccurs='unbounded' ref='b:value'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-    <xs:element name='remove_all_these_tokens_from_all_users'>
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element maxOccurs='unbounded' ref='b:value'/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name='assign_tokens_to_user'>
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element ref='b:value'/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name='my_info'>
-        <xs:complexType>
-            <xs:choice>
-                <xs:sequence>
-                    <xs:element ref='b:tokens'/>
-                    <xs:element ref='b:personal_token_users'/>
-                </xs:sequence>
-                <xs:sequence>
-                    <xs:element ref='b:id'/>
-                    <xs:element ref='b:name'/>
-                    <xs:element ref='b:lang'/>
-                    <xs:element ref='b:login_id'/>
-                    <xs:element ref='b:read_token'/>
-                    <xs:element ref='b:write_token'/>
-                    <xs:element ref='b:last_access'/>
-                    <xs:element ref='b:writeable'/>
-                    <xs:element ref='b:current_login'/>
-                    <xs:element ref='b:is_manager'/>
-                    <xs:element ref='b:is_main_admin'/>
-                    <xs:element ref='b:security_tokens'/>
-                    <xs:element ref='b:personal_tokens'/>
-                    <xs:element ref='b:current_api_key'/>
-                    <xs:element ref='b:api_key'/>
-                    <xs:element ref='b:api_key_age_in_seconds'/>
-                </xs:sequence>
-            </xs:choice>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name='personal_token_users'>
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element maxOccurs='unbounded' ref='b:value'/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name='current_login' type='xs:integer'/>
-    <xs:element name='is_manager' type='xs:integer'/>
-    <xs:element name='is_main_admin' type='xs:integer'/>
+    
     <xs:element name='value'>
-        <xs:complexType mixed='true'>
-            <xs:choice maxOccurs='unbounded'>
-                <xs:element ref='b:given_name'/>
-                <xs:element ref='b:id'/>
-                <xs:element ref='b:lang'/>
-                <xs:element ref='b:last_access'/>
-                <xs:element ref='b:middle_name'/>
-                <xs:element ref='b:name'/>
-                <xs:element ref='b:nickname'/>
-                <xs:element ref='b:payload'/>
-                <xs:element ref='b:payload_type'/>
-                <xs:element ref='b:prefix'/>
-                <xs:element ref='b:read_token'/>
-                <xs:element ref='b:suffix'/>
-                <xs:element ref='b:surname'/>
-                <xs:element ref='b:tokens'/>
-                <xs:element ref='b:value'/>
-                <xs:element ref='b:write_token'/>
-                <xs:element ref='b:writeable'/>
-                <xs:element ref='b:after'/>
-                <xs:element ref='b:associated_login_id'/>
-                <xs:element ref='b:before'/>
-            </xs:choice>
-            <xs:attribute name='sequence_index' use='required' type='xs:integer'/>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name='after'>
         <xs:complexType>
-            <xs:sequence>
-                <xs:element ref='b:id'/>
-                <xs:element ref='b:name'/>
-                <xs:element ref='b:lang'/>
-                <xs:element ref='b:read_token'/>
-                <xs:element ref='b:write_token'/>
-                <xs:element ref='b:last_access'/>
-                <xs:element ref='b:writeable'/>
-                <xs:element ref='b:children'/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name='associated_login_id' type='xs:integer'/>
-    <xs:element name='before'>
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element ref='b:id'/>
-                <xs:element ref='b:name'/>
-                <xs:element ref='b:lang'/>
-                <xs:element ref='b:read_token'/>
-                <xs:element ref='b:write_token'/>
-                <xs:element ref='b:last_access'/>
-                <xs:element ref='b:writeable'/>
-                <xs:element ref='b:children'/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name='id' type='xs:integer'/>
-    <xs:element name='name' type='xs:string'/>
-    <xs:element name='lang' type='xs:NCName'/>
-    <xs:element name='read_token' type='xs:integer'/>
-    <xs:element name='write_token' type='xs:integer'/>
-    <xs:element name='last_access' type='xs:string'/>
-    <xs:element name='writeable' type='xs:integer'/>
-    <xs:element name='children' type='b:people'/>
-    <xs:element name='payload_type' type='xs:string'/>
-    <xs:element name='payload' type='xs:string'/>
-    <xs:element name='surname' type='xs:NCName'/>
-    <xs:element name='middle_name' type='xs:string'/>
-    <xs:element name='given_name' type='xs:NCName'/>
-    <xs:element name='prefix' type='xs:NCName'/>
-    <xs:element name='suffix' type='xs:string'/>
-    <xs:element name='nickname' type='xs:string'/>
-    <xs:element name='login_id' type='xs:NCName'/>
-    <xs:element name='security_tokens'>
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element maxOccurs='unbounded' ref='b:value'/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name='current_api_key' type='xs:integer'/>
-    <xs:element name='api_key' type='xs:string'/>
-    <xs:element name='api_key_age_in_seconds' type='xs:integer'/>
-    <xs:element name='tokens'>
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element maxOccurs='unbounded' ref='b:value'/>
-            </xs:sequence>
+            <xs:simpleContent>
+                <xs:extension base='xs:integer'>
+                    <xs:attribute name='sequence_index' use='required' type='xs:integer'/>
+                </xs:extension>
+            </xs:simpleContent>
         </xs:complexType>
     </xs:element>
