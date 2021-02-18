@@ -1,4 +1,4 @@
-**1.1.0.3000** *(TBD)*
+**1.1.0.3000** *(February 18, 2021)*
 
 - Added support for personal tokens.
 
