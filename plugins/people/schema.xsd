@@ -3,74 +3,7 @@
         <xs:complexType mixed="true">
             <xs:choice minOccurs="0" maxOccurs="unbounded">
                         
-                <xs:element minOccurs="0" name="personal_tokens">
-                    <xs:complexType mixed="true">
-                        <xs:choice>
-                            <xs:element name='value'>
-                                    <xs:complexType mixed='true'>
-                                            <xs:sequence>
-                                                    <xs:element maxOccurs='unbounded' ref='b:value'/>
-                                            </xs:sequence>
-                                            <xs:attribute name='sequence_index' use='required' type='xs:integer'/>
-                                    </xs:complexType>
-                            </xs:element>
-                    
-                            <xs:element name="my_info">
-                                <xs:complexType>
-                                    <xs:sequence maxOccurs="unbounded">
-                                        <xs:element minOccurs="0" ref="b:value"/>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-                            
-                            <xs:element name="personal_token_users">
-                                <xs:complexType>
-                                    <xs:sequence maxOccurs="unbounded">
-                                        <xs:element minOccurs="0" ref="b:token_user"/>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-                    
-                            <xs:element name="all_personal_tokens">
-                                <xs:complexType>
-                                    <xs:sequence maxOccurs="unbounded">
-                                        <xs:element minOccurs="0" ref="b:value"/>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-                        
-                            <xs:element name='assign_tokens_to_user'>
-                                <xs:complexType>
-                                    <xs:sequence maxOccurs='unbounded'>
-                                        <xs:element name='value'>
-                                            <xs:complexType>
-                                                <xs:sequence>
-                                                    <xs:element name='id' type='xs:integer'/>
-                                                    <xs:element name='tokens'>
-                                                        <xs:complexType>
-                                                            <xs:sequence maxOccurs="unbounded">
-                                                                <xs:element minOccurs="1" maxOccurs="unbounded" name="value">
-                                                                    <xs:complexType mixed="true">
-                                                                        <xs:simpleContent>
-                                                                            <xs:extension base="xs:integer">
-                                                                                <xs:attribute name="sequence_index" use="required" type="xs:integer"/>
-                                                                            </xs:extension>
-                                                                        </xs:simpleContent>
-                                                                    </xs:complexType>
-                                                                </xs:element>
-                                                            </xs:sequence>
-                                                        </xs:complexType>
-                                                    </xs:element>
-                                                </xs:sequence>
-                                                <xs:attribute name='sequence_index' use='required' type='xs:integer'/>
-                                            </xs:complexType>
-                                        </xs:element>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-                        </xs:choice>
-                    </xs:complexType>
-                </xs:element>
+                <xs:element minOccurs="0" ref="b:personal_tokens"/>
                 
                 <xs:element minOccurs="0" name="people">
                     <xs:complexType mixed="true">
@@ -380,18 +313,69 @@
                         <xs:sequence>
                             <xs:element maxOccurs='unbounded' ref='b:value'/>
                         </xs:sequence>
+                        <xs:attribute name="sequence_index" type="xs:integer"/>
                     </xs:complexType>
                 </xs:element>
             </xs:sequence>
+            <xs:attribute name="sequence_index" use="optional" type="xs:integer"/>
         </xs:complexType>
     </xs:element>
     
     <xs:element name='value'>
-        <xs:complexType>
-            <xs:simpleContent>
-                <xs:extension base='xs:integer'>
-                    <xs:attribute name='sequence_index' use='required' type='xs:integer'/>
-                </xs:extension>
-            </xs:simpleContent>
+        <xs:complexType mixed='true'>
+            <xs:choice minOccurs="0" maxOccurs='unbounded'>
+                <xs:element name='value' type='xs:integer'/>
+                <xs:element ref='b:id'/>
+                <xs:element ref='b:tokens'/>
+            </xs:choice>
+            <xs:attribute name='sequence_index' use='required' type='xs:integer'/>
         </xs:complexType>
     </xs:element>
+    
+    <xs:element name='personal_tokens'>
+        <xs:complexType>
+            <xs:choice>
+                <xs:element ref='b:my_info'/>
+                <xs:element ref='b:remove_tokens_from_user'/>
+                <xs:element ref='b:assign_tokens_to_user'/>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name='my_info'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref='b:tokens'/>
+                <xs:element ref='b:token_users'/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name='token_users'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs='unbounded' ref='b:value'/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name='remove_tokens_from_user'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref='b:id'/>
+                <xs:element ref='b:tokens'/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name='assign_tokens_to_user'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs='unbounded' ref='b:value'/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name='tokens'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs='unbounded' ref='b:value'/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name='id' type='xs:integer'/>
