@@ -2,19 +2,18 @@
     <xs:element name="people">
         <xs:complexType mixed="true">
             <xs:choice minOccurs="0" maxOccurs="unbounded">
-                <xs:element minOccurs="0" maxOccurs="unbounded" name="value">
-                    <xs:complexType mixed="true">
-                        <xs:simpleContent>
-                            <xs:extension base="xs:string">
-                                <xs:attribute name="sequence_index" use="required" type="xs:integer"/>
-                            </xs:extension>
-                        </xs:simpleContent>
-                    </xs:complexType>
-                </xs:element>
-                
+                        
                 <xs:element minOccurs="0" name="personal_tokens">
                     <xs:complexType mixed="true">
                         <xs:choice>
+                            <xs:element name='value'>
+                                    <xs:complexType mixed='true'>
+                                            <xs:sequence>
+                                                    <xs:element maxOccurs='unbounded' ref='b:value'/>
+                                            </xs:sequence>
+                                            <xs:attribute name='sequence_index' use='required' type='xs:integer'/>
+                                    </xs:complexType>
+                            </xs:element>
                     
                             <xs:element name="my_info">
                                 <xs:complexType>
@@ -40,6 +39,35 @@
                                 </xs:complexType>
                             </xs:element>
                         
+                            <xs:element name='assign_tokens_to_user'>
+                                <xs:complexType>
+                                    <xs:sequence maxOccurs='unbounded'>
+                                        <xs:element name='value'>
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name='id' type='xs:integer'/>
+                                                    <xs:element name='tokens'>
+                                                        <xs:complexType>
+                                                            <xs:sequence maxOccurs="unbounded">
+                                                                <xs:element minOccurs="1" maxOccurs="unbounded" name="value">
+                                                                    <xs:complexType mixed="true">
+                                                                        <xs:simpleContent>
+                                                                            <xs:extension base="xs:integer">
+                                                                                <xs:attribute name="sequence_index" use="required" type="xs:integer"/>
+                                                                            </xs:extension>
+                                                                        </xs:simpleContent>
+                                                                    </xs:complexType>
+                                                                </xs:element>
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                                <xs:attribute name='sequence_index' use='required' type='xs:integer'/>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
                         </xs:choice>
                     </xs:complexType>
                 </xs:element>
