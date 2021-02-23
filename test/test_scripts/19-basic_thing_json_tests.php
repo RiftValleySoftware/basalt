@@ -57,11 +57,11 @@ function basalt_tests_read_things() {
 
 function basalt_tests_display_things_result_raw($in_result) {
     $payload_pair = explode(',', $in_result);
-    $type = $payload_pair[0];
-    $payload = $payload_pair[1];
+    $type = 0 < count($payload_pair) ? $payload_pair[0] : NULL;
+    $payload = 1 < count($payload_pair) ? $payload_pair[1] : NULL;
 
     $type_header = explode('/', $type);
-    $type_trailer = explode(';', $type_header[1]);
+    $type_trailer = 1 < count($type_header) ? explode(';', $type_header[1]) : NULL;
     switch ($type_header[0]) {
         case 'image':
             if ('tiff' != $type_trailer[0]) {

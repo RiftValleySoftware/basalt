@@ -809,7 +809,7 @@ function basalt_test_0152($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<h3 class="inner_header"><a href="javascript:toggle_inner_state(\'test_0152_results_1_div\')" style="font-weight:bold">See the Hierarchy Setup Process:</a></h3>');
         echo('<div class="main_div inner_container">');
             $st1 = microtime(true);
-            set_up_hierarchy(0, $hierarchy_list, $api_result);
+            set_up_hierarchy(0, $hierarchy_list, NULL);
             $fetchTime = sprintf('%01.4f', microtime(true) - $st1);
             echo("<h4>The test took $fetchTime seconds to complete.</h4>");
         echo('</div>');

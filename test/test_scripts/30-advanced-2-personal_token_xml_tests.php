@@ -28,29 +28,41 @@
 
 require_once(dirname(dirname(__FILE__)).'/run_basalt_tests.php');
 
-basalt_run_tests(202, 'ADVANCED (2) PERSONAL TOKEN XML TESTS', 'Personal Token Creation and Cataloging');
+basalt_run_tests(205, 'ADVANCED (2) PERSONAL TOKEN XML TESTS', 'Personal Token Creation and Cataloging');
 
 // --------------------------------- DEFINITIONS ---------------------------------------
 
-function basalt_test_define_0202() {
-    basalt_run_single_direct_test(202, 'PASS-Create New User With Personal IDs', 'Log in as a manager, create a new user, and associate 5 personal tokens with it.', 'personal_id_test', 'tertiary', '', 'CoreysGoryStory');
-}
-
-function basalt_test_define_0203() {
-    basalt_run_single_direct_test(203, 'PASS-Baseline-List IDs, and Ensure They are Assigned Properly.', 'Log in as the \'God\' Admin, and ask to see all the security IDs. Ensure they are the proper type.', '', 'admin', '', CO_Config::god_mode_password());
-}
-
-function basalt_test_define_0204() {
-    basalt_run_single_direct_test(204, 'PASS-Assign Unassigned Personal Token to User (direct).', 'Log in as the \'God\' Admin, and assign an unassigned token to a user as a personal token.', '', 'admin', '', CO_Config::god_mode_password());
-}
-
 function basalt_test_define_0205() {
-    basalt_run_single_direct_test(205, 'PASS-Assign Unassigned Personal Token to User (direct).', 'Log in as the \'God\' Admin, and assign an unassigned token to a user as a personal token.', '', 'admin', '', CO_Config::god_mode_password());
+    basalt_run_single_direct_test(205, 'PASS-Create New User With Personal IDs', 'Log in as a manager, create a new user, and associate 5 personal tokens with it.', 'personal_id_test', 'tertiary', '', 'CoreysGoryStory');
+}
+
+function basalt_test_define_0206() {
+    basalt_run_single_direct_test(206, 'PASS-Baseline-List IDs, and Ensure They are Assigned Properly.', 'Log in as the \'God\' Admin, and ask to see all the security IDs. Ensure they are the proper type.', '', 'admin', '', CO_Config::god_mode_password());
+}
+
+function basalt_test_define_0207() {
+    basalt_run_single_direct_test(207, 'PASS-Assign Unassigned Personal Token to User (direct).', 'Log in as the \'God\' Admin, and assign an unassigned token to a user as a personal token.', '', 'admin', '', CO_Config::god_mode_password());
+}
+
+function basalt_test_define_0208() {
+    basalt_run_single_direct_test(208, 'PASS-Assign Unassigned Personal Token to User (direct).', 'Log in as the \'God\' Admin, and assign an unassigned token to a user as a personal token.', '', 'admin', '', CO_Config::god_mode_password());
+}
+
+function basalt_test_define_0209() {
+    basalt_run_single_direct_test(209, 'PASS-Remove Personal Tokens from User (via user mod).', 'Log in as the \'God\' Admin, and remove all personal tokens.', '', 'admin', '', CO_Config::god_mode_password());
+}
+
+function basalt_test_define_0210() {
+    basalt_run_single_direct_test(210, 'PASS-Assign Unassigned Personal Token to User (via user mod).', 'Log in as the \'God\' Admin, and assign an unassigned token to a user as a personal token.', '', 'admin', '', CO_Config::god_mode_password());
+}
+
+function basalt_test_define_0211() {
+    basalt_run_single_direct_test(211, 'PASS-Remove All Tokens (Personal and Regular - via user mod).', 'Log in as the \'God\' Admin, and assign an unassigned token to a user as a personal token.', '', 'admin', '', CO_Config::god_mode_password());
 }
 
 // ----------------------------------- TESTS -------------------------------------------
 
-function basalt_test_0202($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+function basalt_test_0205($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
@@ -93,7 +105,7 @@ function basalt_test_0202($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
 }
 
-function basalt_test_0203($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+function basalt_test_0206($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     echo('<h4>Log In as \'God\':</h4>');
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
@@ -144,7 +156,7 @@ function basalt_test_0203($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
 }
 
-function basalt_test_0204($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+function basalt_test_0207($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     echo('<h4>Log In as \'God\':</h4>');
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
@@ -183,7 +195,7 @@ function basalt_test_0204($in_login = NULL, $in_hashed_password = NULL, $in_pass
     }
 }
 
-function basalt_test_0205($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+function basalt_test_0208($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     echo('<h4>Log In as \'God\':</h4>');
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
@@ -214,6 +226,123 @@ function basalt_test_0205($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
     }
     echo('<h4>List All Visible Tokens. Note that the previous tokens are now just \'token\' types, and 13 and 16 are now assigned to ID 12:</h4>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/baseline/tokens?types', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+}
+
+function basalt_test_0209($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    echo('<h4>Log In as \'God\':</h4>');
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+    echo('<h4>BEFORE. Note the personal tokens:</h4>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/logins/test_user/?show_details', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+    echo('<h4>Remove all personal tokens, in the newest login:</h4>');
+    $result = call_REST_API('PUT', 'http://localhost/basalt/test/basalt_runner.php/xml/people/logins/12/?personal_tokens=', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+    echo('<h4>Notice that personal tokens 13 and 16 have been removed:</h4>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/logins/test_user/?show_details', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+    echo('<h4>List All Visible Tokens. Note that 13 and 16 are now regular tokens again:</h4>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/baseline/tokens?types', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+}
+
+function basalt_test_0210($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    echo('<h4>Log In as \'God\':</h4>');
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+    echo('<h4>BEFORE. Note the personal tokens:</h4>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/logins/test_user/?show_details', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+    echo('<h4>Add 13 and 16 to the newest login:</h4>');
+    $result = call_REST_API('PUT', 'http://localhost/basalt/test/basalt_runner.php/xml/people/logins/12/?tokens=15&personal_tokens=13,16', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+    echo('<h4>Now, notice the tokens have been replaced with 13 and 16:</h4>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/logins/test_user/?show_details', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+    echo('<h4>List All Visible Tokens. Note that the previous tokens are now just \'token\' types, and 13 and 16 are now assigned to ID 12:</h4>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/baseline/tokens?types', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+}
+
+function basalt_test_0211($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
+    $result_code = '';
+    echo('<h4>Log In as \'God\':</h4>');
+    $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
+    }
+    echo('<h4>BEFORE. Note the personal tokens:</h4>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/logins/test_user/?show_details', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+    echo('<h4>Remove everything:</h4>');
+    $result = call_REST_API('PUT', 'http://localhost/basalt/test/basalt_runner.php/xml/people/logins/12/?tokens=&personal_tokens=', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+    echo('<h4>Now, notice all the tokens are gone:</h4>');
+    $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/logins/test_user/?show_details', NULL, $api_result, $result_code);
+    if (isset($result_code) && $result_code && (200 != $result_code)) {
+        echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
+    } else {
+        echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
+    }
+    echo('<h4>List All Visible Tokens. Note that the previous tokens are now just \'token\' types:</h4>');
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/baseline/tokens?types', NULL, $api_result, $result_code);
     if (isset($result_code) && $result_code && (200 != $result_code)) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
