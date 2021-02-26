@@ -75,6 +75,16 @@ function call_REST_API( $method,                /**< REQUIRED:  This is the meth
         $file_size = filesize($temp_file_name);
         $file = fopen($temp_file_name, 'rb');
     }
+
+    if (isset($api_key) && (0 >= strpos($url, 'login_server_secret='))) {
+        $url .= (0 >= strpos($url, '?')) ? '?' : '&';
+        $url .= 'login_server_secret='.$g_server_secret;
+    }
+
+    if (isset($api_key) && (0 >= strpos($url, 'login_api_key='))) {
+        $url .= (0 >= strpos($url, '?')) ? '?' : '&';
+        $url .= 'login_api_key='.$api_key;
+    }
     
     // These are report displays. To enable these, set the __DISPLAY_BASICS__ constant.
     if (isset($api_key) && $api_key && ($display_log || __DISPLAY_BASICS__)) {
@@ -84,7 +94,7 @@ function call_REST_API( $method,                /**< REQUIRED:  This is the meth
     if ($display_log || __DISPLAY_BASICS__) {
         echo('<p style="vertical-align:middle;font-style:italic">'.$method.' URI: <big><code>'.$url.'</code></big></p>');
     }
-
+    
     $curl = curl_init();                    // Initialize the cURL handle.
     curl_setopt($curl, CURLOPT_URL, $url);  // This is the URL we are calling.
         

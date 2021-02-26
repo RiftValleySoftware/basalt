@@ -39,27 +39,27 @@ function basalt_test_define_0074() {
 function basalt_test_0074($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
     }
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people/2?show_details', NULL, $api_result, $result_code);
     echo('<h3>BEFORE:</h3>');
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
     }
     $result = call_REST_API('PUT', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people/2?name=Lena&surname=Söderberg&given_name=Lena&middle_name=Whoah+Nellie!&nickname=Lenna+Sjööblom&prefix=Ms.&suffix=Scanner+Test+Model', Array('filepath' => dirname(dirname(__FILE__)).'/images/lena.jpg', 'type' => 'image/jpeg', 'name' => 'lena.jpg'), $api_result, $result_code);
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<h3 style="color:green">Success!</h3>');
     }
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people/2?show_details', NULL, $api_result, $result_code);
     echo('<h3>AFTER:</h3>');
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $xml_object = simplexml_load_string($result);
@@ -87,14 +87,14 @@ function basalt_test_define_0075() {
 function basalt_test_0075($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
     }
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people/2?show_details', NULL, $api_result, $result_code);
     echo('<h3>BEFORE:</h3>');
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $xml_object = simplexml_load_string($result);
@@ -106,14 +106,14 @@ function basalt_test_0075($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<div style="text-align:center;margin:1em"><img src="data:'.$type.','.$payload.'" title="Woah! Norm, have you been taking hormones?" alt="Lena, not Norm" style="width:256px;border-radius:2em;border:none" /></div>');
     }
     $result = call_REST_API('PUT', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people/2?name=Marvin&surname=Martian&given_name=Marvin&middle_name=D&nickname=Angry+Little+Fella&prefix=&suffix=', Array('filepath' => dirname(dirname(__FILE__)).'/images/Marvin.svg', 'type' => 'image/svg+xml', 'name' => 'Marvin.svg'), $api_result, $result_code);
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<h3 style="color:green">Success!</h3>');
     }
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people/2?show_details', NULL, $api_result, $result_code);
     echo('<h3>AFTER:</h3>');
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $xml_object = simplexml_load_string($result);
@@ -135,14 +135,14 @@ function basalt_test_define_0076() {
 function basalt_test_0076($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
     }
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people/2?show_details', NULL, $api_result, $result_code);
     echo('<h3>BEFORE:</h3>');
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         $xml_object = simplexml_load_string($result);
@@ -154,14 +154,14 @@ function basalt_test_0076($in_login = NULL, $in_hashed_password = NULL, $in_pass
         echo('<div style="text-align:center;margin:1em"><img src="data:'.$type.','.$payload.'" title="I\'m Very, Very Angry, Right Now!" alt="Marvin, not Lena" style="width:256px" /></div>');
     }
     $result = call_REST_API('PUT', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people/2?name=Norm&surname=&given_name=&middle_name=&nickname=&prefix=&suffix=&remove_payload', NULL, $api_result, $result_code);
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<h3 style="color:green">Success!</h3>');
     }
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people/2?show_details', NULL, $api_result, $result_code);
     echo('<h3>AFTER:</h3>');
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
@@ -177,28 +177,28 @@ function basalt_test_define_0077() {
 function basalt_test_0077($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
     }
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people/3?show_details', NULL, $api_result, $result_code);
     echo('<h3>BEFORE:</h3>');
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
     }
     echo('<h3>Note that there are no users deleted:</h3>');
     $result = call_REST_API('DELETE', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people/3', NULL, $api_result, $result_code);
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
     }
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people/3', NULL, $api_result, $result_code);
     echo('<h3>AFTER. Like a Bad Penny, It\'s Still Here:</h3>');
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
@@ -214,28 +214,28 @@ function basalt_test_define_0078() {
 function basalt_test_0078($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
     }
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people/6?show_details', NULL, $api_result, $result_code);
     echo('<h3>BEFORE. Note that \'writeable\' is Set. That Means We Are Allowed to Delete It:</h3>');
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
     }
     echo('<h3>We will see a record of us deleting the user:</h3>');
     $result = call_REST_API('DELETE', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people/6', NULL, $api_result, $result_code);
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
     }
     $result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people/6', NULL, $api_result, $result_code);
     echo('<h3>AFTER. It\'s Gone:</h3>');
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
@@ -251,14 +251,14 @@ function basalt_test_define_0079() {
 function basalt_test_0079($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
     }
     echo('<h3>Welcome to our new user:</h3>');
     $result = call_REST_API('POST', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people/', NULL, $api_result, $result_code);
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
@@ -274,14 +274,14 @@ function basalt_test_define_0080() {
 function basalt_test_0080($in_login = NULL, $in_hashed_password = NULL, $in_password = NULL) {
     $result_code = '';
     $api_result = call_REST_API('GET', 'http://localhost/basalt/test/basalt_runner.php/login?login_id='.$in_login.'&password='.$in_password, NULL, NULL, $result_code);
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<h3 style="color:green">Successful Login. Returned API Key: <code style="color:green">'.htmlspecialchars(print_r($api_result, true)).'</code></h3>');
     }
     echo('<h3>Welcome to our new user:</h3>');
     $result = call_REST_API('POST', 'http://localhost/basalt/test/basalt_runner.php/xml/people/people/?login_id=ColonelSanders', NULL, $api_result, $result_code);
-    if (isset($result_code) && $result_code && (200 != $result_code)) {
+    if (isset($result_code) && $result_code && (200 != $result_code) && (205 != $result_code) ) {
         echo('<h3 style="color:red">RESULT CODE: '.htmlspecialchars(print_r($result_code, true)).'</h3>');
     } else {
         echo('<pre style="color:green">'.prettify_xml($result).'</pre>');
